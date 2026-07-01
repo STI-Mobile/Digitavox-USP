@@ -66,3 +66,4 @@ Este projeto é licenciado sob a Apache License 2.0.
 
 - **Licença (texto oficial) / License (official text):** [LICENSE](LICENSE)
 - **Avisos de atribuição / Attribution notices:** [NOTICE](NOTICE)
+- **Aviso legal / Disclaimer:** [DISCLAIMER.md](DISCLAIMER.md)

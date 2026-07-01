@@ -9,5 +9,33 @@ A implementação atual do Digitavox USP foi desenvolvida pela Superintendência
 A especificação, validação e disseminação receberam apoio de instituições que atendem pessoas com deficiência visual, incluindo:
 Lar das Moças Cegas; Bengala Verde; ADEVA; Associação Catarinense para Integração do Cego; Fundação Dorina Nowill; SENAI; Comissão Permanente de Acessibilidade e Inclusão da UNESP; Coordenadoria de Ações Educacionais (CAED), Universidade Federal de Santa Maria (UFSM); Pró-Reitoria de Inclusão e Pertencimento da USP; Departamento de Biomateriais e Biologia Oral da Faculdade de Odontologia da USP; e Secretaria de Estado dos Direitos da Pessoa com Deficiência do Governo de São Paulo.
 
-Este produto é licenciado sob a Apache License, Versão 2.0. 
+Este produto é licenciado sob a Apache License, Versão 2.0.
 Você pode obter uma cópia da licença em http://www.apache.org/licenses/LICENSE-2.0
+
+---
+
+Este produto utiliza os seguintes componentes de terceiros:
+
+CommunityToolkit.Mvvm
+  Licença: MIT
+  https://github.com/CommunityToolkit/dotnet
+
+Plugin.Maui.Audio
+  Licença: MIT
+  https://github.com/jfversluis/Plugin.Maui.Audio
+
+Microsoft.Maui.Controls
+  Licença: MIT
+  https://github.com/dotnet/maui
+
+Microsoft.Maui.Controls.Compatibility
+  Licença: MIT
+  https://github.com/dotnet/maui
+
+Microsoft.Extensions.Logging.Debug
+  Licença: MIT
+  https://github.com/dotnet/extensions
+
+System.Speech
+  Licença: MIT
+  https://github.com/dotnet/runtime
