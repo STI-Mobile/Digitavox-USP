@@ -45,9 +45,11 @@ de Proteção de Dados (Lei nº 13.709/2018 – LGPD) e demais normas aplicávei
 
 ## Uso em Derivados
 
-Conforme a Licença Apache 2.0, qualquer redistribuição ou trabalho derivado deve
-preservar os avisos de autoria originais mediante a criação e manutenção de um
-arquivo `NOTICE` na raiz do repositório derivado. Consulte o arquivo [NOTICE](NOTICE)
+Conforme a Seção 4(d) da Licença Apache 2.0, qualquer redistribuição ou trabalho
+derivado deve incluir uma cópia legível dos avisos de atribuição contidos no
+arquivo `NOTICE` original. Essa reprodução pode ocorrer em: um arquivo `NOTICE`
+distribuído junto ao trabalho derivado; na documentação ou código-fonte fornecidos;
+ou em um display gerado pelo próprio software. Consulte o arquivo [NOTICE](NOTICE)
 deste repositório como referência, ou veja um exemplo de estrutura em:
 https://github.com/apache/httpd/blob/trunk/NOTICE
 
