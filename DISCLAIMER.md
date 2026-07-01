@@ -77,4 +77,3 @@ Questões institucionais referentes à publicação deste repositório devem ser
 Superintendência de Tecnologia da Informação (STI) pelo e-mail: sti@usp.br
 Reitera-se que este canal não se destina à prestação de suporte técnico, esclarecimento de
 dúvidas operacionais ou auxílio na implementação do código.
- 
