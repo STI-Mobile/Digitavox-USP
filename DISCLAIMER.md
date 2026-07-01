@@ -74,6 +74,6 @@ ao esforço científico investido:
 
 O software Digitavox é disponibilizado integralmente sob os termos da Licença Apache 2.0.
 Questões institucionais referentes à publicação deste repositório devem ser direcionadas à
-Superintendência de Tecnologia da Informação (STI) pelo e-mail: sti@usp.br
+Superintendência de Tecnologia da Informação (STI) pelo e-mail: sti@usp.br.
 Reitera-se que este canal não se destina à prestação de suporte técnico, esclarecimento de
 dúvidas operacionais ou auxílio na implementação do código.
