@@ -12,7 +12,6 @@ public partial class App : Application
 	public App(DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions)
 	{
 		InitializeComponent();
-		MainPage = new AppShell();
 
         WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => 
         {
@@ -50,9 +49,9 @@ public partial class App : Application
     
     
     
-    protected override Window CreateWindow(IActivationState activationState)
+    protected override Window CreateWindow(IActivationState? activationState)
     {
-        Window window = base.CreateWindow(activationState);
+        Window window = new Window(new AppShell());
         window.Created += (s, e) =>
         {
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowCreated"));
