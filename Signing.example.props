@@ -1,5 +1,5 @@
 <Project>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
     <AndroidSigningKeyStore>/absolute/path/to/your/keystore.jks</AndroidSigningKeyStore>
     <AndroidSigningStorePass>CHANGE_ME</AndroidSigningStorePass>
     <AndroidSigningKeyPass>CHANGE_ME</AndroidSigningKeyPass>
