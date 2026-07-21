@@ -59,5 +59,6 @@ public partial class AppShell : Shell, INotifyPropertyChanged
         Routing.RegisterRoute("Config", typeof(ConfigView));
         Routing.RegisterRoute("SecondHelp", typeof(SecondHelpView));
         Routing.RegisterRoute("PrivacyPolicy", typeof(PrivacyPolicyView));
+        Routing.RegisterRoute("ThirdPartyLicenses", typeof(ThirdPartyLicensesView));
     }
 }

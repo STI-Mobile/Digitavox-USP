@@ -36,6 +36,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<UserOptionsViewModel>();
         builder.Services.AddSingleton<SecondHelpViewModel>();
         builder.Services.AddSingleton<PrivacyPolicyViewModel>();
+        builder.Services.AddSingleton<ThirdPartyLicensesViewModel>();
         builder.Services.AddTransient<ConfigView>();
         builder.Services.AddTransient<CoursesHelpView>();
         builder.Services.AddTransient<CoursesView>();
@@ -51,6 +52,7 @@ public static class MauiProgram
         builder.Services.AddTransient<UserOptionsView>();
         builder.Services.AddTransient<SecondHelpView>();
         builder.Services.AddTransient<PrivacyPolicyView>();
+        builder.Services.AddTransient<ThirdPartyLicensesView>();
 
         builder.Services.AddSingleton(AudioManager.Current);
 

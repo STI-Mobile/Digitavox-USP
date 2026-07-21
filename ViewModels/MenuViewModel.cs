@@ -10,7 +10,7 @@ namespace Digitavox.ViewModels
     {
         List<string> pressedKeys = new List<string>();
         int timeToCaptureNumber = 0;
-        int totalOptions = 6;
+        int totalOptions = 7;
         List<string> pageKeyCodes;
         [ObservableProperty]
         private FormattedString pageFormattedLabel;
@@ -58,7 +58,8 @@ namespace Digitavox.ViewModels
                 "3 - Opções de usuário",
                 "4 - Configurações",
                 "5 - Instruções de uso",
-                "6 - Política de privacidade"
+                "6 - Política de privacidade",
+                "7 - Licenças de terceiros"
             };
             var defaultSpeechList = new List<string>()
             {
@@ -68,7 +69,8 @@ namespace Digitavox.ViewModels
                 "3 - Opções de usuário  ",
                 "4 - Configurações",
                 "5 - Instruções de uso",
-                "6 - Política de privacidade"
+                "6 - Política de privacidade",
+                "7 - Licenças de terceiros"
             };
             if (defaultSpeechList.Count == defaultTextList.Count)
             {
@@ -96,7 +98,7 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetNumberCaptureTimeInterval(timeToCaptureNumber);
             dVViewModelFunctions.SetOption2PageList(new List<string>()
             {
-                "Keyboard", "Courses", "UserOptions", "Config", "Tutorial", "PrivacyPolicy"
+                "Keyboard", "Courses", "UserOptions", "Config", "Tutorial", "PrivacyPolicy", "ThirdPartyLicenses"
             });
             dVViewModelSpeak.SpeakAll();
             WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
