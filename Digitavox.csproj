@@ -82,6 +82,13 @@
 
 		<!-- Custom Fonts -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<MauiAsset Include="THIRD-PARTY-NOTICES.txt" LogicalName="THIRD-PARTY-NOTICES.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="THIRD-PARTY-NOTICES.txt"
+	        CopyToOutputDirectory="PreserveNewest"
+	        CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
