@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Digitavox.Views.ThirdPartyLicensesView"
+             x:Name="LicensesPage">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid>
+        <CollectionView ItemsSource="{Binding NoticeSections}"
+                        ItemSizingStrategy="MeasureAllItems"
+                        SelectionMode="None"
+                        Margin="10,10,5,20"
+                        AutomationProperties.ExcludedWithChildren="True">
+            <CollectionView.Header>
+                <Label FormattedText="{Binding PageFormattedLabel}"
+                       FontSize="{Binding TextSize}"
+                       LineBreakMode="WordWrap" />
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding .}"
+                           FontSize="{Binding Source={x:Reference LicensesPage}, Path=BindingContext.TextSize}"
+                           LineBreakMode="WordWrap" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
