@@ -41,7 +41,6 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     protected override void OnCreate(Bundle savedInstanceState) {
         base.OnCreate(savedInstanceState);
         active = true;
-        Window.SetStatusBarColor(Android.Graphics.Color.Rgb(253, 180, 32));
         am = (AccessibilityManager)GetSystemService(Context.AccessibilityService);
         WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
             if (m.Value == "WindowActivated")
@@ -76,9 +75,6 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
         DVSpeak.GetInstance().Init(this);
         base.OnResume();
         active = true;
-        
-        
-        FullScreen();
     }
     public TextToSpeech createTextToSpeech()
     {
@@ -136,13 +132,5 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
               else return base.OnKeyUp(keyCode, e);
           }
           else return base.OnKeyUp(keyCode, e);
-    }
-    private void FullScreen()
-    {
-        
-        
-        
-        this.Window.DecorView.SystemUiVisibility = (StatusBarVisibility)
-            (SystemUiFlags.HideNavigation | SystemUiFlags.Immersive);
     }
 }
