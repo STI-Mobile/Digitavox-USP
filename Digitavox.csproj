@@ -19,10 +19,10 @@
 		<ApplicationIdGuid>7bb29c79-1497-44c6-8a14-a26048874ff4</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.4</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
@@ -50,6 +50,8 @@
 		  <AndroidKeyStore Condition="Exists('Signing.local.props')">True</AndroidKeyStore>
 		  <AndroidSigningKeyAlias>distribution</AndroidSigningKeyAlias>
 		  <AndroidPackageFormat>aab</AndroidPackageFormat>
+		  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
+		  <ApplicationVersion>23</ApplicationVersion>
 		  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 		  <AndroidUseAapt2>True</AndroidUseAapt2>
@@ -59,14 +61,12 @@
 	
 	<!-- Configurações para suporte a páginas de 16KB no Android -->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
-	  <AndroidExtractJavaLibs>true</AndroidExtractJavaLibs>
-	  <AndroidUncompressedFileExtensions>.so</AndroidUncompressedFileExtensions>
 	  <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 	
 		<ItemGroup>
 			<!-- App Icon -->
-			<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#FDB420">
+			<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#FCB421">
 				 <ForegroundScale Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">0.40</ForegroundScale>
 				 <ForegroundScale Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">0.80</ForegroundScale>
 				 <ForegroundScale Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">0.75</ForegroundScale>
@@ -74,7 +74,7 @@
 	    </MauiIcon>
 
 			<!-- Splash Screen -->
-			<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FDB420" BaseSize="256,256" />
+			<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FCB421" BaseSize="256,256" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
