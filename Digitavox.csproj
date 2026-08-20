@@ -51,7 +51,7 @@
 		  <AndroidSigningKeyAlias>distribution</AndroidSigningKeyAlias>
 		  <AndroidPackageFormat>aab</AndroidPackageFormat>
 		  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
-		  <ApplicationVersion>22</ApplicationVersion>
+		  <ApplicationVersion>23</ApplicationVersion>
 		  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 		  <AndroidUseAapt2>True</AndroidUseAapt2>
