@@ -50,6 +50,8 @@
 		  <AndroidKeyStore Condition="Exists('Signing.local.props')">True</AndroidKeyStore>
 		  <AndroidSigningKeyAlias>distribution</AndroidSigningKeyAlias>
 		  <AndroidPackageFormat>aab</AndroidPackageFormat>
+		  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
+		  <ApplicationVersion>22</ApplicationVersion>
 		  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 		  <AndroidUseAapt2>True</AndroidUseAapt2>
@@ -59,8 +61,6 @@
 	
 	<!-- Configurações para suporte a páginas de 16KB no Android -->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
-	  <AndroidExtractJavaLibs>true</AndroidExtractJavaLibs>
-	  <AndroidUncompressedFileExtensions>.so</AndroidUncompressedFileExtensions>
 	  <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 	
