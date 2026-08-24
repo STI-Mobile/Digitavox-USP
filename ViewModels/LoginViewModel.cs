@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Microsoft.Maui.Controls;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -55,15 +56,24 @@ namespace Digitavox.ViewModels
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public LoginViewModel(DVViewModelSpeak dVViewModelSpeak, 
                               FingerMapping fingerMapping,
                               UserProgress userProgress,
-                              DVViewModelFunctions dVViewModelFunctions)
+                              DVViewModelFunctions dVViewModelFunctions,
+                              ISettingsService settingsService,
+                              INavigationService navigationService,
+                              IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             
         }
         public void OnPage()
@@ -94,7 +104,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             titleOutput = true;
@@ -163,7 +173,7 @@ namespace Digitavox.ViewModels
             {
                 if (!dVViewModelFunctions.OnAlert())
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
                         GoToMenuPage();
                     });
@@ -225,7 +235,7 @@ namespace Digitavox.ViewModels
         }
         private async void GoToMenuPage()
         {
-            await Shell.Current.GoToAsync("Menu");
+            await navigationService.GoToAsync("Menu");
         }
         public bool OnPageKeyDown(int keyCode)
         {

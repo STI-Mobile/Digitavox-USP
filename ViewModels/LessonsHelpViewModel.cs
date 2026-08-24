@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 
 namespace Digitavox.ViewModels
@@ -35,15 +36,21 @@ namespace Digitavox.ViewModels
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
         private Course course;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public LessonsHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
                                     FingerMapping fingerMapping,
-                                    Course course)
+                                    Course course,
+                                    ISettingsService settingsService,
+                                    IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
             this.course = course;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -104,7 +111,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - totalOptions);
@@ -157,7 +164,7 @@ namespace Digitavox.ViewModels
                     if (dVViewModelFunctions.LessonsEnterOptionSelected()) dVViewModelFunctions.HandleKeyCode("Enter");
                     else Enter();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

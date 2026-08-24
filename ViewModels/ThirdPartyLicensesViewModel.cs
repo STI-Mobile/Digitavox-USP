@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using System.Text;
 
 namespace Digitavox.ViewModels;
@@ -30,6 +31,8 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
     private readonly DVViewModelSpeak dVViewModelSpeak;
     private readonly FingerMapping fingerMapping;
     private readonly List<string> pressedKeys = new();
+    private readonly ISettingsService settingsService;
+    private readonly IAppEnvironment appEnvironment;
     private bool isLoaded;
     private List<string> introductionParagraphs = new();
 
@@ -45,18 +48,22 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
     public ThirdPartyLicensesViewModel(
         DVViewModelFunctions dVViewModelFunctions,
         DVViewModelSpeak dVViewModelSpeak,
-        FingerMapping fingerMapping)
+        FingerMapping fingerMapping,
+        ISettingsService settingsService,
+        IAppEnvironment appEnvironment)
     {
         this.dVViewModelFunctions = dVViewModelFunctions;
         this.dVViewModelSpeak = dVViewModelSpeak;
         this.fingerMapping = fingerMapping;
+        this.settingsService = settingsService;
+        this.appEnvironment = appEnvironment;
     }
 
     public async Task LoadAsync()
     {
         dVViewModelFunctions.SetCurrentPageIdentifier("na tela de licenças de terceiros");
         dVViewModelFunctions.ClearHelpOptions();
-        TextSize = DVPersistence.Get<double>("fontSize");
+        TextSize = settingsService.Get<double>("fontSize");
         if (!isLoaded)
         {
             try
@@ -185,7 +192,7 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
         if (bean.code is not null)
         {
             dVViewModelSpeak.Skip();
-            if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+            if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
             {
                 NavigateBack();
             }

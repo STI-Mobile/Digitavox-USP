@@ -20,11 +20,15 @@ using Microsoft.Maui.Controls;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
     public class DVViewModelSpeak
     {
+        private readonly ISettingsService settingsService;
+        private readonly ISpeechService speechService;
+        private readonly IAppEnvironment appEnvironment;
         private int boldLineIndex = -1;
         private bool isExercisePage = false;
         private bool isLessonsPage = false;
@@ -43,12 +47,23 @@ namespace Digitavox.ViewModels
             {"optionTitle", string.Empty},
             {"optionList", new List<string>()}
         };
+
+        public DVViewModelSpeak(
+            ISettingsService settingsService,
+            ISpeechService speechService,
+            IAppEnvironment appEnvironment)
+        {
+            this.settingsService = settingsService;
+            this.speechService = speechService;
+            this.appEnvironment = appEnvironment;
+        }
+
         public void Skip()
         {
             if (!stopRecursive)
                 stopRecursive = true;
 
-            DVSpeak.GetInstance().Cancel();
+            speechService.Cancel();
         }
         private void CancelCurrentExecution()
         {
@@ -56,7 +71,7 @@ namespace Digitavox.ViewModels
         }
         public void Speak(string text, Action onCompleted)
         {
-            DVSpeak.GetInstance().SpeakText(text, onCompleted);
+            speechService.Speak(text, onCompleted);
         }
         public void SpeakAll(Action onCompleted)
         {
@@ -78,7 +93,7 @@ namespace Digitavox.ViewModels
         }
         public void SpeakOneLine(int index, Action onCompleted)
         {
-            DVSpeak.GetInstance().Cancel();
+            speechService.Cancel();
             if (index >= 0 && index < textList.Count)
             {
                 BoldLine(index);
@@ -201,19 +216,11 @@ namespace Digitavox.ViewModels
         }
         private Span DefineSpan(string text, int index)
         {
-            double fontSize = DVPersistence.Get<double>("fontSize");
+            double fontSize = settingsService.Get<double>("fontSize");
             FontAttributes fontAttributes = FontAttributes.None;
 
             Color color;
-            if (AccessibilityHelper.IsHighContrastEnabled())
-            {
-                color = Colors.White; 
-            }
-            else
-            {
-                AppTheme currentTheme = Application.Current.RequestedTheme;
-                color = (currentTheme == AppTheme.Light) ? Colors.Black : Colors.White;
-            }
+            color = appEnvironment.ShouldUseLightForeground ? Colors.White : Colors.Black;
 
             if (isExercisePage && index >= 2 && index <= 4)
             {

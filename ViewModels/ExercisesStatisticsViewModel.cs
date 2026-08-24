@@ -15,6 +15,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -36,12 +37,18 @@ namespace Digitavox.ViewModels
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
         private CourseLesson courseLesson;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public ExercisesStatisticsViewModel(Course course,
                                             DVViewModelSpeak dVViewModelSpeak,
                                             DVViewModelFunctions dVViewModelFunctions,
                                             FingerMapping fingerMapping,
                                             UserProgress userProgress,
-                                            CourseLesson courseLesson)
+                                            CourseLesson courseLesson,
+                                            ISettingsService settingsService,
+                                            INavigationService navigationService,
+                                            IAppEnvironment appEnvironment)
         {
             this.course = course;
             this.dVViewModelSpeak = dVViewModelSpeak;
@@ -49,6 +56,9 @@ namespace Digitavox.ViewModels
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
             this.courseLesson = courseLesson;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab"
@@ -63,7 +73,7 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetOptionNumberStart(0);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 string instructionsText = userProgress.ConsultingOldLesson() ? "Escape volta." : "Aperte enter para fazer a próxima lição disponível. Escape volta para o menu de lições.";
                 string instructionsSpeech = userProgress.ConsultingOldLesson() ? "Esqueipe volta." : "Aperte êmter para fazer a próxima lição disponível. Esqueipe volta para o menu de lições.";
@@ -145,7 +155,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             lessonNumber = userProgress.LastAvailableLesson();
@@ -158,11 +168,11 @@ namespace Digitavox.ViewModels
         private async void NavigateBack()
         {
             string backRoute = userProgress.ConsultingOldLesson() ? ".." : "../..";
-            await Shell.Current.GoToAsync(backRoute);
+            await navigationService.GoToAsync(backRoute);
         }
         private async void GoToNextLesson()
         {
-            await Shell.Current.GoToAsync("../../Exercises");
+            await navigationService.GoToAsync("../../Exercises");
         }
         public bool OnPageKeyDown(int keyCode)
         {
@@ -184,7 +194,7 @@ namespace Digitavox.ViewModels
                 {
                     OnPage();
                 }
-                else if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     NavigateBack();
                 }

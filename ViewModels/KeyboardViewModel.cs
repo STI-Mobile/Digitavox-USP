@@ -15,6 +15,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using Digitavox.PlatformsImplementations;
 
 namespace Digitavox.ViewModels
@@ -31,14 +32,23 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         private FingerMapping fingerMapping;
         public KeyboardViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
-                                    FingerMapping fingerMapping)
+                                    FingerMapping fingerMapping,
+                                    ISettingsService settingsService,
+                                    INavigationService navigationService,
+                                    IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
         }
         public void OnPage()
         {
@@ -64,7 +74,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
 
@@ -78,7 +88,7 @@ namespace Digitavox.ViewModels
         }
         private async void NavigateBack()
         {
-            await Shell.Current.GoToAsync("..");
+            await navigationService.GoToAsync("..");
         }
         public bool OnPageKeyDown(int keyCode)
         {
@@ -96,12 +106,12 @@ namespace Digitavox.ViewModels
             if (bean.show != null && bean.speak != null)
             {
                 dVViewModelSpeak.Skip();
-                if (DVDevice.IsVirtual() && (bean.code != "!" || escPressed == 0))
+                if (appEnvironment.IsVirtualDevice && (bean.code != "!" || escPressed == 0))
                 {
                     dVViewModelSpeak.ChangeLine(bean.show, bean.speak, 2);
                     dVViewModelSpeak.SpeakOneLine(2, () => { });
                 }
-                else if (!DVDevice.IsVirtual() && (bean.code != "Escape" || escPressed == 0))
+                else if (!appEnvironment.IsVirtualDevice && (bean.code != "Escape" || escPressed == 0))
 
                 {
                     dVViewModelSpeak.ChangeLine(bean.show, bean.speak, 2);
@@ -111,7 +121,7 @@ namespace Digitavox.ViewModels
                 {
                     CountEsc();
                 }
-                else if (bean.code == "!" && DVDevice.IsVirtual())
+                else if (bean.code == "!" && appEnvironment.IsVirtualDevice)
                 {
                     CountEsc();
                 }

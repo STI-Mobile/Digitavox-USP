@@ -15,6 +15,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -24,11 +25,14 @@ namespace Digitavox.ViewModels
         List<string> pageKeyCodes;
         private FingerMapping fingerMapping;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly IAppEnvironment appEnvironment;
         public PrivacyPolicyViewModel(FingerMapping fingerMapping,
-                                      DVViewModelFunctions dVViewModelFunctions)
+                                      DVViewModelFunctions dVViewModelFunctions,
+                                      IAppEnvironment appEnvironment)
         {
             this.fingerMapping = fingerMapping;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Escape"
@@ -49,7 +53,7 @@ namespace Digitavox.ViewModels
             var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
             if (bean.code != null)
             {
-                if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

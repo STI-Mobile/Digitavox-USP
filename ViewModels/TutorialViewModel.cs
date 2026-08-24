@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -33,15 +34,24 @@ namespace Digitavox.ViewModels
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public TutorialViewModel(DVViewModelSpeak dVViewModelSpeak,
                              FingerMapping fingerMapping,
                              UserProgress userProgress,
-                             DVViewModelFunctions dVViewModelFunctions)
+                             DVViewModelFunctions dVViewModelFunctions,
+                             ISettingsService settingsService,
+                             INavigationService navigationService,
+                             IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
         }
         public void OnPage()
         {
@@ -56,7 +66,7 @@ namespace Digitavox.ViewModels
                 };
             }
             Thread.Sleep(100);
-            if (DVDevice.IsAndroid())
+            if (appEnvironment.Platform == AppPlatformKind.Android)
             {
                 tutorialText = new List<string>()
                 {
@@ -99,7 +109,7 @@ namespace Digitavox.ViewModels
                     "As instruções de uso foram finalizadas. O Digitavóx USP iniciará normalmente agora."
                 };
             }
-            else if (DVDevice.IsIos())
+            else if (appEnvironment.Platform == AppPlatformKind.Ios)
             {
                 tutorialText = new List<string>()
                 {
@@ -128,7 +138,7 @@ namespace Digitavox.ViewModels
                     "As instruções de uso foram finalizadas. O Digitavóx uspe iniciará normalmente agora."
                 };
             }
-            else if (DVDevice.IsMac())
+            else if (appEnvironment.Platform == AppPlatformKind.MacCatalyst)
             {
                 tutorialText = new List<string>()
                 {
@@ -157,7 +167,7 @@ namespace Digitavox.ViewModels
                     "As instruções de uso foram finalizadas. O Digitavóx uspe iniciará normalmente agora."
                 };
             }
-            else if (DVDevice.IsWindows())
+            else if (appEnvironment.Platform == AppPlatformKind.Windows)
             {
                 tutorialText = new List<string>()
                 {
@@ -195,13 +205,13 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
             dVViewModelSpeak.SpeakAll(() =>
             {
                 if (!userProgress.UserLogged() && !dVViewModelFunctions.OnAlert())
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
                         GoToLoginPage();
                     });
@@ -212,7 +222,7 @@ namespace Digitavox.ViewModels
         private async void GoToLoginPage()
         {
             WeakReferenceMessenger.Default.Send(new DVMessage("CheckForScreenReader"));
-            await Shell.Current.GoToAsync("Login");
+            await navigationService.GoToAsync("Login");
         }
         public bool OnPageKeyDown(int keyCode)
         {
@@ -234,7 +244,7 @@ namespace Digitavox.ViewModels
                 {
                     OnPage();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

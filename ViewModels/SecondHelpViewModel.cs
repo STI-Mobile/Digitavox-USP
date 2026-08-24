@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 
 namespace Digitavox.ViewModels
@@ -36,17 +37,23 @@ namespace Digitavox.ViewModels
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
         private Course course;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public SecondHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                    DVViewModelFunctions dVViewModelFunctions, 
                                    FingerMapping fingerMapping,
                                    UserProgress userProgress,
-                                   Course course)
+                                   Course course,
+                                   ISettingsService settingsService,
+                                   IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
             this.course = course;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             statistcsOptionKey = dVViewModelFunctions.LessonStatisticsCode();
         }
         public void OnPage()
@@ -70,7 +77,7 @@ namespace Digitavox.ViewModels
             {
                 string.Empty
             };
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 textList.Add(instructionText);
                 speechList.Add(instructionSpeak);
@@ -111,7 +118,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelSpeak.SpeakAll();
@@ -146,7 +153,7 @@ namespace Digitavox.ViewModels
                 {
                     OnPage();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

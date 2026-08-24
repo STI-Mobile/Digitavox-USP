@@ -20,6 +20,11 @@ using Digitavox.ViewModels;
 using Digitavox.Models;
 using Digitavox.Helpers;
 using Plugin.Maui.Audio;
+using Digitavox.Core.Abstractions;
+using Digitavox.Infrastructure.Navigation;
+using Digitavox.Infrastructure.Platform;
+using Digitavox.Infrastructure.Settings;
+using Digitavox.Infrastructure.Speech;
 
 namespace Digitavox;
 
@@ -33,6 +38,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<CourseLesson>();
         builder.Services.AddSingleton<FingerMapping>();
         builder.Services.AddSingleton<UserProgress>();
+        builder.Services.AddSingleton<ISettingsService, MauiSettingsService>();
+        builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
+        builder.Services.AddSingleton<ISpeechService, MauiSpeechService>();
+        builder.Services.AddSingleton<IAppEnvironment, MauiAppEnvironment>();
         builder.Services.AddSingleton<DVViewModelSpeak>();
         builder.Services.AddSingleton<DVViewModelFunctions>();
         builder.Services.AddSingleton<ConfigViewModel>();

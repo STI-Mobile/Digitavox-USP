@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -40,17 +41,23 @@ namespace Digitavox.ViewModels
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public CoursesViewModel(Course course, 
                                 DVViewModelSpeak dVViewModelSpeak,
                                 DVViewModelFunctions dVViewModelFunctions,
                                 FingerMapping fingerMapping,
-                                UserProgress userProgress)
+                                UserProgress userProgress,
+                                ISettingsService settingsService,
+                                IAppEnvironment appEnvironment)
         {
             this.course = course;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             course.GetCoursesLists();
             pageKeyCodes = new List<string>()
             {
@@ -105,7 +112,7 @@ namespace Digitavox.ViewModels
             {
                 "Cursos de digitação"
             };
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 textList.Add($"Use os números de 1 a {courseList.Count}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle enter para confirmar. Escape volta e ao navegar pelas opções tecle F1 para ajuda.");
                 speechList.Add($"Use os números de 1 a {courseList.Count}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle êmter para confirmar. Esqueipe volta e ao navegar pelas opções tecle F1 para ajuda.");
@@ -146,7 +153,7 @@ namespace Digitavox.ViewModels
                                 
                                 
                                 PageFormattedLabel = text;
-                                TextSize = DVPersistence.Get<double>("fontSize");
+                                TextSize = settingsService.Get<double>("fontSize");
                             });
         }
         private void Option2Course()
@@ -179,7 +186,7 @@ namespace Digitavox.ViewModels
                 {
                     OnPage();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                     if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();

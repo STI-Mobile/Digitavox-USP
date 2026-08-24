@@ -15,6 +15,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using Digitavox.Helpers;
 using Plugin.Maui.Audio;
 
@@ -35,13 +36,19 @@ namespace Digitavox.ViewModels
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public MenuViewModel(DVViewModelSpeak dVViewModelSpeak,
                              DVViewModelFunctions dVViewModelFunctions,
-                             FingerMapping fingerMapping)
+                             FingerMapping fingerMapping,
+                             ISettingsService settingsService,
+                             IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -59,7 +66,7 @@ namespace Digitavox.ViewModels
             Thread.Sleep(100);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 textList.Add($"Use os números de 1 a {totalOptions}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle Enter para confirmar. Escape volta.");
                 speechList.Add($"Use os números de 1 a {totalOptions}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle êmter para confirmar. Esqueipe volta.");
@@ -102,7 +109,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
 
@@ -135,7 +142,7 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.Skip();
                 if (dVViewModelFunctions.KeysEnabled())
                 {
-                    if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                    if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                     {
                         string exitText = "Você está no menu inicial.";
                         dVViewModelSpeak.Speak(exitText, () => { });

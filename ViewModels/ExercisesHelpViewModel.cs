@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -34,13 +35,19 @@ namespace Digitavox.ViewModels
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public ExercisesHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                       DVViewModelFunctions dVViewModelFunctions,
-                                      FingerMapping fingerMapping)
+                                      FingerMapping fingerMapping,
+                                      ISettingsService settingsService,
+                                      IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             functionKeyCodes = new List<string>()
             {
                 "Left", "Right", "F2",
@@ -103,7 +110,7 @@ namespace Digitavox.ViewModels
                                 
                                 
                                 PageFormattedLabel = text;
-                                TextSize = DVPersistence.Get<double>("fontSize");
+                                TextSize = settingsService.Get<double>("fontSize");
                             });
 
 
@@ -155,7 +162,7 @@ namespace Digitavox.ViewModels
                 {
                     Enter();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

@@ -19,6 +19,7 @@ using Plugin.Maui.Audio;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text.RegularExpressions;
 using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -53,12 +54,20 @@ namespace Digitavox.ViewModels
         private DVViewModelSpeak dVViewModelSpeak;
         private FingerMapping fingerMapping;
         private readonly IAudioManager audioManager;
+        private readonly ISettingsService settingsService;
+        private readonly ISpeechService speechService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public DVViewModelFunctions(Course course,
                                CourseLesson courseLesson,
                                UserProgress userProgress,
                                DVViewModelSpeak dVViewModelSpeak,
                                FingerMapping fingerMapping,
-                               IAudioManager audioManager)
+                               IAudioManager audioManager,
+                               ISettingsService settingsService,
+                               ISpeechService speechService,
+                               INavigationService navigationService,
+                               IAppEnvironment appEnvironment)
         {
             this.course = course;
             this.courseLesson = courseLesson;
@@ -66,6 +75,10 @@ namespace Digitavox.ViewModels
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
             this.audioManager = audioManager;
+            this.settingsService = settingsService;
+            this.speechService = speechService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             commonFunctions = new Dictionary<string, Action>()
             {
                 { "Enter", Enter},
@@ -110,7 +123,7 @@ namespace Digitavox.ViewModels
                 {courseHelpOptions[3], $"Total de {course.TotalLessons()} lições."},
                 {courseHelpOptions[4], $"Última concluída: lição {userProgress.LastAvailableLesson() - 1}."},
                 {courseHelpOptions[5], $"Usuário {userProgress.GetUserName()} logado."},
-                {courseHelpOptions[6], $"O divisor de tempo definido é {DVPersistence.Get<int>("timeDivider")}"},
+                {courseHelpOptions[6], $"O divisor de tempo definido é {settingsService.Get<int>("timeDivider")}"},
                 {courseHelpOptions[7], $"Curso número {course.CourseNumber()} de {course.CourseNameList().Count}"}
             };
         }
@@ -158,7 +171,7 @@ namespace Digitavox.ViewModels
             {
                 {lessonHelpOptions[4], exercisesString},
                 {lessonHelpOptions[5], $"Usuário {userProgress.GetUserName()} logado."},
-                {lessonHelpOptions[6], $"O divisor de tempo definido é {DVPersistence.Get<int>("timeDivider")}"},
+                {lessonHelpOptions[6], $"O divisor de tempo definido é {settingsService.Get<int>("timeDivider")}"},
                 {lessonHelpOptions[7], $"Lição número {course.LessonNumber()} de {course.TotalLessons()}"},
                 {lessonHelpOptions[8], $"{course.CourseProperty("NOMECURSO")}"}
             };
@@ -204,7 +217,7 @@ namespace Digitavox.ViewModels
         private void LessonData()
         {
             courseLesson.SetLessonChars(course.GetExercises(), int.Parse(course.LessonProperty("REPETICOESEXER")), int.Parse(course.LessonProperty("TEMPOPORCARACTER")),
-                int.Parse(course.LessonProperty("MEDIAEXER")), DVPersistence.Get<int>("timeDivider"), string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase), string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase));
+                int.Parse(course.LessonProperty("MEDIAEXER")), settingsService.Get<int>("timeDivider"), string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase), string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase));
             List<string> statisticsList = new List<string>()
             {
                 $"Lição: {course.LessonNumber()}",
@@ -340,15 +353,15 @@ namespace Digitavox.ViewModels
             }
             else 
             {
-                int spellingSpeakRate = DVPersistence.Get<int>("speakRate") - 3;
+                int spellingSpeakRate = settingsService.Get<int>("speakRate") - 3;
                 if (spellingSpeakRate < 1)
                 {
                     spellingSpeakRate = 1;
                 }
-                DVSpeak.GetInstance().SetSpeechRate(spellingSpeakRate);
+                speechService.SetRate(spellingSpeakRate);
                 courseLesson.PauseTimer();
                 dVViewModelSpeak.Speak(onlySpokenOptions[code], () => {
-                    DVSpeak.GetInstance().SetSpeechRate(DVPersistence.Get<int>("speakRate"));
+                    speechService.SetRate(settingsService.Get<int>("speakRate"));
                     courseLesson.ContinueTimer();
                 });
             }
@@ -410,7 +423,7 @@ namespace Digitavox.ViewModels
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
             dVViewModelSpeak.CurrentIsLessonsPage(false);
-            await Shell.Current.GoToAsync("SecondHelp");
+            await navigationService.GoToAsync("SecondHelp");
         }
         private void UpArrow()
         {
@@ -450,18 +463,18 @@ namespace Digitavox.ViewModels
                 else
                 {
                     keysEnabled = false;
-                    if (DVVoiceOverHelper.IsVoiceOverEnabled())
+                    if (appEnvironment.IsScreenReaderEnabled)
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade as teclas de setas e esqueipe devem ser devolvidas para o controle do vóice ôver, para tanto pressione as teclas de seta para direita e esquerda ao mesmo tempo. Para sair pressione as teclas control e esqueipe juntas e depois pressione as teclas de seta para direita e esquerda ao mesmo tempo novamente.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
                                 GoToNextPage();
                             });
                         });
-                    else if (DVDevice.IsIos()) 
+                    else if (appEnvironment.Platform == AppPlatformKind.Ios)
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade o vóice ôver deve ser ativado e as teclas de setas e esqueipe devem estar configuradas para o seu uso. Para sair pressione as teclas control e esqueipe juntas e depois pressione as teclas de seta para direita e esquerda ao mesmo tempo novamente.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
                                 GoToNextPage();
                             });
@@ -470,7 +483,7 @@ namespace Digitavox.ViewModels
                     {
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade ative o leitor de tela e para sair pressione a tecla esqueipe.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
                                 GoToNextPage();
                             });
@@ -493,14 +506,14 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.CurrentIsExercisePage(false);
             dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
-            await Shell.Current.GoToAsync(nextPageRoute);
+            await navigationService.GoToAsync(nextPageRoute);
         }
         public async void DisplayAlert()
         {
             if (!alertControl)
             {
                 alertControl = true;
-                await Shell.Current.GoToAsync("Alert");
+                await navigationService.GoToAsync("Alert");
             }
         }
         public async void DismissAlert()
@@ -508,7 +521,7 @@ namespace Digitavox.ViewModels
             if (alertControl)
             {
                 alertControl = false;
-                await Shell.Current.GoToAsync("..");
+                await navigationService.GoToAsync("..");
             }
         }
         public bool OnAlert()
@@ -534,7 +547,7 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.CurrentIsExercisePage(false);
             dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
-            await Shell.Current.GoToAsync(navigateBackRoute);
+            await navigationService.GoToAsync(navigateBackRoute);
         }
         public void InvalidOption(string key)
         {
@@ -617,7 +630,7 @@ namespace Digitavox.ViewModels
                 }
                 else
                 {
-                    if (!((code == "!" || code == "@") && (!DVDevice.IsVirtual()))) commonFunctions[code]();
+                    if (!((code == "!" || code == "@") && !appEnvironment.IsVirtualDevice)) commonFunctions[code]();
                 }
             }
             else if (code == "Escape") 
@@ -665,7 +678,7 @@ namespace Digitavox.ViewModels
 
         public string EditStringForVoiceOver(string inputString)
         {
-            if (DeviceInfo.Platform == DevicePlatform.iOS && DVVoiceOverHelper.IsVoiceOverEnabled())
+            if (appEnvironment.Platform == AppPlatformKind.Ios && appEnvironment.IsScreenReaderEnabled)
             {
                 foreach (var term in termModifications.Keys)
                 {

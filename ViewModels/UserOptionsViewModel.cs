@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -40,15 +41,24 @@ namespace Digitavox.ViewModels
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public UserOptionsViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
                                     FingerMapping fingerMapping,
-                                    UserProgress userProgress)
+                                    UserProgress userProgress,
+                                    ISettingsService settingsService,
+                                    INavigationService navigationService,
+                                    IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -69,7 +79,7 @@ namespace Digitavox.ViewModels
             Thread.Sleep(100);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 introductionLines = 2;
                 textList.Add($"Use os números de 1 a {totalOptions}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle enter para confirmar. Escape volta.");
@@ -110,7 +120,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - totalOptions - 1);
@@ -148,7 +158,7 @@ namespace Digitavox.ViewModels
         {
             dVViewModelSpeak.Speak("s", () => 
             {
-                MainThread.BeginInvokeOnMainThread(() =>
+                appEnvironment.RunOnMainThread(() =>
                 {
                     Logout();
                 });
@@ -164,7 +174,7 @@ namespace Digitavox.ViewModels
             userProgress.UserLogout();
             dVViewModelFunctions.LastLineIsText(false);
             
-            await Shell.Current.GoToAsync("../..");
+            await navigationService.GoToAsync("../..");
         }
         private void Reject()
         {
@@ -218,7 +228,7 @@ namespace Digitavox.ViewModels
                     {
                         Enter();
                     }
-                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                     {
                         dVViewModelFunctions.HandleKeyCode(bean.code);
                         apresentationSkiped = true;

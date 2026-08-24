@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using Plugin.Maui.Audio;
 using System;
 
@@ -56,12 +57,16 @@ namespace Digitavox.ViewModels
         private DVViewModelFunctions dVViewModelFunctions;
         private FingerMapping fingerMapping;
         private UserProgress userProgress;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public ExercisesViewModel(Course course,
                                   CourseLesson courseLesson, 
                                   DVViewModelSpeak dVViewModelSpeak,
                                   DVViewModelFunctions dVViewModelFunctions,
                                   FingerMapping fingerMapping,
-                                  UserProgress userProgress)
+                                  UserProgress userProgress,
+                                  ISettingsService settingsService,
+                                  IAppEnvironment appEnvironment)
         {
             this.course = course;
             this.courseLesson = courseLesson;
@@ -69,6 +74,8 @@ namespace Digitavox.ViewModels
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.fingerMapping = fingerMapping;
             this.userProgress = userProgress;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "F1", "Up", "Escape", "Left", "Right", "Down",
@@ -160,14 +167,14 @@ namespace Digitavox.ViewModels
             ignoreLetterCase = string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase);
             repetitionsTotal = int.Parse(course.LessonProperty("REPETICOESEXER"));
             courseLesson.SetLessonChars(exercisesList, repetitionsTotal, int.Parse(course.LessonProperty("TEMPOPORCARACTER")),
-                int.Parse(course.LessonProperty("MEDIAEXER")), DVPersistence.Get<int>("timeDivider"), string.Equals(spellingActive, "sim", StringComparison.OrdinalIgnoreCase), ignoreLetterCase);
+                int.Parse(course.LessonProperty("MEDIAEXER")), settingsService.Get<int>("timeDivider"), string.Equals(spellingActive, "sim", StringComparison.OrdinalIgnoreCase), ignoreLetterCase);
             courseLesson.StartTimer(() =>
             {
                 dVViewModelSpeak.Skip();
                 dVViewModelSpeak.Speak("Tempo expirado", () =>
                 {
                     userProgress.SaveStatistics();
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
                         dVViewModelFunctions.SetNextPageRoute("ExercisesStatistics");
                         dVViewModelFunctions.GoToNextPage();
@@ -226,7 +233,7 @@ namespace Digitavox.ViewModels
                             {
                                 
                                 PageFormattedLabel = text;
-                                TextSize = DVPersistence.Get<double>("fontSize");
+                                TextSize = settingsService.Get<double>("fontSize");
                             });
         }
         private void ControlExercises()
@@ -262,7 +269,7 @@ namespace Digitavox.ViewModels
                 }
             }
             string repetitionsCount = $"Repetição: {courseLesson.CurrentRepetition()} / {repetitionsTotal}";
-            string repetitionsSpeak = (DVPersistence.Get<bool>("countRepetitions") && updateRepetition) ? $"Repetição {courseLesson.CurrentRepetition()} de {repetitionsTotal}" : string.Empty;
+            string repetitionsSpeak = (settingsService.Get<bool>("countRepetitions") && updateRepetition) ? $"Repetição {courseLesson.CurrentRepetition()} de {repetitionsTotal}" : string.Empty;
             dVViewModelSpeak.ChangeLine(repetitionsCount, repetitionsSpeak, 2);
             dVViewModelSpeak.ChangeLine(exercise, exerciseSpeak, 3);
             SpeakNextIteration();
@@ -322,7 +329,7 @@ namespace Digitavox.ViewModels
         private void WriteWord()
         {
             
-            if (DVPersistence.Get<bool>("speakInput"))
+            if (settingsService.Get<bool>("speakInput"))
             {
                 
                 dVViewModelSpeak.Speak(lastInput, () => {
@@ -340,7 +347,7 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.Speak("Fim da lição", () =>
             {
                 Thread.Sleep(100);
-                MainThread.BeginInvokeOnMainThread(() =>
+                appEnvironment.RunOnMainThread(() =>
                 {
                     endLesson = false;
                     dVViewModelFunctions.GoToNextPage();
@@ -380,7 +387,7 @@ namespace Digitavox.ViewModels
             if (bean.code != null && !endLesson)
             {
                 dVViewModelFunctions.ExerciseHelpOptions();
-                if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     CountEsc();
                 }
@@ -392,7 +399,7 @@ namespace Digitavox.ViewModels
                     if (startExercise)
                     {
                         updateLine = false;
-                        if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && DVDevice.IsVirtual()))
+                        if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                         {
                             dVViewModelFunctions.HandleKeyCode(bean.code);
                             if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();
