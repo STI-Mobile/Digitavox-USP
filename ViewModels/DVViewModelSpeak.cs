@@ -12,28 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.PlatformsImplementations;
-using Microsoft.Maui;
-using Digitavox.Helpers;
-using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Maui.Controls;
-using System.Runtime.CompilerServices;
-using Microsoft.Maui.Controls.Shapes;
-using Microsoft.Maui.Graphics;
 using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Text;
 
 namespace Digitavox.ViewModels
 {
     public class DVViewModelSpeak
     {
-        private readonly ISettingsService settingsService;
         private readonly ISpeechService speechService;
-        private readonly IAppEnvironment appEnvironment;
+        private readonly PageTextRenderer pageTextRenderer;
         private int boldLineIndex = -1;
         private bool isExercisePage = false;
-        private bool isLessonsPage = false;
-        private string letterStyle = string.Empty;
-        private int letterIndex = -1;
         private Dictionary<int, Tuple<string, int>> letterStyleDictionary = new Dictionary<int, Tuple<string, int>>();
         private bool stopRecursive;
         private List<string> textList = new List<string>();
@@ -49,13 +38,11 @@ namespace Digitavox.ViewModels
         };
 
         public DVViewModelSpeak(
-            ISettingsService settingsService,
             ISpeechService speechService,
-            IAppEnvironment appEnvironment)
+            PageTextRenderer pageTextRenderer)
         {
-            this.settingsService = settingsService;
             this.speechService = speechService;
-            this.appEnvironment = appEnvironment;
+            this.pageTextRenderer = pageTextRenderer;
         }
 
         public void Skip()
@@ -176,71 +163,11 @@ namespace Digitavox.ViewModels
         }
         private void CallUpdateScreen()
         {
-            List<string> textListCopy = textList;
-            FormattedString result = new FormattedString();
-            for (int index = 0; index < textList.Count; index++)
-            {
-                string line = textListCopy[index];
-                Dictionary<int, Tuple<string, int>> letterStyleCopy = new Dictionary<int, Tuple<string, int>>(letterStyleDictionary);
-                if (isExercisePage && letterStyleCopy.ContainsKey(index))
-                {
-                    letterIndex = letterStyleCopy[index].Item2;
-                    if (letterIndex >= 0 && line.Length > letterIndex)
-                    {
-                        string firstPart = line.Substring(0, letterIndex);
-                        string letter = line[letterIndex].ToString();
-                        string secondPart = line.Substring(letterIndex + 1);
-                        result.Spans.Add(DefineSpan(firstPart, index));
-                        letterStyle = letterStyleCopy[index].Item1;
-                        result.Spans.Add(DefineSpan(letter, index));
-                        letterStyle = string.Empty;
-                        result.Spans.Add(DefineSpan(secondPart, index));
-                    }
-                    else
-                    {
-                        result.Spans.Add(DefineSpan(line, index));
-                    }
-                    
-                }
-                else
-                {
-                    result.Spans.Add(DefineSpan(line, index));
-                }
-                result.Spans.Add(new Span { Text = "\n" });
-                if (isExercisePage && index <= 4)
-                {
-                    result.Spans.Add(new Span { Text = "\n" });
-                }
-            }
-            updateScreen.Invoke(result);
-        }
-        private Span DefineSpan(string text, int index)
-        {
-            double fontSize = settingsService.Get<double>("fontSize");
-            FontAttributes fontAttributes = FontAttributes.None;
-
-            Color color;
-            color = appEnvironment.ShouldUseLightForeground ? Colors.White : Colors.Black;
-
-            if (isExercisePage && index >= 2 && index <= 4)
-            {
-                fontSize += 4.0;
-            }
-
-            if (boldLineIndex == index || (letterStyle == "bold" && text.Length == 1))
-            {
-                fontAttributes = FontAttributes.Bold;
-            }
-            else if (letterStyle == "green" && text.Length == 1)
-            {
-                color = Colors.Green;
-            }
-            else if (letterStyle == "red" && text.Length == 1)
-            {
-                color = Colors.Red;
-            }
-
-            return new Span { Text = text, FontSize = fontSize, FontAttributes = fontAttributes, TextColor = color };
+            updateScreen.Invoke(pageTextRenderer.Render(
+                textList,
+                boldLineIndex,
+                isExercisePage,
+                letterStyleDictionary));
         }
         public void AttributeStyle(string letterStyle, int lineIndex, int letterIndex)
         {
@@ -255,10 +182,5 @@ namespace Digitavox.ViewModels
         {
             this.isExercisePage = isExercisePage;
         }
-        public void CurrentIsLessonsPage(bool isLessonsPage)
-        {
-            this.isLessonsPage = isLessonsPage;
-        }
-
     }
 }

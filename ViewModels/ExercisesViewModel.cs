@@ -17,7 +17,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
-using Plugin.Maui.Audio;
 using System;
 
 namespace Digitavox.ViewModels
@@ -59,6 +58,7 @@ namespace Digitavox.ViewModels
         private UserProgress userProgress;
         private readonly ISettingsService settingsService;
         private readonly IAppEnvironment appEnvironment;
+        private readonly IFeedbackSoundService feedbackSoundService;
         public ExercisesViewModel(Course course,
                                   CourseLesson courseLesson, 
                                   DVViewModelSpeak dVViewModelSpeak,
@@ -66,7 +66,8 @@ namespace Digitavox.ViewModels
                                   FingerMapping fingerMapping,
                                   UserProgress userProgress,
                                   ISettingsService settingsService,
-                                  IAppEnvironment appEnvironment)
+                                  IAppEnvironment appEnvironment,
+                                  IFeedbackSoundService feedbackSoundService)
         {
             this.course = course;
             this.courseLesson = courseLesson;
@@ -76,6 +77,7 @@ namespace Digitavox.ViewModels
             this.userProgress = userProgress;
             this.settingsService = settingsService;
             this.appEnvironment = appEnvironment;
+            this.feedbackSoundService = feedbackSoundService;
             pageKeyCodes = new List<string>()
             {
                 "F1", "Up", "Escape", "Left", "Right", "Down",
@@ -154,7 +156,7 @@ namespace Digitavox.ViewModels
         public void BeginExercise()
         {
             startExercise = false;
-            dVViewModelFunctions.CreatePlayers();
+            _ = feedbackSoundService.PrepareAsync();
             wordInput = "";
             exercisesList = course.GetExercises();
             exerciseNumber = 0;
@@ -308,7 +310,7 @@ namespace Digitavox.ViewModels
                 {
                     color = "red";
                     CountConsecutiveErrors();
-                    dVViewModelFunctions.PlayBuzzSound();
+                    feedbackSoundService.PlayError();
                 }
                 dVViewModelSpeak.AttributeStyle(color, 4, index - 1);
                 inputDisplay += wordInput[index - 1];
@@ -412,7 +414,7 @@ namespace Digitavox.ViewModels
                                 if (bean.code != " ")
                                 {
                                     CountConsecutiveErrors();
-                                    dVViewModelFunctions.PlayBuzzSound();
+                                    feedbackSoundService.PlayError();
                                     
                                 }
                                 else

@@ -21,6 +21,9 @@
     <Compile Include="../../Models/FingerMapping.cs" Link="Production/Models/FingerMapping.cs" />
     <Compile Include="../../Models/FingerMappingBean.cs" Link="Production/Models/FingerMappingBean.cs" />
     <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
+    <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/IAppEnvironment.cs" />
+    <Compile Include="../../Application/Abstractions/ISpeechTextFormatter.cs" Link="Production/Application/ISpeechTextFormatter.cs" />
+    <Compile Include="../../Presentation/Text/SpeechTextFormatter.cs" Link="Production/Presentation/SpeechTextFormatter.cs" />
   </ItemGroup>
 
   <ItemGroup>

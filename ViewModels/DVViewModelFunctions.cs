@@ -15,7 +15,6 @@
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Views;
-using Plugin.Maui.Audio;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text.RegularExpressions;
 using Digitavox.PlatformsImplementations;
@@ -29,7 +28,6 @@ namespace Digitavox.ViewModels
         private string numberConcat;
         private AppRoute nextPageRoute;
         private AppRoute? lastHelpPageRoute;
-        private string currentPageIdentifier = string.Empty;
         private int optionNumber;
         private int firstOptionLineNumber;
         private int lastOptionLineNumber;
@@ -45,40 +43,41 @@ namespace Digitavox.ViewModels
         private Dictionary<string, Action> commonFunctions;
         private Dictionary<string, Action> helpFunctions = new Dictionary<string, Action>();
         private Dictionary<string, string> onlySpokenOptions = new Dictionary<string, string>();
-        private string buzzSound = "buzz.wav";
-        private IAudioPlayer player1;
         private System.Timers.Timer timer = new System.Timers.Timer();
         private Course course;
         private CourseLesson courseLesson;
         private UserProgress userProgress;
         private DVViewModelSpeak dVViewModelSpeak;
         private FingerMapping fingerMapping;
-        private readonly IAudioManager audioManager;
         private readonly ISettingsService settingsService;
         private readonly ISpeechService speechService;
         private readonly INavigationService navigationService;
         private readonly IAppEnvironment appEnvironment;
+        private readonly ISpeechTextFormatter speechTextFormatter;
+        private readonly ICurrentPageContext currentPageContext;
         public DVViewModelFunctions(Course course,
                                CourseLesson courseLesson,
                                UserProgress userProgress,
                                DVViewModelSpeak dVViewModelSpeak,
                                FingerMapping fingerMapping,
-                               IAudioManager audioManager,
                                ISettingsService settingsService,
                                ISpeechService speechService,
                                INavigationService navigationService,
-                               IAppEnvironment appEnvironment)
+                               IAppEnvironment appEnvironment,
+                               ISpeechTextFormatter speechTextFormatter,
+                               ICurrentPageContext currentPageContext)
         {
             this.course = course;
             this.courseLesson = courseLesson;
             this.userProgress = userProgress;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
-            this.audioManager = audioManager;
             this.settingsService = settingsService;
             this.speechService = speechService;
             this.navigationService = navigationService;
             this.appEnvironment = appEnvironment;
+            this.speechTextFormatter = speechTextFormatter;
+            this.currentPageContext = currentPageContext;
             commonFunctions = new Dictionary<string, Action>()
             {
                 { "Enter", Enter},
@@ -165,7 +164,7 @@ namespace Digitavox.ViewModels
             string exercisesString = string.Empty;
             for (int i = 0; i < course.GetExercises().Count; i++)
             {
-                exercisesString += string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase) ? SpellWord(course.GetExercises()[i]) : SpeakPunctuation(course.GetExercises()[i]);
+                exercisesString += string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase) ? speechTextFormatter.Spell(course.GetExercises()[i]) : speechTextFormatter.DescribePunctuation(course.GetExercises()[i]);
             }
             onlySpokenOptions = new Dictionary<string, string>()
             {
@@ -262,14 +261,14 @@ namespace Digitavox.ViewModels
                 {exerciseHelpOptions[0], $"Repetição {courseLesson.CurrentRepetition()} de {courseLesson.GetStatistics().exerciseRepetitions}"},
                 {exerciseHelpOptions[1], $"{CharsTypedCorrectPercentual()}%" },
                 {exerciseHelpOptions[2], $"{fingerMapping.Code2Speak(courseLesson.CurrentCharacter())} {fingerMapping.Code2Finger(courseLesson.CurrentCharacter())}"},
-                {exerciseHelpOptions[3], SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
-                {exerciseHelpOptions[4], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : SpeakPunctuation(SpeakRemainder(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
-                {exerciseHelpOptions[5], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise()) : SpeakPunctuation(courseLesson.CurrentExercise())},
+                {exerciseHelpOptions[3], speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
+                {exerciseHelpOptions[4], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : speechTextFormatter.DescribePunctuation(speechTextFormatter.PreserveWordAfterLeadingPunctuation(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
+                {exerciseHelpOptions[5], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise()) : speechTextFormatter.DescribePunctuation(courseLesson.CurrentExercise())},
                 {exerciseHelpOptions[8], DateTime.Now.ToString().Substring(11)},
-                {"Up", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise()) : SpeakPunctuation(courseLesson.CurrentExercise())},
-                {"Right", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : SpeakPunctuation(SpeakRemainder(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
+                {"Up", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise()) : speechTextFormatter.DescribePunctuation(courseLesson.CurrentExercise())},
+                {"Right", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : speechTextFormatter.DescribePunctuation(speechTextFormatter.PreserveWordAfterLeadingPunctuation(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
                 {"Down", $"{fingerMapping.Code2Speak(courseLesson.CurrentCharacter())} {fingerMapping.Code2Finger(courseLesson.CurrentCharacter())}"},
-                {"Ctrl+Right", SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
+                {"Ctrl+Right", speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
             };
         }
         public void ClearHelpOptions()
@@ -277,45 +276,13 @@ namespace Digitavox.ViewModels
             onlySpokenOptions.Clear();
             helpFunctions.Clear();
         }
-        public string SpellWord(string word)
-        {
-            string exerciseSpelled = string.Empty;
-            if (word.Last() == ' ' && word.Length > 1) word = word.Remove(word.Length - 1, 1);
-            foreach (char letter in word)
-            {
-                exerciseSpelled += fingerMapping.Code2Speak($"{letter}") + " ";
-            }
-            return exerciseSpelled;
-        }
-        public string SpeakPunctuation(string word)
-        {
-            string speakString = string.Empty;
-            foreach (char character in word)
-            {
-                if (IsPunctuation(character)) speakString += " " + fingerMapping.Code2Speak($"{character}") + " ";
-                else speakString += character;
-            }
-            return speakString;
-        }
-        static bool IsPunctuation(char character)
-        {
-            string punctuationChars = ".,;:?!";
+        public string SpellWord(string word) => speechTextFormatter.Spell(word);
 
-            return punctuationChars.Contains(character);
-        }
-        private string SpeakRemainder(string word)
-        {
-            string speakString = fingerMapping.Code2Speak($"{word.First()}") + " ";
-            if (char.IsLetter(word.First()))
-            {
-                return word;
-            }
-            if (word.Length > 1)
-            {
-                speakString += SpeakRemainder(word.Substring(1));
-            }
-            return speakString;
-        }
+        public string SpeakPunctuation(string word) => speechTextFormatter.DescribePunctuation(word);
+
+        public string EditStringForVoiceOver(string inputString) =>
+            speechTextFormatter.AdaptForScreenReader(inputString);
+
         private int CharsTypedCorrectPercentual()
         {
             int totalCharsTyped = courseLesson.GetStatistics().correctChars + courseLesson.GetStatistics().incorrectChars;
@@ -333,17 +300,6 @@ namespace Digitavox.ViewModels
         private void TimeStatistics()
         {
             OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 2);
-        }
-        public async void CreatePlayers()
-        {
-            if (player1 == null)
-            {
-                player1 = audioManager.CreatePlayer(await FileSystem.OpenAppPackageFileAsync(buzzSound));
-            }
-        }
-        public void PlayBuzzSound()
-        {
-            player1.Play();
         }
         private void ShortCode2Speak(string code)
         {
@@ -422,7 +378,6 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.Set("optionList", lines);
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
             await navigationService.GoToAsync(AppRoute.SecondHelp);
         }
         private void UpArrow()
@@ -504,7 +459,6 @@ namespace Digitavox.ViewModels
             keysEnabled = true;
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
             await navigationService.GoToAsync(nextPageRoute);
         }
@@ -545,7 +499,6 @@ namespace Digitavox.ViewModels
                 lastHelpPageRoute = null;
             }
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
             await navigationService.GoBackAsync(backLevels);
         }
@@ -665,43 +618,9 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.SpeakOneLine(optionNumber, () => { });
             }
         }
-
-
-        private static readonly Dictionary<string, string> termModifications = new Dictionary<string, string>
-        {
-            { "Escape", "CTRL + Escape" },
-            { "ESCAPE", "CTRL + ESCAPE" },
-            { "esqueipe", "control esqueipe" },
-            { "Esqueipe", "control esqueipe" },
-            { "[ESC]", "[CTRL] + [ESC]" },
-        };
-
-        public string EditStringForVoiceOver(string inputString)
-        {
-            if (appEnvironment.Platform == AppPlatformKind.Ios && appEnvironment.IsScreenReaderEnabled)
-            {
-                foreach (var term in termModifications.Keys)
-                {
-                    if (inputString.Contains(term))
-                    {
-                        inputString = inputString.Replace(term, termModifications[term]);
-                    }
-                }
-            }
-
-            return inputString;
-        }
         public void SetCurrentPageIdentifier(string currentPageIdentifier)
         {
-            this.currentPageIdentifier = currentPageIdentifier;
-        }
-        public string CurrentPageIdentifier()
-        {
-            if (currentPageIdentifier.Length > 0)
-            {
-                return currentPageIdentifier;
-            }
-            return string.Empty;
+            currentPageContext.Identifier = currentPageIdentifier;
         }
     }
 }

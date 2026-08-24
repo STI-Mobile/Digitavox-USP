@@ -77,7 +77,6 @@ namespace Digitavox.ViewModels
         public void OnPage()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de lições");
-            dVViewModelSpeak.CurrentIsLessonsPage(true);
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
             speakLessons = false;
             lessonNumber = userProgress.LastAvailableLesson();

@@ -17,8 +17,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
 using Digitavox.Helpers;
-using Plugin.Maui.Audio;
-
 namespace Digitavox.ViewModels
 {
     public partial class MenuViewModel : ObservableObject, IOnPageKeyPress

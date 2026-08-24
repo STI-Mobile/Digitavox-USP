@@ -26,6 +26,9 @@ using Digitavox.Infrastructure.Platform;
 using Digitavox.Infrastructure.Settings;
 using Digitavox.Infrastructure.Speech;
 using Digitavox.Infrastructure.Startup;
+using Digitavox.Presentation.Text;
+using Digitavox.Presentation.State;
+using Digitavox.Infrastructure.Audio;
 
 namespace Digitavox;
 
@@ -44,6 +47,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISpeechService, MauiSpeechService>();
         builder.Services.AddSingleton<IAppEnvironment, MauiAppEnvironment>();
         builder.Services.AddSingleton<IAppStartupService, MauiAppStartupService>();
+        builder.Services.AddSingleton<ISpeechTextFormatter, SpeechTextFormatter>();
+        builder.Services.AddSingleton<PageTextRenderer>();
+        builder.Services.AddSingleton<ICurrentPageContext, CurrentPageContext>();
+        builder.Services.AddSingleton<IFeedbackSoundService, MauiFeedbackSoundService>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<DVViewModelSpeak>();
         builder.Services.AddSingleton<DVViewModelFunctions>();

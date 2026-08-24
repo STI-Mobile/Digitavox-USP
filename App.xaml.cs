@@ -18,6 +18,7 @@ using Digitavox.ViewModels;
 using Digitavox.Views;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox;
 
@@ -25,7 +26,7 @@ public partial class App : Application
 {
     private readonly AppShell appShell;
 
-	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions)
+	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions, ICurrentPageContext currentPageContext)
 	{
 		this.appShell = appShell;
 		InitializeComponent();
@@ -42,7 +43,7 @@ public partial class App : Application
             }
             else if (m.Value == "WindowResumed")
             {
-                string currentPageMessage = $"Você está {dVViewModelFunctions.CurrentPageIdentifier()}";
+                string currentPageMessage = $"Você está {currentPageContext.Identifier}";
                 dVViewModelSpeak.Skip();
                 dVViewModelSpeak.Speak(currentPageMessage, () => { });
             }
