@@ -19,6 +19,8 @@ namespace Digitavox.Views;
 
 public partial class UserOptionsView : ContentPage, IOnPageKeyPress
 {
+    private UserOptionsViewModel ViewModel => (UserOptionsViewModel)BindingContext;
+
 	public UserOptionsView(UserOptionsViewModel userOptionsViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class UserOptionsView : ContentPage, IOnPageKeyPress
 	}
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((UserOptionsViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((UserOptionsViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is UserOptionsViewModel vm)
-        {
-            vm.OnPage();
-        }
+        ViewModel.OnPage();
     }
 }

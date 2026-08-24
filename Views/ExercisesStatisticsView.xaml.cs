@@ -19,6 +19,8 @@ namespace Digitavox.Views;
 
 public partial class ExercisesStatisticsView : ContentPage, IOnPageKeyPress
 {
+    private ExercisesStatisticsViewModel ViewModel => (ExercisesStatisticsViewModel)BindingContext;
+
 	public ExercisesStatisticsView(ExercisesStatisticsViewModel exercisesStatisticsViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class ExercisesStatisticsView : ContentPage, IOnPageKeyPress
     }
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((ExercisesStatisticsViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((ExercisesStatisticsViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is ExercisesStatisticsViewModel vm)
-        {
-            vm.OnPage();
-        }
+        ViewModel.OnPage();
     }
 }

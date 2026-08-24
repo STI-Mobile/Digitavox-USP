@@ -19,6 +19,8 @@ namespace Digitavox.Views;
 
 public partial class MenuView : ContentPage, IOnPageKeyPress
 {
+    private MenuViewModel ViewModel => (MenuViewModel)BindingContext;
+
 	public MenuView(MenuViewModel menuViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class MenuView : ContentPage, IOnPageKeyPress
     }
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-		return ((MenuViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((MenuViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is MenuViewModel vm)
-        {
-            vm.OnPage();
-        }
+        ViewModel.OnPage();
     }
 }

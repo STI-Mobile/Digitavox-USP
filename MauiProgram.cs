@@ -70,6 +70,8 @@ public static class MauiProgram
         builder.Services.AddTransient<SecondHelpViewModel>();
         builder.Services.AddTransient<PrivacyPolicyViewModel>();
         builder.Services.AddTransient<ThirdPartyLicensesViewModel>();
+        builder.Services.AddTransient<AlertViewModel>();
+        builder.Services.AddTransient<AlertView>();
         builder.Services.AddTransient<ConfigView>();
         builder.Services.AddTransient<CoursesHelpView>();
         builder.Services.AddTransient<CoursesView>();

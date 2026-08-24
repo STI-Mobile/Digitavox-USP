@@ -19,6 +19,8 @@ namespace Digitavox.Views;
 
 public partial class ConfigView : ContentPage, IOnPageKeyPress
 {
+    private ConfigViewModel ViewModel => (ConfigViewModel)BindingContext;
+
 	public ConfigView(ConfigViewModel configViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class ConfigView : ContentPage, IOnPageKeyPress
 	}
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((ConfigViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((ConfigViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is ConfigViewModel vm)
-        {
-            vm.OnPage();
-        }
+        ViewModel.OnPage();
     }
 }

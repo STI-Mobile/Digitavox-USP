@@ -19,6 +19,8 @@ namespace Digitavox.Views;
 
 public partial class ThirdPartyLicensesView : ContentPage, IOnPageKeyPress
 {
+    private ThirdPartyLicensesViewModel ViewModel => (ThirdPartyLicensesViewModel)BindingContext;
+
     public ThirdPartyLicensesView(ThirdPartyLicensesViewModel viewModel)
     {
         InitializeComponent();
@@ -27,17 +29,17 @@ public partial class ThirdPartyLicensesView : ContentPage, IOnPageKeyPress
 
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((ThirdPartyLicensesViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
 
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((ThirdPartyLicensesViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await ((ThirdPartyLicensesViewModel)BindingContext).LoadAsync();
+        await ViewModel.LoadAsync();
     }
 }
