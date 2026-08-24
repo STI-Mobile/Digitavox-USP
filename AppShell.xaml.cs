@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Helpers;
+using Digitavox.Core.Abstractions;
 using Digitavox.Views;
-using System.ComponentModel;
-using System.IO.IsolatedStorage;
 
 namespace Digitavox;
 
-public partial class AppShell : Shell, INotifyPropertyChanged
+public partial class AppShell : Shell
 {
+    private readonly IAppStartupService appStartupService;
     private DataTemplate _firstView;
 
     public DataTemplate FirstView
@@ -36,25 +35,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged
         }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    public AppShell()
+    public AppShell(IAppStartupService appStartupService)
 	{
+        this.appStartupService = appStartupService;
         InitializeComponent();
-
-        if (DVPersistence.CourseDirectoryExists())
-        {
-            FirstView = new DataTemplate(typeof(LoginView));
-        }
-        else
-        {
-            DVPersistence.CopyCourseFiles();
-            FirstView = new DataTemplate(typeof(TutorialView));
-        }
+        FirstView = new DataTemplate(() => new ContentPage());
         BindingContext = this;
 
         Routing.RegisterRoute("Alert", typeof(AlertView));
@@ -74,5 +59,14 @@ public partial class AppShell : Shell, INotifyPropertyChanged
         Routing.RegisterRoute("SecondHelp", typeof(SecondHelpView));
         Routing.RegisterRoute("PrivacyPolicy", typeof(PrivacyPolicyView));
         Routing.RegisterRoute("ThirdPartyLicenses", typeof(ThirdPartyLicensesView));
+    }
+
+    public async Task InitializeAsync()
+    {
+        AppStartupDestination destination = await appStartupService.InitializeAsync();
+        Type firstViewType = destination == AppStartupDestination.Login
+            ? typeof(LoginView)
+            : typeof(TutorialView);
+        FirstView = new DataTemplate(firstViewType);
     }
 }

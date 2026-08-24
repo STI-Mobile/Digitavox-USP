@@ -23,8 +23,11 @@ namespace Digitavox;
 
 public partial class App : Application
 {
-	public App(DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions)
+    private readonly AppShell appShell;
+
+	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions)
 	{
+		this.appShell = appShell;
 		InitializeComponent();
 
         WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => 
@@ -65,9 +68,10 @@ public partial class App : Application
     
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        Window window = new Window(new AppShell());
-        window.Created += (s, e) =>
+        Window window = new Window(appShell);
+        window.Created += async (s, e) =>
         {
+            await appShell.InitializeAsync();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowCreated"));
         };
         window.Activated += (s, e) =>

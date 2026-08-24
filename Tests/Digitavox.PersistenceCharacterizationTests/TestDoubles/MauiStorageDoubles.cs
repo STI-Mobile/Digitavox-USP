@@ -51,9 +51,12 @@ namespace Digitavox.Helpers
     {
         public static string AppDataDirectory { get; set; }
 
+        public static string AppPackageDirectory { get; set; }
+
         public static Task<Stream> OpenAppPackageFileAsync(string fileName)
         {
-            throw new NotSupportedException("A cópia de assets é coberta pela matriz manual.");
+            Stream stream = File.OpenRead(Path.Combine(AppPackageDirectory, fileName));
+            return Task.FromResult(stream);
         }
     }
 }

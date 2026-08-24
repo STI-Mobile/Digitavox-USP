@@ -18,6 +18,8 @@ public class DVPersistenceCharacterizationTests
             Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(testDirectory);
         FileSystem.AppDataDirectory = testDirectory;
+        FileSystem.AppPackageDirectory = Path.Combine(testDirectory, "Package");
+        Directory.CreateDirectory(FileSystem.AppPackageDirectory);
         Preferences.Default.Clear();
         DVSpeak.GetInstance().Reset();
     }
@@ -130,6 +132,32 @@ public class DVPersistenceCharacterizationTests
         Directory.CreateDirectory(Path.Combine(testDirectory, "Courses"));
 
         Assert.IsTrue(DVPersistence.CourseDirectoryExists());
+    }
+
+    [TestMethod]
+    public async Task Copy_course_files_completes_only_after_all_assets_are_persisted()
+    {
+        string[] bundledCourses =
+        {
+            "curso_abnt2_basico",
+            "curso_abnt2_intermediario",
+            "musica_se_eu_quiser_falar_com_deus",
+            "musicas",
+            "SENAI"
+        };
+        foreach (string course in bundledCourses)
+        {
+            File.WriteAllText(
+                Path.Combine(FileSystem.AppPackageDirectory, $"{course}.json"),
+                course);
+        }
+
+        await DVPersistence.CopyCourseFilesAsync();
+
+        string courseDirectory = Path.Combine(testDirectory, "Courses");
+        CollectionAssert.AreEquivalent(
+            bundledCourses.Select(course => $"{course}.json").ToArray(),
+            Directory.GetFiles(courseDirectory).Select(Path.GetFileName).ToArray());
     }
 
     private static void WriteCourse(

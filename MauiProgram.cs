@@ -25,6 +25,7 @@ using Digitavox.Infrastructure.Navigation;
 using Digitavox.Infrastructure.Platform;
 using Digitavox.Infrastructure.Settings;
 using Digitavox.Infrastructure.Speech;
+using Digitavox.Infrastructure.Startup;
 
 namespace Digitavox;
 
@@ -42,6 +43,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
         builder.Services.AddSingleton<ISpeechService, MauiSpeechService>();
         builder.Services.AddSingleton<IAppEnvironment, MauiAppEnvironment>();
+        builder.Services.AddSingleton<IAppStartupService, MauiAppStartupService>();
+        builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<DVViewModelSpeak>();
         builder.Services.AddSingleton<DVViewModelFunctions>();
         builder.Services.AddSingleton<ConfigViewModel>();
