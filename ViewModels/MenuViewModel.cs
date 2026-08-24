@@ -21,7 +21,7 @@ using Digitavox.Presentation.Input;
 using Digitavox.Helpers;
 namespace Digitavox.ViewModels
 {
-    public partial class MenuViewModel : ObservableObject, IOnPageKeyPress
+    public partial class MenuViewModel : ObservableObject, IKeyboardInputHandler
     {
         int timeToCaptureNumber = 0;
         int totalOptions = 7;
@@ -58,11 +58,11 @@ namespace Digitavox.ViewModels
                 pageKeyCodes.Add($"{i}");
             }
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu inicial");
             dVViewModelFunctions.ClearHelpOptions();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>();
             var speechList = new List<string>();
             if (settingsService.Get<bool>("instructionsEnabled"))
@@ -145,7 +145,7 @@ namespace Digitavox.ViewModels
                     {
                         if (bean.code == " ")
                         {
-                            OnPage();
+                            _ = OnPageAsync();
                         }
                         else if (pageKeyCodes.Contains(bean.code))
                         {

@@ -27,37 +27,10 @@ namespace Digitavox.Helpers {
     Command  = Window
   }
 
-  ///
   /// <summary>
-  ///   Funções para tratar modificadores de teclas
-  ///
-  ///   public static void SetXxx(ref int keyModifiers)
-  ///   public static void ResetXxx(ref int keyModifiers)
-  ///   public static bool IsXxxSet(int keyModifiers)
-  ///
-  ///   Xxx = CapsLock, Shift, Ctrl, OpttionAlt, Command, NumLock, AltGr, Fn
-  ///
-  ///   public static void SetModifier(Modifier modifier, ref int keyModifier)
-  ///   public static void ResetModifier(Modifier modifier, ref int keyModifier)
-  ///   public static bool IsModifierSet(Modifier modifier, int keyModifier)
+  /// Funções para compor, remover e consultar modificadores de teclado
+  /// representados como uma máscara de bits.
   /// </summary>
-  /// 
-  /// <param name="modifier">
-  ///   enum Modifier {CapsLock, Shift, Ctrl, Alt, Window, NumLock, AltGr, Fn,
-  ///                  Option, Command}
-  /// </param>
-  ///
-  /// <param name="keyModifier">
-  ///   bit0 - CapsLock
-  ///   bit1 - Shift
-  ///   bit2 - Ctrl
-  ///   bit3 - Option / Alt
-  ///   bit4 - Command / Window
-  ///   bit5 - NumLock
-  ///   bit6 - AltGr
-  ///   bit7 - Fn
-  /// </param>
-  ///
   public static class DVKeyboard {
 
     public static void SetModifier(Modifier modifier, ref int keyModifier) {

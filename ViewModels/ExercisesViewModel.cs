@@ -23,7 +23,7 @@ using System;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesViewModel : ObservableObject, IKeyboardInputHandler
     {
         int escPressed = 0;
         bool updateLine;
@@ -89,7 +89,7 @@ namespace Digitavox.ViewModels
             repetitionsTotal = 0;
             consecutiveErrors = 0;
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             escPressed = 0;
             dVViewModelFunctions.SetCurrentPageIdentifier("na tela de exercícios");
@@ -103,7 +103,7 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetOptionNumberStart(exerciseLine);
             dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesHelp);
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             if (speakFromHelp == -1)
             {
                 if (courseLesson.ExerciseRunnig())
@@ -120,13 +120,7 @@ namespace Digitavox.ViewModels
                         if (updateLine && escPressed == 0)
                         {
                             dVViewModelSpeak.ChangeLine(exercise, exerciseSpeak, 3);
-                            dVViewModelSpeak.SpeakOneLine(3, () =>
-                            {
-                                courseLesson.ContinueTimer();
-                                Thread.Sleep(200);
-                                if (updateLine) dVViewModelSpeak.ChangeLine(exerciseDisplay, exerciseSpeak, 3);
-                                startExercise = true;
-                            });
+                            dVViewModelSpeak.SpeakOneLine(3, () => _ = RestoreExerciseDisplayAsync());
                         }
                     });
                 }
@@ -347,15 +341,24 @@ namespace Digitavox.ViewModels
             courseLesson.StopTimer();
             userProgress.SaveStatistics();
             dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
-            dVViewModelSpeak.Speak("Fim da lição", () =>
+            dVViewModelSpeak.Speak("Fim da lição", () => _ = CompleteExerciseAsync());
+        }
+
+        private async Task RestoreExerciseDisplayAsync()
+        {
+            courseLesson.ContinueTimer();
+            await Task.Delay(200);
+            if (updateLine) dVViewModelSpeak.ChangeLine(exerciseDisplay, exerciseSpeak, 3);
+            startExercise = true;
+        }
+
+        private async Task CompleteExerciseAsync()
+        {
+            await Task.Delay(100);
+            appEnvironment.RunOnMainThread(() =>
             {
-                Thread.Sleep(100);
-                appEnvironment.RunOnMainThread(() =>
-                {
-                    endLesson = false;
-                    _ = dVViewModelFunctions.GoToNextPageAsync();
-                });
-                
+                endLesson = false;
+                _ = dVViewModelFunctions.GoToNextPageAsync();
             });
         }
         private void CountEsc()
@@ -399,7 +402,7 @@ namespace Digitavox.ViewModels
                         if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                         {
                             dVViewModelFunctions.HandleKeyCode(bean.code);
-                            if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();
+                            if (dVViewModelFunctions.GetSpeakFromHelp() != -1) _ = OnPageAsync();
                         }
                         else if (bean.code.Length == 1)
                         {

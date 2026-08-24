@@ -22,7 +22,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class TutorialViewModel : ObservableObject, IOnPageKeyPress
+    public partial class TutorialViewModel : ObservableObject, IKeyboardInputHandler
     {
         List<string> pageKeyCodes;
         [ObservableProperty]
@@ -54,7 +54,7 @@ namespace Digitavox.ViewModels
             this.navigationService = navigationService;
             this.appEnvironment = appEnvironment;
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("na tela de instruções de uso");
             List<string> tutorialText = new List<string>();
@@ -66,7 +66,7 @@ namespace Digitavox.ViewModels
                     "Escape"
                 };
             }
-            Thread.Sleep(100);
+            await Task.Delay(100);
             if (appEnvironment.Platform == AppPlatformKind.Android)
             {
                 tutorialText = new List<string>()
@@ -236,7 +236,7 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.Skip();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {

@@ -20,7 +20,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class PrivacyPolicyViewModel : IOnPageKeyPress
+    public partial class PrivacyPolicyViewModel : IKeyboardInputHandler
     {
         List<string> pageKeyCodes;
         private KeyboardInputProcessor keyboardInputProcessor;

@@ -17,7 +17,7 @@ using Foundation;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using UIKit;
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 using Digitavox.Helpers;
 using Digitavox.Core.Messages;
@@ -94,8 +94,8 @@ public class DVLayoutView : LayoutView {
     
 
     Page p = Shell.Current.CurrentPage;
-    if (p is IOnPageKeyPress) {
-      bool handled = (p as IOnPageKeyPress).OnPageKeyPress(keyCode, keyModifiers);
+    if (p is IKeyboardInputHandler inputHandler) {
+      bool handled = inputHandler.OnPageKeyPress(keyCode, keyModifiers);
       if (!handled)
         base.PressesCancelled(presses, evt);
     } else

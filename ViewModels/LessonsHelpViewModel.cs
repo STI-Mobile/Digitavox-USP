@@ -23,7 +23,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class LessonsHelpViewModel : ObservableObject, IOnPageKeyPress 
+    public partial class LessonsHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
         int totalOptions = 13;
         List<string> pageKeyCodes;
@@ -60,10 +60,10 @@ namespace Digitavox.ViewModels
                 "F7", "F8", "F9", "F10", "Escape"
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de ajuda de lições");
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             var textList = new List<string>()
             {
@@ -152,7 +152,7 @@ namespace Digitavox.ViewModels
                 dVViewModelFunctions.LessonHelpOptions();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (bean.code == "Enter")
                 {

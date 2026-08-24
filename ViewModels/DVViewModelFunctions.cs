@@ -14,10 +14,6 @@
 
 using Digitavox.Helpers;
 using Digitavox.Models;
-using Digitavox.Views;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Text.RegularExpressions;
-using Digitavox.PlatformsImplementations;
 using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels

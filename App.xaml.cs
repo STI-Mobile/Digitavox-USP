@@ -13,11 +13,7 @@
 // limitations under the License.
 
 using CommunityToolkit.Mvvm.Messaging;
-using Digitavox.Helpers;
 using Digitavox.ViewModels;
-using Digitavox.Views;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
 using Digitavox.Core.Abstractions;
 using Digitavox.Models;
 using Digitavox.Core.Messages;
@@ -48,16 +44,9 @@ public partial class App : Application
         {
             _ = dVViewModelFunctions.DismissAlertAsync();
         });
-
-        
-
     }
-    
-    
-    
-    
-    
-    protected override Window CreateWindow(IActivationState? activationState)
+
+    protected override Window CreateWindow(IActivationState activationState)
     {
         Window window = new Window(appShell);
         window.Created += async (s, e) =>
@@ -92,41 +81,6 @@ public partial class App : Application
             this.courseLesson.PauseTimer();
         };
         return window;
-    }
-
-    private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
-    {
-        Dispatcher.Dispatch(() =>
-        {
-            var theme = e.RequestedTheme;
-            if (theme == AppTheme.Dark)
-            {
-                Resources["DynamicTextColor"] = Resources["TextColorDark"];
-            }
-            else
-            {
-                Resources["DynamicTextColor"] = Resources["TextColorLight"];
-            }
-        });
-    }
-
-    protected override void OnStart()
-    {
-        base.OnStart();
-    }
-
-    
-    protected override void OnSleep()
-    {
-        base.OnSleep();
-        
-    }
-
-    
-    protected override void OnResume()
-    {
-        base.OnResume();
-        
     }
 
 }

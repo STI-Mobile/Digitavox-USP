@@ -23,7 +23,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class LessonsViewModel : ObservableObject, IOnPageKeyPress
+    public partial class LessonsViewModel : ObservableObject, IKeyboardInputHandler
     {
         int timeToCaptureNumber = 1000;
         int textLineCount;
@@ -75,14 +75,14 @@ namespace Digitavox.ViewModels
             }
             lessonTextOption = false;
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de lições");
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
             speakLessons = false;
             lessonNumber = userProgress.LastAvailableLesson();
             UpdateTextSpeakLists();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             dVViewModelFunctions.SetNextPageRoute(AppRoute.LessonsHelp);
             dVViewModelFunctions.SetNumberCaptureTimeInterval(timeToCaptureNumber);
             dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
@@ -226,12 +226,12 @@ namespace Digitavox.ViewModels
                 UpdateTextSpeakLists();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
-                    if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();
+                    if (dVViewModelFunctions.GetSpeakFromHelp() != -1) _ = OnPageAsync();
                 }
                 else if (!DVKeyboard.IsModifierKey(bean.code))
                 {

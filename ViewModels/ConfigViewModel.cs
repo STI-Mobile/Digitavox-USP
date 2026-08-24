@@ -17,11 +17,10 @@ using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
 using Digitavox.Presentation.Input;
-using Digitavox.PlatformsImplementations;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ConfigViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ConfigViewModel : ObservableObject, IKeyboardInputHandler
     {
         private int currentSpeakRate = -1;
         private double prevFontSize = -1;
@@ -76,13 +75,13 @@ namespace Digitavox.ViewModels
                 SpeakRate, TypingToggle, ChangeFont, TimeDivider, CountRepetitions, EnableInstructions, ResetConfig
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             currentSpeakRate = -1;
             prevFontSize = -1;
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de configurações");
             dVViewModelFunctions.ClearHelpOptions();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>();
             var speechList = new List<string>();
             if ((settingsService.Get<bool>("instructionsEnabled") && updateText) || storedText)
@@ -185,7 +184,7 @@ namespace Digitavox.ViewModels
             answerController = -1;
             settingsService.Set("speakRate", currentSpeakRate);
             answerOption = true;
-            OnPage();
+            _ = OnPageAsync();
         }
         private void TypingToggle()
         {
@@ -227,7 +226,7 @@ namespace Digitavox.ViewModels
         {
             answerController = -1;
             answerOption = true;
-            OnPage();
+            _ = OnPageAsync();
         }
         private void TimeDivider()
         {
@@ -321,7 +320,7 @@ namespace Digitavox.ViewModels
             }
             else if (answerController == pageFunctions.IndexOf(ResetConfig) && answerLetter == "N")
             {
-                OnPage();
+                _ = OnPageAsync();
             }
             else if (answerController == pageFunctions.IndexOf(TypingToggle))
             {
@@ -340,7 +339,7 @@ namespace Digitavox.ViewModels
         {
             dVViewModelSpeak.Speak(key, () =>
             {
-                OnPage();
+                _ = OnPageAsync();
             });
         }
         private void Select(string key, Action onCompleted)
@@ -552,7 +551,7 @@ namespace Digitavox.ViewModels
                     if (outcome) RemoveOutcome();
                     if (bean.code == " ")
                     {
-                        OnPage();
+                        _ = OnPageAsync();
                     }
                     else if (bean.code == "Enter" && apresentationSkiped)
                     {

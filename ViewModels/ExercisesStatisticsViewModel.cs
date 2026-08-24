@@ -20,7 +20,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesStatisticsViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesStatisticsViewModel : ObservableObject, IKeyboardInputHandler
     {
         private int instructionLines = 1;
         private int lessonNumber;
@@ -64,10 +64,10 @@ namespace Digitavox.ViewModels
                 "Up", "Down", "Tab", "ShiftTab"
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("na tela de estatísticas de exercícios");
-            Thread.Sleep(100);
+            await Task.Delay(100);
             dVViewModelFunctions.ClearHelpOptions();
             dVViewModelFunctions.SetFirstOptionLineNumber(1);
             dVViewModelFunctions.SetOptionNumberStart(0);
@@ -186,7 +186,7 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.Skip();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {

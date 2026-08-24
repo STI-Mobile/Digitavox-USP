@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Digitavox.ViewModels;
 
-public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyPress
+public partial class ThirdPartyLicensesViewModel : ObservableObject, IKeyboardInputHandler
 {
     private const string NoticesFileName = "THIRD-PARTY-NOTICES.txt";
     private const string SectionSeparator = "============================================================";

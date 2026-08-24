@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 
 namespace Digitavox.Views;
 
-public partial class AlertView : ContentPage, IOnPageKeyPress
+public partial class AlertView : ContentPage, IKeyboardInputHandler
 {
     public AlertView(AlertViewModel viewModel)
     {

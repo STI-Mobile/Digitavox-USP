@@ -23,7 +23,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class SecondHelpViewModel : ObservableObject, IOnPageKeyPress
+    public partial class SecondHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
         string statistcsOptionKey;
         List<string> pageKeyCodes;
@@ -57,7 +57,7 @@ namespace Digitavox.ViewModels
             this.appEnvironment = appEnvironment;
             statistcsOptionKey = dVViewModelFunctions.LessonStatisticsCode();
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             bool statisticsNext = dVViewModelSpeak.Get<string>("optionTitle").StartsWith(statistcsOptionKey);
             string instructionText = statisticsNext ? "Use tab e shift tab ou as setas verticais para navegar pelos itens. Depois tecle Enter para confirmar. Escape volta." : "Use tab e shift tab ou as setas verticais para navegar pelos itens. Escape volta.";
@@ -68,7 +68,7 @@ namespace Digitavox.ViewModels
                 "Escape"
             };
             dVViewModelFunctions.ClearHelpOptions();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             List<string> textList = new List<string>()
             {
                 
@@ -146,7 +146,7 @@ namespace Digitavox.ViewModels
                 }
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {

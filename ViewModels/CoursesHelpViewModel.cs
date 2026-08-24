@@ -22,7 +22,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class CoursesHelpViewModel : ObservableObject, IOnPageKeyPress
+    public partial class CoursesHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
         int totalOptions = 9;
         List<string> pageKeyCodes;
@@ -62,10 +62,10 @@ namespace Digitavox.ViewModels
                 "Escape"
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de ajuda de cursos");
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>()
             {
                 
@@ -141,7 +141,7 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.Skip();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (bean.code == "Enter")
                 {

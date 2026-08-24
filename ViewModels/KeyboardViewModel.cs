@@ -17,11 +17,10 @@ using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
 using Digitavox.Presentation.Input;
-using Digitavox.PlatformsImplementations;
 
 namespace Digitavox.ViewModels
 {
-    public partial class KeyboardViewModel : ObservableObject, IOnPageKeyPress
+    public partial class KeyboardViewModel : ObservableObject, IKeyboardInputHandler
     {
         int escPressed = 0;
         [ObservableProperty]

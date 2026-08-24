@@ -14,11 +14,9 @@
 
 using Microsoft.Extensions.Logging;
 using Digitavox.PlatformsImplementations;
-using static Microsoft.Maui.ApplicationModel.Permissions;
 using Digitavox.Views;
 using Digitavox.ViewModels;
 using Digitavox.Models;
-using Digitavox.Helpers;
 using Plugin.Maui.Audio;
 using Digitavox.Core.Abstractions;
 using Digitavox.Infrastructure.Navigation;

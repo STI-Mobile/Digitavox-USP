@@ -22,7 +22,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class CoursesViewModel : ObservableObject, IOnPageKeyPress
+    public partial class CoursesViewModel : ObservableObject, IKeyboardInputHandler
     {
         int timeToCaptureNumber = 500;
         int textLineCount;
@@ -72,11 +72,11 @@ namespace Digitavox.ViewModels
                 pageKeyCodes.Add($"{i}");
             }
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de cursos");
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             courseList = course.CourseNameList();
             UpdateTextSpeakLists();
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - courseList.Count);
@@ -179,12 +179,12 @@ namespace Digitavox.ViewModels
                 UpdateTextSpeakLists();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
-                    if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();
+                    if (dVViewModelFunctions.GetSpeakFromHelp() != -1) _ = OnPageAsync();
                 }
                 else if (!DVKeyboard.IsModifierKey(bean.code))
                 {

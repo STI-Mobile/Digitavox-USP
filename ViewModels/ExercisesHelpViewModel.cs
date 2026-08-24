@@ -22,7 +22,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesHelpViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
         int totalOptions = 11;
         List<string> functionKeyCodes;
@@ -65,10 +65,10 @@ namespace Digitavox.ViewModels
                 pageKeyCodes.Add(key);
             }
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de ajuda de exercícios");
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             var textList = new List<string>()
 {
@@ -151,7 +151,7 @@ namespace Digitavox.ViewModels
                 dVViewModelFunctions.ExerciseHelpOptions();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (bean.code == "Enter")
                 {

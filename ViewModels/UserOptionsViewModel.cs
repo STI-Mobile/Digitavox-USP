@@ -21,7 +21,7 @@ using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class UserOptionsViewModel : ObservableObject, IOnPageKeyPress
+    public partial class UserOptionsViewModel : ObservableObject, IKeyboardInputHandler
     {
         int timeToCaptureNumber = 0;
         int totalOptions = 2;
@@ -73,10 +73,10 @@ namespace Digitavox.ViewModels
                 UserOn, ChangeUser
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de opções de usuário");
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>();
             var speechList = new List<string>();
             if (settingsService.Get<bool>("instructionsEnabled"))
@@ -180,7 +180,7 @@ namespace Digitavox.ViewModels
         {
             dVViewModelSpeak.Speak("n", () => 
             {
-                OnPage();
+                _ = OnPageAsync();
             });
         }
         public bool OnPageKeyDown(int keyCode)
@@ -216,7 +216,7 @@ namespace Digitavox.ViewModels
                     if (outcome) RemoveOutcome();
                     if (bean.code == " ")
                     {
-                        OnPage();
+                        _ = OnPageAsync();
                     }
                     else if (bean.code == "Enter" && apresentationSkiped)
                     {
