@@ -174,7 +174,7 @@ namespace Digitavox.ViewModels
             userProgress.UserLogout();
             dVViewModelFunctions.LastLineIsText(false);
             
-            await navigationService.GoToAsync("../..");
+            await navigationService.GoBackAsync(levels: 2);
         }
         private void Reject()
         {

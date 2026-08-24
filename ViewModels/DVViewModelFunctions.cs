@@ -27,8 +27,8 @@ namespace Digitavox.ViewModels
     {
         private int numberCaptureInterval;
         private string numberConcat;
-        private string nextPageRoute;
-        private string lastHelpPageRoute = string.Empty;
+        private AppRoute nextPageRoute;
+        private AppRoute? lastHelpPageRoute;
         private string currentPageIdentifier = string.Empty;
         private int optionNumber;
         private int firstOptionLineNumber;
@@ -37,8 +37,8 @@ namespace Digitavox.ViewModels
         private bool lastLineIsText;
         private bool alertControl = false;
         private bool keysEnabled = true;
-        private List<string> pageRouteStack = new List<string>();
-        private List<string> pageListEnterFunction;
+        private List<AppRoute> pageRouteStack = new List<AppRoute>();
+        private List<AppRoute> pageListEnterFunction;
         private List<string> courseHelpOptions;
         private List<string> lessonHelpOptions;
         private List<string> exerciseHelpOptions;
@@ -104,7 +104,7 @@ namespace Digitavox.ViewModels
                 "Left", "Ctrl+Left", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "Escape"
             };
             numberConcat = string.Empty;
-            nextPageRoute = "Menu";
+            nextPageRoute = AppRoute.Menu;
             speakFromHelp = -1;
             lastLineIsText = false;
             optionNumber = 0;
@@ -129,11 +129,11 @@ namespace Digitavox.ViewModels
         }
         private void CourseSelectedApresentation()
         {
-            OptionBasedOnCurrentPage("CoursesHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.CoursesHelp, 0);
         }
         private void CourseSelectedInstruction()
         {
-            OptionBasedOnCurrentPage("CoursesHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.CoursesHelp, 1);
         }
         public bool CoursesEnterOptionSelected()
         {
@@ -141,8 +141,8 @@ namespace Digitavox.ViewModels
         }
         private void StartCourse()
         {
-            nextPageRoute = "Lessons";
-            if (pageRouteStack[pageRouteStack.Count - 1] == "CoursesHelp")
+            nextPageRoute = AppRoute.Lessons;
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.CoursesHelp)
             {
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
@@ -190,8 +190,8 @@ namespace Digitavox.ViewModels
         }
         private void StartLesson()
         {
-            nextPageRoute = "Exercises";
-            if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+            nextPageRoute = AppRoute.Exercises;
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
             {
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
@@ -200,19 +200,19 @@ namespace Digitavox.ViewModels
         }
         private void CourseApresentation()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 0);
         }
         private void CourseInstruction()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 1);
         }
         private void LessonSelectedApresentation()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 2);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 2);
         }
         private void LessonSelectedInstruction()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 3);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 3);
         }
         private void LessonData()
         {
@@ -238,7 +238,7 @@ namespace Digitavox.ViewModels
             if (textList.Count == 1)
             {
                 dVViewModelSpeak.Speak("Nenhuma tentativa registrada", () => { });
-                if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+                if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
                 {
                     optionNumber = lessonHelpOptions.IndexOf("F8") + firstOptionLineNumber;
                     dVViewModelSpeak.BoldLine(optionNumber);
@@ -324,15 +324,15 @@ namespace Digitavox.ViewModels
         }
         private void LessonApresentation()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 0);
         }
         private void LessonInstruction()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 1);
         }
         private void TimeStatistics()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 2);
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 2);
         }
         public async void CreatePlayers()
         {
@@ -366,22 +366,22 @@ namespace Digitavox.ViewModels
                 });
             }
             int number = -1;
-            if (pageRouteStack[pageRouteStack.Count - 1] == "CoursesHelp")
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.CoursesHelp)
             {
                 number = courseHelpOptions.IndexOf(code);
             }
-            else if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+            else if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
             {
                 number = lessonHelpOptions.IndexOf(code);
             }
-            else if (pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp")
+            else if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp)
             {
                 List<string> arrow_function = new List<string>
                 {
                     "Down", "Ctrl+Right", "Right", "Up", "Ctrl+Up", "Ctrl+Down" 
                 };
                 number = exerciseHelpOptions.IndexOf(code);
-                if ((pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp") && arrow_function.Contains(code))
+                if ((pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp) && arrow_function.Contains(code))
                 {
                     number = exerciseHelpOptions.IndexOf("F2") + arrow_function.IndexOf(code);
                 }
@@ -408,11 +408,11 @@ namespace Digitavox.ViewModels
         {
             numberCaptureInterval = interval;
         }
-        public void SetNextPageRoute(string route)
+        public void SetNextPageRoute(AppRoute route)
         {
             nextPageRoute = route;
         }
-        public void SetOption2PageList(List<string> pagesRoutes)
+        public void SetOption2PageList(List<AppRoute> pagesRoutes)
         {
             pageListEnterFunction = pagesRoutes;
         }
@@ -423,7 +423,7 @@ namespace Digitavox.ViewModels
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
             dVViewModelSpeak.CurrentIsLessonsPage(false);
-            await navigationService.GoToAsync("SecondHelp");
+            await navigationService.GoToAsync(AppRoute.SecondHelp);
         }
         private void UpArrow()
         {
@@ -456,7 +456,7 @@ namespace Digitavox.ViewModels
             if (optionNumber >= firstOptionLineNumber && optionNumber < dVViewModelSpeak.LineCount())
             {
                 nextPageRoute = (pageListEnterFunction.Count > 1) ? pageListEnterFunction[optionNumber - firstOptionLineNumber] : pageListEnterFunction[0];
-                if (nextPageRoute != "PrivacyPolicy")
+                if (nextPageRoute != AppRoute.PrivacyPolicy)
                 {
                     GoToNextPage();
                 }
@@ -513,7 +513,7 @@ namespace Digitavox.ViewModels
             if (!alertControl)
             {
                 alertControl = true;
-                await navigationService.GoToAsync("Alert");
+                await navigationService.GoToAsync(AppRoute.Alert);
             }
         }
         public async void DismissAlert()
@@ -521,7 +521,7 @@ namespace Digitavox.ViewModels
             if (alertControl)
             {
                 alertControl = false;
-                await navigationService.GoToAsync("..");
+                await navigationService.GoBackAsync();
             }
         }
         public bool OnAlert()
@@ -532,22 +532,22 @@ namespace Digitavox.ViewModels
         {
             lastLineIsText = false;
             
-            string currentPageRoute = string.Empty;
-            string navigateBackRoute = "..";
+            AppRoute? currentPageRoute = null;
+            int backLevels = 1;
             if (pageRouteStack.Count > 0)
             {
                 currentPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            if ((currentPageRoute == "Exercises" && lastHelpPageRoute == "LessonsHelp") || (currentPageRoute == "Lessons" && lastHelpPageRoute == "CoursesHelp"))
+            if ((currentPageRoute == AppRoute.Exercises && lastHelpPageRoute == AppRoute.LessonsHelp) || (currentPageRoute == AppRoute.Lessons && lastHelpPageRoute == AppRoute.CoursesHelp))
             {
-                navigateBackRoute = "../..";
-                lastHelpPageRoute = string.Empty;
+                backLevels = 2;
+                lastHelpPageRoute = null;
             }
             dVViewModelSpeak.CurrentIsExercisePage(false);
             dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
-            await navigationService.GoToAsync(navigateBackRoute);
+            await navigationService.GoBackAsync(backLevels);
         }
         public void InvalidOption(string key)
         {
@@ -557,7 +557,7 @@ namespace Digitavox.ViewModels
                 else SkipPageApresentation();
             }
         }
-        private void OptionBasedOnCurrentPage(string route, int helpNumber)
+        private void OptionBasedOnCurrentPage(AppRoute route, int helpNumber)
         {
             speakFromHelp = helpNumber;
             if (pageRouteStack[pageRouteStack.Count - 1] == route)
@@ -624,7 +624,7 @@ namespace Digitavox.ViewModels
                 {
                     helpFunctions[code]();
                 }
-                else if (onlySpokenOptions.ContainsKey(code) && (((pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp") && !arrow_navigation.Contains(code)) || (pageRouteStack[pageRouteStack.Count - 1] != "ExercisesHelp")))
+                else if (onlySpokenOptions.ContainsKey(code) && (((pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp) && !arrow_navigation.Contains(code)) || (pageRouteStack[pageRouteStack.Count - 1] != AppRoute.ExercisesHelp)))
                 {
                     ShortCode2Speak(code);
                 }

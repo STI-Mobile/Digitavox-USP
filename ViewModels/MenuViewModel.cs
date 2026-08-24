@@ -117,9 +117,10 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelFunctions.SetOptionNumberStart(dVViewModelSpeak.LineCount() - totalOptions - 1);
             dVViewModelFunctions.SetNumberCaptureTimeInterval(timeToCaptureNumber);
-            dVViewModelFunctions.SetOption2PageList(new List<string>()
+            dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
             {
-                "Keyboard", "Courses", "UserOptions", "Config", "Tutorial", "PrivacyPolicy", "ThirdPartyLicenses"
+                AppRoute.Keyboard, AppRoute.Courses, AppRoute.UserOptions, AppRoute.Config,
+                AppRoute.Tutorial, AppRoute.PrivacyPolicy, AppRoute.ThirdPartyLicenses
             });
             dVViewModelSpeak.SpeakAll();
             WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));

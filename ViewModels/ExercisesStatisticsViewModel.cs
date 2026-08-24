@@ -167,12 +167,12 @@ namespace Digitavox.ViewModels
         }
         private async void NavigateBack()
         {
-            string backRoute = userProgress.ConsultingOldLesson() ? ".." : "../..";
-            await navigationService.GoToAsync(backRoute);
+            int backLevels = userProgress.ConsultingOldLesson() ? 1 : 2;
+            await navigationService.GoBackAsync(backLevels);
         }
         private async void GoToNextLesson()
         {
-            await navigationService.GoToAsync("../../Exercises");
+            await navigationService.GoToAsync(AppRoute.Exercises, backLevels: 2);
         }
         public bool OnPageKeyDown(int keyCode)
         {

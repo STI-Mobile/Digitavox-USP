@@ -83,11 +83,11 @@ namespace Digitavox.ViewModels
             lessonNumber = userProgress.LastAvailableLesson();
             UpdateTextSpeakLists();
             Thread.Sleep(100);
-            dVViewModelFunctions.SetNextPageRoute("LessonsHelp");
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.LessonsHelp);
             dVViewModelFunctions.SetNumberCaptureTimeInterval(timeToCaptureNumber);
-            dVViewModelFunctions.SetOption2PageList(new List<string>()
+            dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
             {
-                "Exercises"
+                AppRoute.Exercises
             });
             dVViewModelFunctions.SetFirstOptionLineNumber(textList.Count - lessonNumber);
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
@@ -223,7 +223,7 @@ namespace Digitavox.ViewModels
             {
                 if (bean.code == "F2" || bean.code == "F8")
                 {
-                    dVViewModelFunctions.SetNextPageRoute("SecondHelp");
+                    dVViewModelFunctions.SetNextPageRoute(AppRoute.SecondHelp);
                 }
                 dVViewModelSpeak.Skip();
                 Option2Lesson();

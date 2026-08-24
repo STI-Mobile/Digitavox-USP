@@ -8,7 +8,30 @@
 
 namespace Digitavox.Core.Abstractions;
 
+public enum AppRoute
+{
+    Alert,
+    Tutorial,
+    Login,
+    Menu,
+    Keyboard,
+    Courses,
+    CoursesHelp,
+    Lessons,
+    LessonsHelp,
+    Exercises,
+    ExercisesHelp,
+    ExercisesStatistics,
+    UserOptions,
+    Config,
+    SecondHelp,
+    PrivacyPolicy,
+    ThirdPartyLicenses
+}
+
 public interface INavigationService
 {
-    Task GoToAsync(string route);
+    Task GoToAsync(AppRoute route, int backLevels = 0);
+
+    Task GoBackAsync(int levels = 1);
 }

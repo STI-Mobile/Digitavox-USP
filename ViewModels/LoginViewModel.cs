@@ -235,7 +235,7 @@ namespace Digitavox.ViewModels
         }
         private async void GoToMenuPage()
         {
-            await navigationService.GoToAsync("Menu");
+            await navigationService.GoToAsync(AppRoute.Menu);
         }
         public bool OnPageKeyDown(int keyCode)
         {

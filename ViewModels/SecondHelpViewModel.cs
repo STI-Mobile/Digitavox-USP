@@ -93,9 +93,9 @@ namespace Digitavox.ViewModels
                 dVViewModelFunctions.SetFirstOptionLineNumber(originalTextListCount + 1);
                 dVViewModelFunctions.SetOptionNumberStart(originalTextListCount);
                 dVViewModelFunctions.SetLastOptionLineNumber(textList.Count - 1);
-                dVViewModelFunctions.SetOption2PageList(new List<string>()
+                dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
                 {
-                    "ExercisesStatistics"
+                    AppRoute.ExercisesStatistics
                 });
                 pageKeyCodes.Add("Enter");
             }

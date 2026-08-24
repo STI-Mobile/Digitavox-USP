@@ -88,7 +88,7 @@ namespace Digitavox.ViewModels
         }
         private async void NavigateBack()
         {
-            await navigationService.GoToAsync("..");
+            await navigationService.GoBackAsync();
         }
         public bool OnPageKeyDown(int keyCode)
         {

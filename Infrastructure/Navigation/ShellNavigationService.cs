@@ -12,5 +12,22 @@ namespace Digitavox.Infrastructure.Navigation;
 
 public sealed class ShellNavigationService : INavigationService
 {
-    public Task GoToAsync(string route) => Shell.Current.GoToAsync(route);
+    public Task GoToAsync(AppRoute route, int backLevels = 0) =>
+        Shell.Current.GoToAsync(BuildRoute(route.ToString(), backLevels));
+
+    public Task GoBackAsync(int levels = 1) =>
+        Shell.Current.GoToAsync(BuildRoute(null, levels));
+
+    private static string BuildRoute(string route, int backLevels)
+    {
+        if (backLevels < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(backLevels));
+        }
+
+        string backPath = string.Join('/', Enumerable.Repeat("..", backLevels));
+        if (string.IsNullOrEmpty(backPath)) return route ?? string.Empty;
+        if (string.IsNullOrEmpty(route)) return backPath;
+        return $"{backPath}/{route}";
+    }
 }

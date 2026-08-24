@@ -222,7 +222,7 @@ namespace Digitavox.ViewModels
         private async void GoToLoginPage()
         {
             WeakReferenceMessenger.Default.Send(new DVMessage("CheckForScreenReader"));
-            await navigationService.GoToAsync("Login");
+            await navigationService.GoToAsync(AppRoute.Login);
         }
         public bool OnPageKeyDown(int keyCode)
         {

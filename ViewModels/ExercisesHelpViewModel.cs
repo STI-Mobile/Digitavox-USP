@@ -117,9 +117,9 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - totalOptions);
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelFunctions.SetOptionNumberStart(dVViewModelSpeak.LineCount() - totalOptions - 1);
-            dVViewModelFunctions.SetOption2PageList(new List<string>()
+            dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
             {
-                "SecondHelp"
+                AppRoute.SecondHelp
             });
             dVViewModelSpeak.SpeakAll();
             WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));

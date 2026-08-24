@@ -98,7 +98,7 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetFirstOptionLineNumber(exerciseLine);
             dVViewModelFunctions.SetLastOptionLineNumber(exerciseLine);
             dVViewModelFunctions.SetOptionNumberStart(exerciseLine);
-            dVViewModelFunctions.SetNextPageRoute("ExercisesHelp");
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesHelp);
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
             Thread.Sleep(100);
             if (speakFromHelp == -1)
@@ -176,7 +176,7 @@ namespace Digitavox.ViewModels
                     userProgress.SaveStatistics();
                     appEnvironment.RunOnMainThread(() =>
                     {
-                        dVViewModelFunctions.SetNextPageRoute("ExercisesStatistics");
+                        dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
                         dVViewModelFunctions.GoToNextPage();
                     });
                 });
@@ -343,7 +343,7 @@ namespace Digitavox.ViewModels
             endLesson = true;
             courseLesson.StopTimer();
             userProgress.SaveStatistics();
-            dVViewModelFunctions.SetNextPageRoute("ExercisesStatistics");
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
             dVViewModelSpeak.Speak("Fim da lição", () =>
             {
                 Thread.Sleep(100);

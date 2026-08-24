@@ -81,11 +81,11 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - courseList.Count);
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelFunctions.SetOptionNumberStart(dVViewModelSpeak.LineCount() - courseList.Count - 1);
-            dVViewModelFunctions.SetNextPageRoute("CoursesHelp");
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.CoursesHelp);
             dVViewModelFunctions.SetNumberCaptureTimeInterval(timeToCaptureNumber);
-            dVViewModelFunctions.SetOption2PageList(new List<string>()
+            dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
             {
-                "Lessons"
+                AppRoute.Lessons
             });
             if (speakFromHelp == -1)
             {
