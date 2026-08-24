@@ -9,10 +9,12 @@ namespace Digitavox.CharacterizationTests;
 public class SpeechTextFormatterTests
 {
     [TestMethod]
-    public void Screen_reader_terms_change_only_for_voice_over_on_ios()
+    public async Task Screen_reader_terms_change_only_for_voice_over_on_ios()
     {
         FakeAppEnvironment environment = new();
-        SpeechTextFormatter formatter = new(new FingerMapping(), environment);
+        FingerMapping mapping = new();
+        await mapping.InitializeAsync();
+        SpeechTextFormatter formatter = new(mapping, environment);
 
         Assert.AreEqual("Escape volta.", formatter.AdaptForScreenReader("Escape volta."));
 
@@ -25,9 +27,11 @@ public class SpeechTextFormatterTests
     }
 
     [TestMethod]
-    public void Keyboard_descriptions_are_kept_out_of_the_navigation_coordinator()
+    public async Task Keyboard_descriptions_are_kept_out_of_the_navigation_coordinator()
     {
-        SpeechTextFormatter formatter = new(new FingerMapping(), new FakeAppEnvironment());
+        FingerMapping mapping = new();
+        await mapping.InitializeAsync();
+        SpeechTextFormatter formatter = new(mapping, new FakeAppEnvironment());
 
         Assert.AreEqual("a ", formatter.Spell("a "));
         Assert.AreEqual("a Interrogação ", formatter.DescribePunctuation("a?"));

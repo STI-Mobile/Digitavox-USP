@@ -24,6 +24,8 @@
     <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/IAppEnvironment.cs" />
     <Compile Include="../../Application/Abstractions/ISpeechTextFormatter.cs" Link="Production/Application/ISpeechTextFormatter.cs" />
     <Compile Include="../../Presentation/Text/SpeechTextFormatter.cs" Link="Production/Presentation/SpeechTextFormatter.cs" />
+    <Compile Include="../../Presentation/Input/KeyboardInputState.cs" Link="Production/Presentation/KeyboardInputState.cs" />
+    <Compile Include="../../Presentation/Input/KeyboardInputProcessor.cs" Link="Production/Presentation/KeyboardInputProcessor.cs" />
   </ItemGroup>
 
   <ItemGroup>

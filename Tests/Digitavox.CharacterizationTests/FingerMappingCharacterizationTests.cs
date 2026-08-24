@@ -14,9 +14,10 @@ public class FingerMappingCharacterizationTests
     }
 
     [TestMethod]
-    public void Android_key_code_maps_to_common_code_and_finger_guidance()
+    public async Task Android_key_code_maps_to_common_code_and_finger_guidance()
     {
         FingerMapping mapping = new();
+        await mapping.InitializeAsync();
 
         FingerMappingBean result = mapping.MapKey(29, modifiers: 0, pressedKeys: new List<string>());
 
@@ -28,9 +29,10 @@ public class FingerMappingCharacterizationTests
     }
 
     [TestMethod]
-    public void Shift_and_caps_lock_produce_uppercase_mapping()
+    public async Task Shift_and_caps_lock_produce_uppercase_mapping()
     {
         FingerMapping mapping = new();
+        await mapping.InitializeAsync();
 
         FingerMappingBean shifted = mapping.MapKey(
             29,
@@ -46,9 +48,10 @@ public class FingerMappingCharacterizationTests
     }
 
     [TestMethod]
-    public void Acute_dead_key_is_combined_with_the_following_vowel()
+    public async Task Acute_dead_key_is_combined_with_the_following_vowel()
     {
         FingerMapping mapping = new();
+        await mapping.InitializeAsync();
 
         FingerMappingBean deadKey = mapping.MapKey(71, modifiers: 0, pressedKeys: new List<string>());
         FingerMappingBean accentedLetter = mapping.MapKey(29, modifiers: 0, pressedKeys: new List<string>());
@@ -61,10 +64,11 @@ public class FingerMappingCharacterizationTests
     [DataRow(TestPlatform.Ios, 4)]
     [DataRow(TestPlatform.Mac, 4)]
     [DataRow(TestPlatform.Windows, 65)]
-    public void Platform_key_codes_are_normalized_to_the_android_mapping(TestPlatform platform, int nativeCode)
+    public async Task Platform_key_codes_are_normalized_to_the_android_mapping(TestPlatform platform, int nativeCode)
     {
         DVDevice.Platform = platform;
         FingerMapping mapping = new();
+        await mapping.InitializeAsync();
 
         Assert.AreEqual("a", mapping.mapKeyCode(nativeCode));
         Assert.AreEqual("a", mapping.MapKey(nativeCode, 0, new List<string>()).code);

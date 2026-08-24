@@ -8,13 +8,23 @@
 
 using Digitavox.Core.Abstractions;
 using Digitavox.Helpers;
+using Digitavox.Models;
 
 namespace Digitavox.Infrastructure.Startup;
 
 public sealed class MauiAppStartupService : IAppStartupService
 {
+    private readonly FingerMapping fingerMapping;
+
+    public MauiAppStartupService(FingerMapping fingerMapping)
+    {
+        this.fingerMapping = fingerMapping;
+    }
+
     public async Task<AppStartupDestination> InitializeAsync()
     {
+        await fingerMapping.InitializeAsync();
+
         if (DVPersistence.CourseDirectoryExists())
         {
             return AppStartupDestination.Login;

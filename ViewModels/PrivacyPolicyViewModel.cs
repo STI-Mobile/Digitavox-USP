@@ -16,21 +16,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
     public partial class PrivacyPolicyViewModel : IOnPageKeyPress
     {
-        List<string> pressedKeys = new List<string>();
         List<string> pageKeyCodes;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private DVViewModelFunctions dVViewModelFunctions;
         private readonly IAppEnvironment appEnvironment;
-        public PrivacyPolicyViewModel(FingerMapping fingerMapping,
+        public PrivacyPolicyViewModel(KeyboardInputProcessor keyboardInputProcessor,
                                       DVViewModelFunctions dVViewModelFunctions,
                                       IAppEnvironment appEnvironment)
         {
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.dVViewModelFunctions = dVViewModelFunctions;
             this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
@@ -40,17 +40,11 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))

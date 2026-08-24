@@ -17,12 +17,12 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
     public partial class CoursesHelpViewModel : ObservableObject, IOnPageKeyPress
     {
-        List<string> pressedKeys = new List<string>();
         int totalOptions = 9;
         List<string> pageKeyCodes;
         [ObservableProperty]
@@ -33,14 +33,14 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private Course course;
         private UserProgress userProgress;
         private readonly ISettingsService settingsService;
         private readonly IAppEnvironment appEnvironment;
         public CoursesHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
-                                    FingerMapping fingerMapping,
+                                    KeyboardInputProcessor keyboardInputProcessor,
                                     Course course,
                                     UserProgress userProgress,
                                     ISettingsService settingsService,
@@ -48,7 +48,7 @@ namespace Digitavox.ViewModels
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.course = course;
             this.userProgress = userProgress;
             this.settingsService = settingsService;
@@ -129,17 +129,11 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 dVViewModelFunctions.CourseHelpOptions();

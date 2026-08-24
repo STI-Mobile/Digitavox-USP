@@ -16,12 +16,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
     public partial class ExercisesStatisticsViewModel : ObservableObject, IOnPageKeyPress
     {
-        List<string> pressedKeys = new List<string>();
         private int instructionLines = 1;
         private int lessonNumber;
         List<string> pageKeyCodes;
@@ -34,7 +34,7 @@ namespace Digitavox.ViewModels
         private Course course;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
         private CourseLesson courseLesson;
         private readonly ISettingsService settingsService;
@@ -43,7 +43,7 @@ namespace Digitavox.ViewModels
         public ExercisesStatisticsViewModel(Course course,
                                             DVViewModelSpeak dVViewModelSpeak,
                                             DVViewModelFunctions dVViewModelFunctions,
-                                            FingerMapping fingerMapping,
+                                            KeyboardInputProcessor keyboardInputProcessor,
                                             UserProgress userProgress,
                                             CourseLesson courseLesson,
                                             ISettingsService settingsService,
@@ -53,7 +53,7 @@ namespace Digitavox.ViewModels
             this.course = course;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
             this.courseLesson = courseLesson;
             this.settingsService = settingsService;
@@ -176,17 +176,11 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int keyModifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, keyModifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, keyModifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
