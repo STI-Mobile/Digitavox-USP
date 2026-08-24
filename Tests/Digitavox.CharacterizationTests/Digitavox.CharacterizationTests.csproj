@@ -23,6 +23,7 @@
     <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
     <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/IAppEnvironment.cs" />
     <Compile Include="../../Application/Abstractions/IClock.cs" Link="Production/Application/IClock.cs" />
+    <Compile Include="../../Application/Abstractions/ICourseCatalogStore.cs" Link="Production/Application/ICourseCatalogStore.cs" />
     <Compile Include="../../Application/Abstractions/IExerciseTimer.cs" Link="Production/Application/IExerciseTimer.cs" />
     <Compile Include="../../Application/Abstractions/ISettingsService.cs" Link="Production/Application/ISettingsService.cs" />
     <Compile Include="../../Application/Abstractions/IUserProgressStore.cs" Link="Production/Application/IUserProgressStore.cs" />

@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 
 
@@ -108,7 +109,7 @@ namespace Digitavox.ViewModels
                     lessonTextOption = false;
                 }
             }
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
         private void UpdateTextSpeakLists()
         {

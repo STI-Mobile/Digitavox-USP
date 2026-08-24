@@ -8,16 +8,10 @@ namespace Digitavox.CharacterizationTests;
 [TestClass]
 public class KeyboardInputProcessorTests
 {
-    [TestInitialize]
-    public void SetUp()
-    {
-        DVDevice.Platform = TestPlatform.Android;
-    }
-
     [TestMethod]
     public async Task Dead_key_state_is_isolated_between_screen_input_processors()
     {
-        FingerMapping mapping = new();
+        FingerMapping mapping = new(new TestAppEnvironment());
         await mapping.InitializeAsync();
         KeyboardInputProcessor firstScreen = new(mapping);
         KeyboardInputProcessor secondScreen = new(mapping);
@@ -30,7 +24,7 @@ public class KeyboardInputProcessorTests
     [TestMethod]
     public async Task Key_down_and_key_up_are_normalized_by_one_pipeline()
     {
-        FingerMapping mapping = new();
+        FingerMapping mapping = new(new TestAppEnvironment());
         await mapping.InitializeAsync();
         KeyboardInputProcessor processor = new(mapping);
 

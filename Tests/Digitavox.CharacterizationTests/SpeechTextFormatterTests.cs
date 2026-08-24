@@ -12,7 +12,7 @@ public class SpeechTextFormatterTests
     public async Task Screen_reader_terms_change_only_for_voice_over_on_ios()
     {
         FakeAppEnvironment environment = new();
-        FingerMapping mapping = new();
+        FingerMapping mapping = new(environment);
         await mapping.InitializeAsync();
         SpeechTextFormatter formatter = new(mapping, environment);
 
@@ -29,7 +29,7 @@ public class SpeechTextFormatterTests
     [TestMethod]
     public async Task Keyboard_descriptions_are_kept_out_of_the_navigation_coordinator()
     {
-        FingerMapping mapping = new();
+        FingerMapping mapping = new(new TestAppEnvironment());
         await mapping.InitializeAsync();
         SpeechTextFormatter formatter = new(mapping, new FakeAppEnvironment());
 

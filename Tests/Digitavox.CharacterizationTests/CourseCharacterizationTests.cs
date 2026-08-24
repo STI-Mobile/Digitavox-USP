@@ -20,7 +20,7 @@ public class CourseCharacterizationTests
 
         course.GetCoursesLists();
 
-        Assert.AreEqual(1, DVPersistence.ReadCourseFilesCalls);
+        Assert.AreEqual(1, TestCourseFactory.CourseCatalogLoadCalls);
         Assert.AreEqual(1, course.CourseNumber());
         Assert.AreEqual("curso-teste", course.CourseId());
         Assert.AreEqual("Curso de caracterização", course.CourseNameList().Single());

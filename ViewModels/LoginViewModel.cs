@@ -18,6 +18,7 @@ using Digitavox.Helpers;
 using Digitavox.Models;
 using Microsoft.Maui.Controls;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
@@ -122,7 +123,7 @@ namespace Digitavox.ViewModels
                     dVViewModelSpeak.Set("maintainTag", true);
                 });
             });
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
 
         private void WriteName(string letter)
@@ -175,7 +176,7 @@ namespace Digitavox.ViewModels
                 {
                     appEnvironment.RunOnMainThread(() =>
                     {
-                        GoToMenuPage();
+                        _ = GoToMenuPageAsync();
                     });
                 }
             });
@@ -233,7 +234,7 @@ namespace Digitavox.ViewModels
                 RepeatRegisterText();
             });
         }
-        private async void GoToMenuPage()
+        private async Task GoToMenuPageAsync()
         {
             await navigationService.GoToAsync(AppRoute.Menu);
         }

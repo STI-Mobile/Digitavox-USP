@@ -160,7 +160,7 @@ namespace Digitavox.ViewModels
             {
                 appEnvironment.RunOnMainThread(() =>
                 {
-                    Logout();
+                    _ = LogoutAsync();
                 });
             });
         }
@@ -169,7 +169,7 @@ namespace Digitavox.ViewModels
             outcome = false;
             dVViewModelSpeak.ChangeLine(string.Empty, string.Empty, introductionLines + totalOptions);
         }
-        private async void Logout()
+        private async Task LogoutAsync()
         {
             userProgress.UserLogout();
             dVViewModelFunctions.LastLineIsText(false);

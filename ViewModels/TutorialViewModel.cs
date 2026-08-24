@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
@@ -213,15 +214,14 @@ namespace Digitavox.ViewModels
                 {
                     appEnvironment.RunOnMainThread(() =>
                     {
-                        GoToLoginPage();
+                        _ = GoToLoginPageAsync();
                     });
                 }
             });
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
-        private async void GoToLoginPage()
+        private async Task GoToLoginPageAsync()
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("CheckForScreenReader"));
             await navigationService.GoToAsync(AppRoute.Login);
         }
         public bool OnPageKeyDown(int keyCode)

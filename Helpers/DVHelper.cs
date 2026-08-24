@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommunityToolkit.Mvvm.Messaging.Messages;
-
 namespace Digitavox.Helpers {
 
   public enum Modifier {
@@ -81,40 +79,4 @@ namespace Digitavox.Helpers {
 
   } 
 
-  /// <summary>
-  ///   Funções para detectar tipo de plataforma
-  /// </summary>
-  /// <returns>
-  ///   TRUE se corresponde à plataforma
-  ///   FALSE se não corresponde à plataforma
-  /// </returns>
-  public static class DVDevice {
-
-    public static bool IsAndroid() =>
-      DeviceInfo.Current.Platform == DevicePlatform.Android;
-
-    public static bool IsVirtual() =>
-      DeviceInfo.Current.DeviceType == DeviceType.Virtual;
-
-    public static bool IsIos() =>
-      DeviceInfo.Current.Platform == DevicePlatform.iOS;
-
-    public static bool IsMac() =>
-      DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst;
-
-    public static bool IsWindows() =>
-      DeviceInfo.Current.Platform == DevicePlatform.WinUI;
-
-  } 
-
-  /// <summary>
-  ///   Classe auxiliar para mensagens para usar com WeakReferenceMessenger
-  /// </summary>
-  public class DVMessage : ValueChangedMessage<string> {
-
-    public DVMessage(string value) : base(value) { }
-
-  } 
-
 } 
-

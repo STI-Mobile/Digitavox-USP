@@ -24,6 +24,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Messages;
 using Java.Util;
 using Locale = Java.Util.Locale;
 using TextToSpeech = Android.Speech.Tts.TextToSpeech;
@@ -42,13 +43,6 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
         base.OnCreate(savedInstanceState);
         active = true;
         am = (AccessibilityManager)GetSystemService(Context.AccessibilityService);
-        WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-            if (m.Value == "WindowActivated")
-            {
-                
-            }
-        });
-       
     }
     private void CheckTalkbackHandler(object sender, EventArgs e)
     {
@@ -58,11 +52,11 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     {
         if (am.IsEnabled && am.IsTouchExplorationEnabled)
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("DisplayAlertDialog"));
+            WeakReferenceMessenger.Default.Send(new ShowSpeechCompatibilityAlertMessage());
         }
         else
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("DismissAlertDialog"));
+            WeakReferenceMessenger.Default.Send(new HideSpeechCompatibilityAlertMessage());
         }
     }
     protected override void OnPause()

@@ -84,9 +84,9 @@ namespace Digitavox.ViewModels
         private void CountEsc()
         {
             escPressed += 1; 
-            if (escPressed == 2) NavigateBack();
+            if (escPressed == 2) _ = NavigateBackAsync();
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
             await navigationService.GoBackAsync();
         }

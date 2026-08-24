@@ -165,12 +165,12 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetOptionNumberStart(instructionLines - 1);
             dVViewModelSpeak.SpeakAll();
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
             int backLevels = userProgress.ConsultingOldLesson() ? 1 : 2;
             await navigationService.GoBackAsync(backLevels);
         }
-        private async void GoToNextLesson()
+        private async Task GoToNextLessonAsync()
         {
             await navigationService.GoToAsync(AppRoute.Exercises, backLevels: 2);
         }
@@ -190,13 +190,13 @@ namespace Digitavox.ViewModels
                 }
                 else if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
-                    NavigateBack();
+                    _ = NavigateBackAsync();
                 }
                 else if (bean.code == "Enter" && !userProgress.ConsultingOldLesson())
                 {
                     course.SelectLesson(lessonNumber);
                     userProgress.LessonRegistration($"LICAO{lessonNumber}");
-                    GoToNextLesson();
+                    _ = GoToNextLessonAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code))
                 {

@@ -22,6 +22,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Digitavox.Helpers;
 using Digitavox.Presentation.Input;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.Models
 {
@@ -32,17 +33,18 @@ namespace Digitavox.Models
         private JsonElement keysIos2Android;
         private JsonElement keysWindows2Android;
         private readonly KeyboardInputState legacyState = new();
+        private readonly IAppEnvironment appEnvironment;
         private Task initializationTask;
         private List<string> charsWithCaps = new List<string>(new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ç" });
         private List<string> keysWithCaps = new List<string>();
         public string mapKeyCode(int intKey)
         {
             var key = intKey.ToString();
-            if ((DVDevice.IsIos() || DVDevice.IsMac()) && keysIos2Android.TryGetProperty(key, out var mapping2))
+            if ((appEnvironment.Platform is AppPlatformKind.Ios or AppPlatformKind.MacCatalyst) && keysIos2Android.TryGetProperty(key, out var mapping2))
             {
                 key = mapping2.GetString();
             }
-            else if (DVDevice.IsWindows() && keysWindows2Android.TryGetProperty(key, out var mapping3))
+            else if (appEnvironment.Platform == AppPlatformKind.Windows && keysWindows2Android.TryGetProperty(key, out var mapping3))
             {
                 key = mapping3.GetString();
             }
@@ -59,11 +61,11 @@ namespace Digitavox.Models
         public FingerMappingBean MapKey(int intKey, int modifiers, List<string> pressedKeys, KeyboardInputState state)
         {
             var key = intKey.ToString();
-            if ((DVDevice.IsIos() || DVDevice.IsMac()) && keysIos2Android.TryGetProperty(key, out var mapping4))
+            if ((appEnvironment.Platform is AppPlatformKind.Ios or AppPlatformKind.MacCatalyst) && keysIos2Android.TryGetProperty(key, out var mapping4))
             {
                 key = mapping4.GetString();
             }
-            else if (DVDevice.IsWindows() && keysWindows2Android.TryGetProperty(key, out var mapping8))
+            else if (appEnvironment.Platform == AppPlatformKind.Windows && keysWindows2Android.TryGetProperty(key, out var mapping8))
             {
                 key = mapping8.GetString();
             }
@@ -220,6 +222,10 @@ namespace Digitavox.Models
         public string Code2Finger(string code)
         {
             return fingers.GetProperty(Code2Key("finger", code)).GetString();
+        }
+        public FingerMapping(IAppEnvironment appEnvironment)
+        {
+            this.appEnvironment = appEnvironment;
         }
         public Task InitializeAsync()
         {

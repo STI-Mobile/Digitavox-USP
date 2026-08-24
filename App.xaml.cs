@@ -20,6 +20,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Digitavox.Core.Abstractions;
 using Digitavox.Models;
+using Digitavox.Core.Messages;
 
 namespace Digitavox;
 
@@ -27,39 +28,25 @@ public partial class App : Application
 {
     private readonly AppShell appShell;
     private readonly CourseLesson courseLesson;
+    private readonly DVViewModelSpeak dVViewModelSpeak;
+    private readonly ICurrentPageContext currentPageContext;
 
 	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions, ICurrentPageContext currentPageContext, CourseLesson courseLesson)
 	{
 		this.appShell = appShell;
 		this.courseLesson = courseLesson;
+		this.dVViewModelSpeak = dVViewModelSpeak;
+		this.currentPageContext = currentPageContext;
 		InitializeComponent();
 
-        WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => 
+        WeakReferenceMessenger.Default.Register<ShowSpeechCompatibilityAlertMessage>(this, (r, m) =>
         {
-            if (m.Value == "WindowStopped")
-            {
-            #if __ANDROID__
-                dVViewModelSpeak.Skip();
-            #endif
-            
-
-            }
-            else if (m.Value == "WindowResumed")
-            {
-                string currentPageMessage = $"Você está {currentPageContext.Identifier}";
-                dVViewModelSpeak.Skip();
-                dVViewModelSpeak.Speak(currentPageMessage, () => { });
-            }
-            if (m.Value == "DisplayAlertDialog")
-            {
-                dVViewModelSpeak.Skip();
-                
-                dVViewModelFunctions.DisplayAlert();
-            }
-            else if (m.Value == "DismissAlertDialog")
-            {
-                dVViewModelFunctions.DismissAlert();
-            }
+            this.dVViewModelSpeak.Skip();
+            _ = dVViewModelFunctions.DisplayAlertAsync();
+        });
+        WeakReferenceMessenger.Default.Register<HideSpeechCompatibilityAlertMessage>(this, (r, m) =>
+        {
+            _ = dVViewModelFunctions.DismissAlertAsync();
         });
 
         
@@ -77,32 +64,32 @@ public partial class App : Application
         {
             await appShell.InitializeAsync();
             this.courseLesson.ContinueTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowCreated"));
         };
         window.Activated += (s, e) =>
         {
             this.courseLesson.ContinueTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowActivated"));
         };
         window.Deactivated += (s, e) =>
         {
             this.courseLesson.PauseTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowDeactivated"));
         };
         window.Stopped += (s, e) =>
         {
             this.courseLesson.PauseTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowStopped"));
+#if __ANDROID__
+            dVViewModelSpeak.Skip();
+#endif
         };
         window.Resumed += (s, e) =>
         {
             this.courseLesson.ContinueTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowResumed"));
+            string currentPageMessage = $"Você está {this.currentPageContext.Identifier}";
+            this.dVViewModelSpeak.Skip();
+            this.dVViewModelSpeak.Speak(currentPageMessage, () => { });
         };
         window.Destroying += (s, e) =>
         {
             this.courseLesson.PauseTimer();
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowDestroying"));
         };
         return window;
     }

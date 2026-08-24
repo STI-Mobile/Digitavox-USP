@@ -16,6 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 using Digitavox.Helpers;
 namespace Digitavox.ViewModels
@@ -121,7 +122,7 @@ namespace Digitavox.ViewModels
                 AppRoute.Tutorial, AppRoute.PrivacyPolicy, AppRoute.ThirdPartyLicenses
             });
             dVViewModelSpeak.SpeakAll();
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
         public bool OnPageKeyDown(int keyCode)
         {

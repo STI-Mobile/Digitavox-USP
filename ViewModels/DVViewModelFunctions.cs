@@ -81,14 +81,14 @@ namespace Digitavox.ViewModels
             commonFunctions = new Dictionary<string, Action>()
             {
                 { "Enter", Enter},
-                { "!", NavigateBack},
+                { "!", () => _ = NavigateBackAsync()},
                 { "Down",  DownArrow},
                 { "Tab",  DownArrow},
                 { "Up",  UpArrow},
                 { "ShiftTab",  UpArrow},
-                { "Escape", NavigateBack},
-                { "F1", GoToNextPage},
-                { "@", GoToNextPage}
+                { "Escape", () => _ = NavigateBackAsync()},
+                { "F1", () => _ = GoToNextPageAsync()},
+                { "@", () => _ = GoToNextPageAsync()}
             };
             courseHelpOptions = new List<string>()
             {
@@ -146,7 +146,7 @@ namespace Digitavox.ViewModels
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            GoToNextPage();
+            _ = GoToNextPageAsync();
         }
         public void LessonHelpOptions()
         {
@@ -159,7 +159,7 @@ namespace Digitavox.ViewModels
                 {lessonHelpOptions[9], LessonStatistics},
                 {lessonHelpOptions[10], CourseApresentation},
                 {lessonHelpOptions[11], CourseInstruction},
-                {lessonHelpOptions[12], NavigateBack}
+                {lessonHelpOptions[12], () => _ = NavigateBackAsync()}
             };
             string exercisesString = string.Empty;
             for (int i = 0; i < course.GetExercises().Count; i++)
@@ -195,7 +195,7 @@ namespace Digitavox.ViewModels
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            GoToNextPage();
+            _ = GoToNextPageAsync();
         }
         private void CourseApresentation()
         {
@@ -229,7 +229,7 @@ namespace Digitavox.ViewModels
                 $"Maiúsculas dispensadas: {course.LessonProperty("TUDO_EM_MAIUSCULO")}",
                 $"Quantidade de exercícios: {course.GetExercises().Count}",
             };
-            NextPageContent($"{LessonDataCode()} - Apresenta dados da lição", statisticsList);
+            _ = NextPageContentAsync($"{LessonDataCode()} - Apresenta dados da lição", statisticsList);
         }
         private void LessonStatistics()
         {
@@ -243,7 +243,7 @@ namespace Digitavox.ViewModels
                     dVViewModelSpeak.BoldLine(optionNumber);
                 }
             }
-            else NextPageContent($"{LessonStatisticsCode()} - Apresenta estatísticas da lição", textList);
+            else _ = NextPageContentAsync($"{LessonStatisticsCode()} - Apresenta estatísticas da lição", textList);
         }
         public void ExerciseHelpOptions()
         {
@@ -252,7 +252,7 @@ namespace Digitavox.ViewModels
                 {exerciseHelpOptions[6], LessonApresentation},
                 {exerciseHelpOptions[7], LessonInstruction},
                 {exerciseHelpOptions[9], TimeStatistics},
-                {exerciseHelpOptions[10], NavigateBack},
+                {exerciseHelpOptions[10], () => _ = NavigateBackAsync()},
                 {"Ctrl+Up", LessonApresentation},
                 {"Ctrl+Down", LessonInstruction},
             };
@@ -372,7 +372,7 @@ namespace Digitavox.ViewModels
         {
             pageListEnterFunction = pagesRoutes;
         }
-        private async void NextPageContent(string title, List<string> lines)
+        private async Task NextPageContentAsync(string title, List<string> lines)
         {
             dVViewModelSpeak.Set("optionTitle", title);
             dVViewModelSpeak.Set("optionList", lines);
@@ -413,7 +413,7 @@ namespace Digitavox.ViewModels
                 nextPageRoute = (pageListEnterFunction.Count > 1) ? pageListEnterFunction[optionNumber - firstOptionLineNumber] : pageListEnterFunction[0];
                 if (nextPageRoute != AppRoute.PrivacyPolicy)
                 {
-                    GoToNextPage();
+                    _ = GoToNextPageAsync();
                 }
                 else
                 {
@@ -423,7 +423,7 @@ namespace Digitavox.ViewModels
                         {
                             appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
                     else if (appEnvironment.Platform == AppPlatformKind.Ios)
@@ -431,7 +431,7 @@ namespace Digitavox.ViewModels
                         {
                             appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
                     else
@@ -440,7 +440,7 @@ namespace Digitavox.ViewModels
                         {
                             appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
                     }
@@ -453,7 +453,7 @@ namespace Digitavox.ViewModels
             if (!keysEnabled) keysEnabled = true;
             return keysEnabledStored;
         }
-        public async void GoToNextPage()
+        public async Task GoToNextPageAsync()
         {
             lastLineIsText = false;
             keysEnabled = true;
@@ -462,7 +462,7 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.ClearStyleDictionary();
             await navigationService.GoToAsync(nextPageRoute);
         }
-        public async void DisplayAlert()
+        public async Task DisplayAlertAsync()
         {
             if (!alertControl)
             {
@@ -470,7 +470,7 @@ namespace Digitavox.ViewModels
                 await navigationService.GoToAsync(AppRoute.Alert);
             }
         }
-        public async void DismissAlert()
+        public async Task DismissAlertAsync()
         {
             if (alertControl)
             {
@@ -482,7 +482,7 @@ namespace Digitavox.ViewModels
         {
             return alertControl;
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
             lastLineIsText = false;
             
@@ -515,7 +515,7 @@ namespace Digitavox.ViewModels
             speakFromHelp = helpNumber;
             if (pageRouteStack[pageRouteStack.Count - 1] == route)
             {
-                NavigateBack();
+                _ = NavigateBackAsync();
             }
         }
         public int GetUpdateSpeakFromHelp()
@@ -588,7 +588,7 @@ namespace Digitavox.ViewModels
             }
             else if (code == "Escape") 
             {
-                NavigateBack();
+                _ = NavigateBackAsync();
             }
             else
             {

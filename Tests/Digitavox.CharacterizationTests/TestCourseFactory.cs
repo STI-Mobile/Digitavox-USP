@@ -1,13 +1,17 @@
 using System.Text.Json;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.CharacterizationTests;
 
 internal static class TestCourseFactory
 {
+    public static int CourseCatalogLoadCalls { get; private set; }
+
     public static Course CreateSelectedCourse(int totalLessons = 2)
     {
+        CourseCatalogLoadCalls = 0;
         string json = $$"""
         {
           "CURSO": {
@@ -32,14 +36,30 @@ internal static class TestCourseFactory
         """;
 
         JsonElement root = JsonDocument.Parse(json).RootElement.Clone();
-        DVPersistence.CourseFiles = (
+        CourseCatalogData catalog = new(
             new List<JsonElement> { root },
             new List<string> { "curso-teste.json" },
             new List<string> { "Curso de caracterização" });
 
-        Course course = new();
+        Course course = new(new TestCourseCatalogStore(catalog));
         course.GetCoursesLists();
         course.SelectCourse(0);
         return course;
+    }
+
+    private sealed class TestCourseCatalogStore : ICourseCatalogStore
+    {
+        private readonly CourseCatalogData catalog;
+
+        public TestCourseCatalogStore(CourseCatalogData catalog)
+        {
+            this.catalog = catalog;
+        }
+
+        public CourseCatalogData Load()
+        {
+            CourseCatalogLoadCalls++;
+            return catalog;
+        }
     }
 }

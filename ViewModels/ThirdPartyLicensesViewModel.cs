@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 using System.Text;
 
@@ -94,7 +95,7 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
         }
 
         SpeakIntroduction();
-        WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
     }
 
     private static bool TrySplitNotice(

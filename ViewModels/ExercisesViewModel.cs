@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
 using Digitavox.Presentation.Input;
 using System;
 
@@ -150,7 +151,7 @@ namespace Digitavox.ViewModels
                     courseLesson.ContinueTimer();
                 });
             }
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
 
         }
         public void BeginExercise()
@@ -179,7 +180,7 @@ namespace Digitavox.ViewModels
                     appEnvironment.RunOnMainThread(() =>
                     {
                         dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
-                        dVViewModelFunctions.GoToNextPage();
+                        _ = dVViewModelFunctions.GoToNextPageAsync();
                     });
                 });
             });
@@ -352,7 +353,7 @@ namespace Digitavox.ViewModels
                 appEnvironment.RunOnMainThread(() =>
                 {
                     endLesson = false;
-                    dVViewModelFunctions.GoToNextPage();
+                    _ = dVViewModelFunctions.GoToNextPageAsync();
                 });
                 
             });

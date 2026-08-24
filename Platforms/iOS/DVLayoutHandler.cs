@@ -20,6 +20,7 @@ using UIKit;
 using Digitavox.Models;
 using Digitavox.ViewModels;
 using Digitavox.Helpers;
+using Digitavox.Core.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Platforms.iOS;
 
@@ -39,14 +40,11 @@ namespace Digitavox.PlatformsImplementations
 
 public class DVLayoutView : LayoutView {
 
-  WeakReferenceMessenger dvMessenger;
-
   public DVLayoutView() {
     this.BecomeFirstResponder();
 
-    WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-      if (m.Value == "BecomeFirstResponder")
-        this.BecomeFirstResponder();
+    WeakReferenceMessenger.Default.Register<RequestFirstResponderMessage>(this, (r, m) => {
+      this.BecomeFirstResponder();
     });
   }
 
