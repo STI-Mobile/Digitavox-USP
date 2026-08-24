@@ -92,6 +92,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <!-- Test projects live below the repository root and must not be compiled into the MAUI app. -->
+	  <Compile Remove="Tests\**\*.cs" />
+	  <EmbeddedResource Remove="Tests\**\*" />
+	  <MauiAsset Remove="Tests\**\*" />
+	  <None Remove="Tests\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Resources\Raw\dedos.json" />
 	  <None Remove="Resources\Raw\dedos_teclas.json" />
 	  <None Remove="Resources\Raw\ios_keys_to_android.json" />

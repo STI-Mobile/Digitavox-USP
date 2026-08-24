@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.3.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../../Models/Course.cs" Link="Production/Models/Course.cs" />
+    <Compile Include="../../Models/CourseLesson.cs" Link="Production/Models/CourseLesson.cs" />
+    <Compile Include="../../Models/CourseLessonBean.cs" Link="Production/Models/CourseLessonBean.cs" />
+    <Compile Include="../../Models/FingerMapping.cs" Link="Production/Models/FingerMapping.cs" />
+    <Compile Include="../../Models/FingerMappingBean.cs" Link="Production/Models/FingerMappingBean.cs" />
+    <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../Resources/Raw/Fingers.json" Link="Fixtures/Fingers.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../Resources/Raw/Keys2Fingers.json" Link="Fixtures/Keys2Fingers.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../Resources/Raw/KeysIos2Android.json" Link="Fixtures/KeysIos2Android.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../Resources/Raw/KeysWindows2Android.json" Link="Fixtures/KeysWindows2Android.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
