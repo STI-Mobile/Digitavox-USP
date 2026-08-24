@@ -1,4 +1,5 @@
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Digitavox.CharacterizationTests;
@@ -93,5 +94,60 @@ public class CourseLessonCharacterizationTests
         CourseLesson lesson = new();
 
         Assert.AreEqual(expected, lesson.TimeDisplay(seconds));
+    }
+
+    [TestMethod]
+    public void Pause_and_resume_use_domain_time_without_counting_background_time()
+    {
+        FakeClock clock = new(new DateTime(2026, 8, 24, 10, 0, 0));
+        FakeExerciseTimer timer = new();
+        CourseLesson lesson = new(timer, clock);
+        lesson.SetLessonChars(
+            new List<string> { "a" },
+            exerciseRepetitions: 1,
+            secondsPerChar: 10,
+            targetPercent: 100,
+            timeDivider: 1,
+            spellingActive: true,
+            ignoreLetterCase: false);
+        lesson.StartTimer(() => { });
+
+        lesson.ContinueTimer();
+        clock.Advance(TimeSpan.FromSeconds(3));
+        lesson.PauseTimer();
+        clock.Advance(TimeSpan.FromSeconds(10));
+        lesson.ContinueTimer();
+
+        Assert.AreEqual(3, lesson.GetStatistics().practiceTime);
+        Assert.AreEqual(TimeSpan.FromSeconds(17), timer.Interval);
+        Assert.AreEqual(2, timer.StartCalls);
+    }
+
+    private sealed class FakeClock : IClock
+    {
+        public FakeClock(DateTime now)
+        {
+            Now = now;
+        }
+
+        public DateTime Now { get; private set; }
+
+        public void Advance(TimeSpan interval) => Now += interval;
+    }
+
+    private sealed class FakeExerciseTimer : IExerciseTimer
+    {
+        public TimeSpan Interval { get; private set; }
+        public int StartCalls { get; private set; }
+
+        public void Start(TimeSpan interval, Action elapsed)
+        {
+            Interval = interval;
+            StartCalls++;
+        }
+
+        public void Stop()
+        {
+        }
     }
 }

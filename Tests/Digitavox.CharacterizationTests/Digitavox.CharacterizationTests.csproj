@@ -22,10 +22,16 @@
     <Compile Include="../../Models/FingerMappingBean.cs" Link="Production/Models/FingerMappingBean.cs" />
     <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
     <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/IAppEnvironment.cs" />
+    <Compile Include="../../Application/Abstractions/IClock.cs" Link="Production/Application/IClock.cs" />
+    <Compile Include="../../Application/Abstractions/IExerciseTimer.cs" Link="Production/Application/IExerciseTimer.cs" />
+    <Compile Include="../../Application/Abstractions/ISettingsService.cs" Link="Production/Application/ISettingsService.cs" />
+    <Compile Include="../../Application/Abstractions/IUserProgressStore.cs" Link="Production/Application/IUserProgressStore.cs" />
     <Compile Include="../../Application/Abstractions/ISpeechTextFormatter.cs" Link="Production/Application/ISpeechTextFormatter.cs" />
     <Compile Include="../../Presentation/Text/SpeechTextFormatter.cs" Link="Production/Presentation/SpeechTextFormatter.cs" />
     <Compile Include="../../Presentation/Input/KeyboardInputState.cs" Link="Production/Presentation/KeyboardInputState.cs" />
     <Compile Include="../../Presentation/Input/KeyboardInputProcessor.cs" Link="Production/Presentation/KeyboardInputProcessor.cs" />
+    <Compile Include="../../Domain/Time/PassiveExerciseTimer.cs" Link="Production/Domain/PassiveExerciseTimer.cs" />
+    <Compile Include="../../Domain/Time/SystemClock.cs" Link="Production/Domain/SystemClock.cs" />
   </ItemGroup>
 
   <ItemGroup>

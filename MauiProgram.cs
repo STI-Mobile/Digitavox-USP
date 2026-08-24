@@ -30,6 +30,9 @@ using Digitavox.Presentation.Text;
 using Digitavox.Presentation.State;
 using Digitavox.Infrastructure.Audio;
 using Digitavox.Presentation.Input;
+using Digitavox.Domain.Time;
+using Digitavox.Infrastructure.Time;
+using Digitavox.Infrastructure.Persistence;
 
 namespace Digitavox;
 
@@ -44,6 +47,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<FingerMapping>();
         builder.Services.AddSingleton<UserProgress>();
         builder.Services.AddSingleton<ISettingsService, MauiSettingsService>();
+        builder.Services.AddSingleton<IClock, SystemClock>();
+        builder.Services.AddSingleton<IExerciseTimer, MauiExerciseTimer>();
+        builder.Services.AddSingleton<IUserProgressStore, MauiUserProgressStore>();
         builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
         builder.Services.AddSingleton<ISpeechService, MauiSpeechService>();
         builder.Services.AddSingleton<IAppEnvironment, MauiAppEnvironment>();

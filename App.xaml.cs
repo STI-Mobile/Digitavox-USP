@@ -19,16 +19,19 @@ using Digitavox.Views;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Digitavox.Core.Abstractions;
+using Digitavox.Models;
 
 namespace Digitavox;
 
 public partial class App : Application
 {
     private readonly AppShell appShell;
+    private readonly CourseLesson courseLesson;
 
-	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions, ICurrentPageContext currentPageContext)
+	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions, ICurrentPageContext currentPageContext, CourseLesson courseLesson)
 	{
 		this.appShell = appShell;
+		this.courseLesson = courseLesson;
 		InitializeComponent();
 
         WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => 
@@ -73,26 +76,32 @@ public partial class App : Application
         window.Created += async (s, e) =>
         {
             await appShell.InitializeAsync();
+            this.courseLesson.ContinueTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowCreated"));
         };
         window.Activated += (s, e) =>
         {
+            this.courseLesson.ContinueTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowActivated"));
         };
         window.Deactivated += (s, e) =>
         {
+            this.courseLesson.PauseTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowDeactivated"));
         };
         window.Stopped += (s, e) =>
         {
+            this.courseLesson.PauseTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowStopped"));
         };
         window.Resumed += (s, e) =>
         {
+            this.courseLesson.ContinueTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowResumed"));
         };
         window.Destroying += (s, e) =>
         {
+            this.courseLesson.PauseTimer();
             WeakReferenceMessenger.Default.Send(new DVMessage("WindowDestroying"));
         };
         return window;

@@ -1,5 +1,6 @@
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Digitavox.CharacterizationTests;
@@ -18,7 +19,7 @@ public class UserProgressCharacterizationTests
     public void New_user_is_normalized_and_becomes_registered_after_first_save()
     {
         Course course = TestCourseFactory.CreateSelectedCourse();
-        UserProgress progress = new(new CourseLesson(), course);
+        UserProgress progress = CreateProgress(new CourseLesson(), course);
 
         progress.UserRegistration("ana");
 
@@ -47,13 +48,25 @@ public class UserProgressCharacterizationTests
             ["type"] = "USUARIO",
             [course.CourseId()] = courseProgress
         });
-        UserProgress progress = new(new CourseLesson(), course);
+        UserProgress progress = CreateProgress(new CourseLesson(), course);
 
         progress.UserRegistration("bia");
         progress.CourseRegistration(course.CourseId());
 
         Assert.IsFalse(progress.FirstLogin());
         Assert.AreEqual(2, progress.LastAvailableLesson());
+    }
+
+    [TestMethod]
+    public void Logout_clears_the_active_user_session()
+    {
+        Course course = TestCourseFactory.CreateSelectedCourse();
+        UserProgress progress = CreateProgress(new CourseLesson(), course);
+        progress.UserRegistration("ana");
+
+        progress.UserLogout();
+
+        Assert.IsFalse(progress.UserLogged());
     }
 
     [TestMethod]
@@ -74,7 +87,7 @@ public class UserProgressCharacterizationTests
         lesson.CharPressed(" ");
         lesson.StopTimer();
 
-        UserProgress progress = new(lesson, course);
+        UserProgress progress = CreateProgress(lesson, course);
         progress.UserRegistration("caio");
         progress.NewProgress();
         progress.CourseRegistration(course.CourseId());
@@ -95,5 +108,27 @@ public class UserProgressCharacterizationTests
         Assert.AreEqual(1, savedCourse["ULTIMACONCLUIDA"]);
         Assert.AreEqual(2, progress.LastAvailableLesson());
         Assert.AreEqual("Sim", progress.LessonConcluded());
+    }
+
+    private static UserProgress CreateProgress(CourseLesson lesson, Course course) =>
+        new(lesson, course, new TestUserProgressStore(), new TestSettingsService());
+
+    private sealed class TestUserProgressStore : IUserProgressStore
+    {
+        public Dictionary<string, object> Load(string userName) =>
+            DVPersistence.LoadUserData(userName);
+
+        public void Save(Dictionary<string, object> userData) =>
+            DVPersistence.SaveUserJson(userData);
+    }
+
+    private sealed class TestSettingsService : ISettingsService
+    {
+        public double DefaultFontSize => 14;
+        public T Get<T>(string key) => DVPersistence.Get<T>(key);
+        public void Set<T>(string key, T value) => DVPersistence.SetSetting(key, value);
+        public void ResetDefaults()
+        {
+        }
     }
 }
