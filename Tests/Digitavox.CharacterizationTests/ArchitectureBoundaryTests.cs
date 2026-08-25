@@ -170,6 +170,35 @@ public sealed class ArchitectureBoundaryTests
     }
 
     [TestMethod]
+    public void StartupResolvesDestinationBeforeCreatingAppShell()
+    {
+        string appSource = File.ReadAllText(Path.Combine(RepositoryRoot.Value, "App.xaml.cs"));
+        string shellSource = File.ReadAllText(Path.Combine(RepositoryRoot.Value, "AppShell.xaml.cs"));
+        string shellMarkup = File.ReadAllText(Path.Combine(RepositoryRoot.Value, "AppShell.xaml"));
+
+        int initializeIndex = appSource.IndexOf(
+            "await appStartupService.InitializeAsync()",
+            StringComparison.Ordinal);
+        int shellCreationIndex = appSource.IndexOf(
+            "new AppShell(destination)",
+            StringComparison.Ordinal);
+
+        Assert.IsTrue(
+            appSource.Contains("new Window(new StartupView())", StringComparison.Ordinal),
+            "A janela deve iniciar com uma View transitória enquanto o startup assíncrono executa.");
+        Assert.IsTrue(initializeIndex >= 0, "O startup assíncrono deve ser executado pela composição do App.");
+        Assert.IsTrue(
+            shellCreationIndex > initializeIndex,
+            "O AppShell só deve ser criado depois que o destino inicial for resolvido.");
+        Assert.IsFalse(
+            shellSource.Contains("new ContentPage()", StringComparison.Ordinal),
+            "O AppShell não deve voltar a materializar uma página vazia como placeholder.");
+        Assert.IsFalse(
+            shellMarkup.Contains("{Binding FirstView}", StringComparison.Ordinal),
+            "O conteúdo inicial do Shell não deve depender de um DataTemplate mutável.");
+    }
+
+    [TestMethod]
     public void KeyboardInputContractBelongsToPresentationLayer()
     {
         string contract = Path.Combine(RepositoryRoot.Value, "Presentation", "Input", "IKeyboardInputHandler.cs");

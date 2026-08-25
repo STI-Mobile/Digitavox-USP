@@ -58,7 +58,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<ICurrentPageContext, CurrentPageContext>();
         builder.Services.AddSingleton<IFeedbackSoundService, MauiFeedbackSoundService>();
         builder.Services.AddTransient<KeyboardInputProcessor>();
-        builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<DVViewModelSpeak>();
         builder.Services.AddSingleton<DVViewModelFunctions>();
         builder.Services.AddTransient<ConfigViewModel>();

@@ -17,23 +17,33 @@ using Digitavox.ViewModels;
 using Digitavox.Core.Abstractions;
 using Digitavox.Models;
 using Digitavox.Core.Messages;
+using Digitavox.Views;
+using Microsoft.Extensions.Logging;
 
 namespace Digitavox;
 
 public partial class App : Application
 {
-    private readonly AppShell appShell;
+    private readonly IAppStartupService appStartupService;
     private readonly CourseLesson courseLesson;
     private readonly DVViewModelSpeak dVViewModelSpeak;
     private readonly ICurrentPageContext currentPageContext;
+    private readonly ILogger<App> logger;
 
-	public App(AppShell appShell, DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions, ICurrentPageContext currentPageContext, CourseLesson courseLesson)
-	{
-		this.appShell = appShell;
-		this.courseLesson = courseLesson;
-		this.dVViewModelSpeak = dVViewModelSpeak;
-		this.currentPageContext = currentPageContext;
-		InitializeComponent();
+    public App(
+        IAppStartupService appStartupService,
+        DVViewModelSpeak dVViewModelSpeak,
+        DVViewModelFunctions dVViewModelFunctions,
+        ICurrentPageContext currentPageContext,
+        CourseLesson courseLesson,
+        ILogger<App> logger)
+    {
+        this.appStartupService = appStartupService;
+        this.courseLesson = courseLesson;
+        this.dVViewModelSpeak = dVViewModelSpeak;
+        this.currentPageContext = currentPageContext;
+        this.logger = logger;
+        InitializeComponent();
 
         WeakReferenceMessenger.Default.Register<ShowSpeechCompatibilityAlertMessage>(this, (r, m) =>
         {
@@ -48,15 +58,14 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState activationState)
     {
-        Window window = new Window(appShell);
-        window.Created += async (s, e) =>
-        {
-            await appShell.InitializeAsync();
-            this.courseLesson.ContinueTimer();
-        };
+        Window window = new Window(new StartupView());
+        window.Created += OnWindowCreated;
         window.Activated += (s, e) =>
         {
-            this.courseLesson.ContinueTimer();
+            if (window.Page is AppShell)
+            {
+                this.courseLesson.ContinueTimer();
+            }
         };
         window.Deactivated += (s, e) =>
         {
@@ -71,6 +80,11 @@ public partial class App : Application
         };
         window.Resumed += (s, e) =>
         {
+            if (window.Page is not AppShell)
+            {
+                return;
+            }
+
             this.courseLesson.ContinueTimer();
             string currentPageMessage = $"Você está {this.currentPageContext.Identifier}";
             this.dVViewModelSpeak.Skip();
@@ -81,6 +95,30 @@ public partial class App : Application
             this.courseLesson.PauseTimer();
         };
         return window;
+    }
+
+    private async void OnWindowCreated(object sender, EventArgs e)
+    {
+        if (sender is not Window window)
+        {
+            return;
+        }
+
+        try
+        {
+            AppStartupDestination destination = await appStartupService.InitializeAsync();
+            window.Page = new AppShell(destination);
+            courseLesson.ContinueTimer();
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Falha ao inicializar o aplicativo.");
+
+            if (window.Page is StartupView startupView)
+            {
+                startupView.ShowInitializationError();
+            }
+        }
     }
 
 }

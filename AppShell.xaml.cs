@@ -19,28 +19,14 @@ namespace Digitavox;
 
 public partial class AppShell : Shell
 {
-    private readonly IAppStartupService appStartupService;
-    private DataTemplate _firstView;
-
-    public DataTemplate FirstView
+    public AppShell(AppStartupDestination initialDestination)
     {
-        get { return _firstView; }
-        set
-        {
-            if (_firstView != value)
-            {
-                _firstView = value;
-                OnPropertyChanged(nameof(FirstView));
-            }
-        }
-    }
-
-    public AppShell(IAppStartupService appStartupService)
-	{
-        this.appStartupService = appStartupService;
         InitializeComponent();
-        FirstView = new DataTemplate(() => new ContentPage());
-        BindingContext = this;
+
+        Type initialViewType = initialDestination == AppStartupDestination.Login
+            ? typeof(LoginView)
+            : typeof(TutorialView);
+        MainContent.ContentTemplate = new DataTemplate(initialViewType);
 
         Routing.RegisterRoute(AppRoute.Alert.ToString(), typeof(AlertView));
         Routing.RegisterRoute(AppRoute.Tutorial.ToString(), typeof(TutorialView));
@@ -59,14 +45,5 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(AppRoute.SecondHelp.ToString(), typeof(SecondHelpView));
         Routing.RegisterRoute(AppRoute.PrivacyPolicy.ToString(), typeof(PrivacyPolicyView));
         Routing.RegisterRoute(AppRoute.ThirdPartyLicenses.ToString(), typeof(ThirdPartyLicensesView));
-    }
-
-    public async Task InitializeAsync()
-    {
-        AppStartupDestination destination = await appStartupService.InitializeAsync();
-        Type firstViewType = destination == AppStartupDestination.Login
-            ? typeof(LoginView)
-            : typeof(TutorialView);
-        FirstView = new DataTemplate(firstViewType);
     }
 }
