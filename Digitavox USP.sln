@@ -4,6 +4,10 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digitavox", "Digitavox.csproj", "{D9597649-C57B-D375-CC99-94413CF97D9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digitavox.CharacterizationTests", "Tests\Digitavox.CharacterizationTests\Digitavox.CharacterizationTests.csproj", "{A2A09147-9B23-42BB-99F3-6277FE41CE16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digitavox.PersistenceCharacterizationTests", "Tests\Digitavox.PersistenceCharacterizationTests\Digitavox.PersistenceCharacterizationTests.csproj", "{C8523D7E-44FC-42D6-B4E4-73B71BB0EFF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +18,14 @@ Global
 		{D9597649-C57B-D375-CC99-94413CF97D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9597649-C57B-D375-CC99-94413CF97D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9597649-C57B-D375-CC99-94413CF97D9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2A09147-9B23-42BB-99F3-6277FE41CE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A09147-9B23-42BB-99F3-6277FE41CE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A09147-9B23-42BB-99F3-6277FE41CE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A09147-9B23-42BB-99F3-6277FE41CE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8523D7E-44FC-42D6-B4E4-73B71BB0EFF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8523D7E-44FC-42D6-B4E4-73B71BB0EFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8523D7E-44FC-42D6-B4E4-73B71BB0EFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8523D7E-44FC-42D6-B4E4-73B71BB0EFF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

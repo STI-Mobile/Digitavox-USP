@@ -13,119 +13,112 @@
 // limitations under the License.
 
 using CommunityToolkit.Mvvm.Messaging;
-using Digitavox.Helpers;
 using Digitavox.ViewModels;
+using Digitavox.Core.Abstractions;
+using Digitavox.Models;
+using Digitavox.Core.Messages;
 using Digitavox.Views;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
+using Microsoft.Extensions.Logging;
 
 namespace Digitavox;
 
 public partial class App : Application
 {
-	public App(DVViewModelSpeak dVViewModelSpeak, DVViewModelFunctions dVViewModelFunctions)
-	{
-		InitializeComponent();
+    private readonly IAppStartupService appStartupService;
+    private readonly CourseLesson courseLesson;
+    private readonly DVViewModelSpeak dVViewModelSpeak;
+    private readonly ICurrentPageContext currentPageContext;
+    private readonly ILogger<App> logger;
 
-        WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => 
-        {
-            if (m.Value == "WindowStopped")
-            {
-            #if __ANDROID__
-                dVViewModelSpeak.Skip();
-            #endif
-            
-
-            }
-            else if (m.Value == "WindowResumed")
-            {
-                string currentPageMessage = $"Você está {dVViewModelFunctions.CurrentPageIdentifier()}";
-                dVViewModelSpeak.Skip();
-                dVViewModelSpeak.Speak(currentPageMessage, () => { });
-            }
-            if (m.Value == "DisplayAlertDialog")
-            {
-                dVViewModelSpeak.Skip();
-                
-                dVViewModelFunctions.DisplayAlert();
-            }
-            else if (m.Value == "DismissAlertDialog")
-            {
-                dVViewModelFunctions.DismissAlert();
-            }
-        });
-
-        
-
-    }
-    
-    
-    
-    
-    
-    protected override Window CreateWindow(IActivationState? activationState)
+    public App(
+        IAppStartupService appStartupService,
+        DVViewModelSpeak dVViewModelSpeak,
+        DVViewModelFunctions dVViewModelFunctions,
+        ICurrentPageContext currentPageContext,
+        CourseLesson courseLesson,
+        ILogger<App> logger)
     {
-        Window window = new Window(new AppShell());
-        window.Created += (s, e) =>
+        this.appStartupService = appStartupService;
+        this.courseLesson = courseLesson;
+        this.dVViewModelSpeak = dVViewModelSpeak;
+        this.currentPageContext = currentPageContext;
+        this.logger = logger;
+        InitializeComponent();
+
+        WeakReferenceMessenger.Default.Register<ShowSpeechCompatibilityAlertMessage>(this, (r, m) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowCreated"));
-        };
+            this.dVViewModelSpeak.Skip();
+            _ = dVViewModelFunctions.DisplayAlertAsync();
+        });
+        WeakReferenceMessenger.Default.Register<HideSpeechCompatibilityAlertMessage>(this, (r, m) =>
+        {
+            _ = dVViewModelFunctions.DismissAlertAsync();
+        });
+    }
+
+    protected override Window CreateWindow(IActivationState activationState)
+    {
+        Window window = new Window(new StartupView());
+        window.Created += OnWindowCreated;
         window.Activated += (s, e) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowActivated"));
+            if (window.Page is AppShell)
+            {
+                this.courseLesson.ContinueTimer();
+            }
         };
         window.Deactivated += (s, e) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowDeactivated"));
+            this.courseLesson.PauseTimer();
         };
         window.Stopped += (s, e) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowStopped"));
+            this.courseLesson.PauseTimer();
+#if __ANDROID__
+            dVViewModelSpeak.Skip();
+#endif
         };
         window.Resumed += (s, e) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowResumed"));
+            if (window.Page is not AppShell)
+            {
+                return;
+            }
+
+            this.courseLesson.ContinueTimer();
+            string currentPageMessage = $"Você está {this.currentPageContext.Identifier}";
+            this.dVViewModelSpeak.Skip();
+            this.dVViewModelSpeak.Speak(currentPageMessage, () => { });
         };
         window.Destroying += (s, e) =>
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("WindowDestroying"));
+            this.courseLesson.PauseTimer();
         };
         return window;
     }
 
-    private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+    private async void OnWindowCreated(object sender, EventArgs e)
     {
-        Dispatcher.Dispatch(() =>
+        if (sender is not Window window)
         {
-            var theme = e.RequestedTheme;
-            if (theme == AppTheme.Dark)
+            return;
+        }
+
+        try
+        {
+            AppStartupDestination destination = await appStartupService.InitializeAsync();
+            window.Page = new AppShell(destination);
+            courseLesson.ContinueTimer();
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Falha ao inicializar o aplicativo.");
+
+            if (window.Page is StartupView startupView)
             {
-                Resources["DynamicTextColor"] = Resources["TextColorDark"];
+                startupView.ShowInitializationError();
             }
-            else
-            {
-                Resources["DynamicTextColor"] = Resources["TextColorLight"];
-            }
-        });
-    }
-
-    protected override void OnStart()
-    {
-        base.OnStart();
-    }
-
-    
-    protected override void OnSleep()
-    {
-        base.OnSleep();
-        
-    }
-
-    
-    protected override void OnResume()
-    {
-        base.OnResume();
-        
+        }
     }
 
 }

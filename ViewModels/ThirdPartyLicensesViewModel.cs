@@ -16,11 +16,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 using System.Text;
 
 namespace Digitavox.ViewModels;
 
-public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyPress
+public partial class ThirdPartyLicensesViewModel : ObservableObject, IKeyboardInputHandler
 {
     private const string NoticesFileName = "THIRD-PARTY-NOTICES.txt";
     private const string SectionSeparator = "============================================================";
@@ -28,8 +31,9 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
 
     private readonly DVViewModelFunctions dVViewModelFunctions;
     private readonly DVViewModelSpeak dVViewModelSpeak;
-    private readonly FingerMapping fingerMapping;
-    private readonly List<string> pressedKeys = new();
+    private readonly KeyboardInputProcessor keyboardInputProcessor;
+    private readonly ISettingsService settingsService;
+    private readonly IAppEnvironment appEnvironment;
     private bool isLoaded;
     private List<string> introductionParagraphs = new();
 
@@ -45,18 +49,22 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
     public ThirdPartyLicensesViewModel(
         DVViewModelFunctions dVViewModelFunctions,
         DVViewModelSpeak dVViewModelSpeak,
-        FingerMapping fingerMapping)
+        KeyboardInputProcessor keyboardInputProcessor,
+        ISettingsService settingsService,
+        IAppEnvironment appEnvironment)
     {
         this.dVViewModelFunctions = dVViewModelFunctions;
         this.dVViewModelSpeak = dVViewModelSpeak;
-        this.fingerMapping = fingerMapping;
+        this.keyboardInputProcessor = keyboardInputProcessor;
+        this.settingsService = settingsService;
+        this.appEnvironment = appEnvironment;
     }
 
     public async Task LoadAsync()
     {
         dVViewModelFunctions.SetCurrentPageIdentifier("na tela de licenças de terceiros");
         dVViewModelFunctions.ClearHelpOptions();
-        TextSize = DVPersistence.Get<double>("fontSize");
+        TextSize = settingsService.Get<double>("fontSize");
         if (!isLoaded)
         {
             try
@@ -87,7 +95,7 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
         }
 
         SpeakIntroduction();
-        WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
     }
 
     private static bool TrySplitNotice(
@@ -169,23 +177,16 @@ public partial class ThirdPartyLicensesViewModel : ObservableObject, IOnPageKeyP
 
     public bool OnPageKeyDown(int keyCode)
     {
-        string code = fingerMapping.mapKeyCode(keyCode);
-        if (!pressedKeys.Contains(code))
-        {
-            pressedKeys.Add(code);
-        }
-
-        return true;
+        return keyboardInputProcessor.KeyDown(keyCode);
     }
 
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-        var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+        var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
         if (bean.code is not null)
         {
             dVViewModelSpeak.Skip();
-            if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+            if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
             {
                 NavigateBack();
             }

@@ -17,9 +17,10 @@ using Foundation;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using UIKit;
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 using Digitavox.Helpers;
+using Digitavox.Core.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 
 namespace Digitavox.PlatformsImplementations
@@ -38,14 +39,11 @@ namespace Digitavox.PlatformsImplementations
 
 public class DVLayoutView : LayoutView {
 
-  WeakReferenceMessenger dvMessenger;
-
   public DVLayoutView() {
     this.BecomeFirstResponder();
 
-    WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-      if (m.Value == "BecomeFirstResponder")
-        this.BecomeFirstResponder();
+    WeakReferenceMessenger.Default.Register<RequestFirstResponderMessage>(this, (r, m) => {
+      this.BecomeFirstResponder();
     });
   }
 
@@ -96,8 +94,8 @@ public class DVLayoutView : LayoutView {
     
 
     Page p = Shell.Current.CurrentPage;
-    if (p is IOnPageKeyPress) {
-      bool handled = (p as IOnPageKeyPress).OnPageKeyPress(keyCode, keyModifiers);
+    if (p is IKeyboardInputHandler inputHandler) {
+      bool handled = inputHandler.OnPageKeyPress(keyCode, keyModifiers);
       if (!handled)
         base.PressesCancelled(presses, evt);
     } else

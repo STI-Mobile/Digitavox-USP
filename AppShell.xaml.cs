@@ -12,67 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Helpers;
+using Digitavox.Core.Abstractions;
 using Digitavox.Views;
-using System.ComponentModel;
-using System.IO.IsolatedStorage;
 
 namespace Digitavox;
 
-public partial class AppShell : Shell, INotifyPropertyChanged
+public partial class AppShell : Shell
 {
-    private DataTemplate _firstView;
-
-    public DataTemplate FirstView
+    public AppShell(AppStartupDestination initialDestination)
     {
-        get { return _firstView; }
-        set
-        {
-            if (_firstView != value)
-            {
-                _firstView = value;
-                OnPropertyChanged(nameof(FirstView));
-            }
-        }
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    public AppShell()
-	{
         InitializeComponent();
 
-        if (DVPersistence.CourseDirectoryExists())
-        {
-            FirstView = new DataTemplate(typeof(LoginView));
-        }
-        else
-        {
-            DVPersistence.CopyCourseFiles();
-            FirstView = new DataTemplate(typeof(TutorialView));
-        }
-        BindingContext = this;
+        Type initialViewType = initialDestination == AppStartupDestination.Login
+            ? typeof(LoginView)
+            : typeof(TutorialView);
+        MainContent.ContentTemplate = new DataTemplate(initialViewType);
 
-        Routing.RegisterRoute("Alert", typeof(AlertView));
-        Routing.RegisterRoute("Tutorial", typeof(TutorialView));
-        Routing.RegisterRoute("Login", typeof(LoginView));
-        Routing.RegisterRoute("Menu", typeof(MenuView));
-        Routing.RegisterRoute("Keyboard", typeof(KeyboardView));
-        Routing.RegisterRoute("Courses", typeof(CoursesView));
-        Routing.RegisterRoute("CoursesHelp", typeof(CoursesHelpView));
-        Routing.RegisterRoute("Lessons", typeof(LessonsView));
-        Routing.RegisterRoute("LessonsHelp", typeof(LessonsHelpView));
-        Routing.RegisterRoute("Exercises", typeof(ExercisesView));
-        Routing.RegisterRoute("ExercisesHelp", typeof(ExercisesHelpView));
-        Routing.RegisterRoute("ExercisesStatistics", typeof(ExercisesStatisticsView));
-        Routing.RegisterRoute("UserOptions", typeof(UserOptionsView));
-        Routing.RegisterRoute("Config", typeof(ConfigView));
-        Routing.RegisterRoute("SecondHelp", typeof(SecondHelpView));
-        Routing.RegisterRoute("PrivacyPolicy", typeof(PrivacyPolicyView));
-        Routing.RegisterRoute("ThirdPartyLicenses", typeof(ThirdPartyLicensesView));
+        Routing.RegisterRoute(AppRoute.Alert.ToString(), typeof(AlertView));
+        Routing.RegisterRoute(AppRoute.Tutorial.ToString(), typeof(TutorialView));
+        Routing.RegisterRoute(AppRoute.Login.ToString(), typeof(LoginView));
+        Routing.RegisterRoute(AppRoute.Menu.ToString(), typeof(MenuView));
+        Routing.RegisterRoute(AppRoute.Keyboard.ToString(), typeof(KeyboardView));
+        Routing.RegisterRoute(AppRoute.Courses.ToString(), typeof(CoursesView));
+        Routing.RegisterRoute(AppRoute.CoursesHelp.ToString(), typeof(CoursesHelpView));
+        Routing.RegisterRoute(AppRoute.Lessons.ToString(), typeof(LessonsView));
+        Routing.RegisterRoute(AppRoute.LessonsHelp.ToString(), typeof(LessonsHelpView));
+        Routing.RegisterRoute(AppRoute.Exercises.ToString(), typeof(ExercisesView));
+        Routing.RegisterRoute(AppRoute.ExercisesHelp.ToString(), typeof(ExercisesHelpView));
+        Routing.RegisterRoute(AppRoute.ExercisesStatistics.ToString(), typeof(ExercisesStatisticsView));
+        Routing.RegisterRoute(AppRoute.UserOptions.ToString(), typeof(UserOptionsView));
+        Routing.RegisterRoute(AppRoute.Config.ToString(), typeof(ConfigView));
+        Routing.RegisterRoute(AppRoute.SecondHelp.ToString(), typeof(SecondHelpView));
+        Routing.RegisterRoute(AppRoute.PrivacyPolicy.ToString(), typeof(PrivacyPolicyView));
+        Routing.RegisterRoute(AppRoute.ThirdPartyLicenses.ToString(), typeof(ThirdPartyLicensesView));
     }
 }

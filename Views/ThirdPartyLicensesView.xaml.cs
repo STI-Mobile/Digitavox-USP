@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 
 namespace Digitavox.Views;
 
-public partial class ThirdPartyLicensesView : ContentPage, IOnPageKeyPress
+public partial class ThirdPartyLicensesView : ContentPage, IKeyboardInputHandler
 {
+    private ThirdPartyLicensesViewModel ViewModel => (ThirdPartyLicensesViewModel)BindingContext;
+
     public ThirdPartyLicensesView(ThirdPartyLicensesViewModel viewModel)
     {
         InitializeComponent();
@@ -27,17 +29,17 @@ public partial class ThirdPartyLicensesView : ContentPage, IOnPageKeyPress
 
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((ThirdPartyLicensesViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
 
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((ThirdPartyLicensesViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await ((ThirdPartyLicensesViewModel)BindingContext).LoadAsync();
+        await ViewModel.LoadAsync();
     }
 }

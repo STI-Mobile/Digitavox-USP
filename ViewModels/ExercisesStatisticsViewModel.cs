@@ -15,12 +15,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesStatisticsViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesStatisticsViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         private int instructionLines = 1;
         private int lessonNumber;
         List<string> pageKeyCodes;
@@ -33,37 +34,46 @@ namespace Digitavox.ViewModels
         private Course course;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
         private CourseLesson courseLesson;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public ExercisesStatisticsViewModel(Course course,
                                             DVViewModelSpeak dVViewModelSpeak,
                                             DVViewModelFunctions dVViewModelFunctions,
-                                            FingerMapping fingerMapping,
+                                            KeyboardInputProcessor keyboardInputProcessor,
                                             UserProgress userProgress,
-                                            CourseLesson courseLesson)
+                                            CourseLesson courseLesson,
+                                            ISettingsService settingsService,
+                                            INavigationService navigationService,
+                                            IAppEnvironment appEnvironment)
         {
             this.course = course;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
             this.courseLesson = courseLesson;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab"
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("na tela de estatísticas de exercícios");
-            Thread.Sleep(100);
+            await Task.Delay(100);
             dVViewModelFunctions.ClearHelpOptions();
             dVViewModelFunctions.SetFirstOptionLineNumber(1);
             dVViewModelFunctions.SetOptionNumberStart(0);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 string instructionsText = userProgress.ConsultingOldLesson() ? "Escape volta." : "Aperte enter para fazer a próxima lição disponível. Escape volta para o menu de lições.";
                 string instructionsSpeech = userProgress.ConsultingOldLesson() ? "Esqueipe volta." : "Aperte êmter para fazer a próxima lição disponível. Esqueipe volta para o menu de lições.";
@@ -145,7 +155,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             lessonNumber = userProgress.LastAvailableLesson();
@@ -155,44 +165,38 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetOptionNumberStart(instructionLines - 1);
             dVViewModelSpeak.SpeakAll();
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
-            string backRoute = userProgress.ConsultingOldLesson() ? ".." : "../..";
-            await Shell.Current.GoToAsync(backRoute);
+            int backLevels = userProgress.ConsultingOldLesson() ? 1 : 2;
+            await navigationService.GoBackAsync(backLevels);
         }
-        private async void GoToNextLesson()
+        private async Task GoToNextLessonAsync()
         {
-            await Shell.Current.GoToAsync("../../Exercises");
+            await navigationService.GoToAsync(AppRoute.Exercises, backLevels: 2);
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int keyModifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, keyModifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, keyModifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
-                else if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
-                    NavigateBack();
+                    _ = NavigateBackAsync();
                 }
                 else if (bean.code == "Enter" && !userProgress.ConsultingOldLesson())
                 {
                     course.SelectLesson(lessonNumber);
                     userProgress.LessonRegistration($"LICAO{lessonNumber}");
-                    GoToNextLesson();
+                    _ = GoToNextLessonAsync();
                 }
                 else if (pageKeyCodes.Contains(bean.code))
                 {

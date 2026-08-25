@@ -127,7 +127,7 @@ namespace Digitavox.Helpers
             string coursesDirectory = Path.Combine(FileSystem.AppDataDirectory, "Courses");
             return Directory.Exists(coursesDirectory);
         }
-        public static async void CopyCourseFiles()
+        public static async Task CopyCourseFilesAsync()
         {
             string coursesDirectory = Path.Combine(FileSystem.AppDataDirectory, "Courses");
             List<string> coursesFilesApp = new List<string>
@@ -139,15 +139,13 @@ namespace Digitavox.Helpers
                 "SENAI"
             };
             Directory.CreateDirectory(coursesDirectory);
-            string[] courseFiles = Directory.GetFiles(coursesDirectory);
             foreach (var fileName in coursesFilesApp)
             {
-                if (!courseFiles.Contains(fileName))
+                string courseFilePath = Path.Combine(coursesDirectory, $"{fileName}.json");
+                if (!File.Exists(courseFilePath))
                 {
                     using (var sourceStream = await FileSystem.OpenAppPackageFileAsync($"{fileName}.json"))
                     {
-                        string courseFilePath = Path.Combine(coursesDirectory, $"{fileName}.json");
-
                         using (var destinationStream = File.Create(courseFilePath))
                         {
                             await sourceStream.CopyToAsync(destinationStream);

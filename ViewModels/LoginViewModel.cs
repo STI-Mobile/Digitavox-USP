@@ -17,12 +17,14 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Microsoft.Maui.Controls;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
     public partial class LoginViewModel : ObservableObject
     {
-        List<string> pressedKeys = new List<string>();
         bool enterName;
         bool titleOutput;
         string userName;
@@ -52,18 +54,27 @@ namespace Digitavox.ViewModels
         };
         public List<string> speakUserName = new List<string>();
         private DVViewModelSpeak dVViewModelSpeak;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public LoginViewModel(DVViewModelSpeak dVViewModelSpeak, 
-                              FingerMapping fingerMapping,
+                              KeyboardInputProcessor keyboardInputProcessor,
                               UserProgress userProgress,
-                              DVViewModelFunctions dVViewModelFunctions)
+                              DVViewModelFunctions dVViewModelFunctions,
+                              ISettingsService settingsService,
+                              INavigationService navigationService,
+                              IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             
         }
         public void OnPage()
@@ -94,7 +105,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             titleOutput = true;
@@ -112,7 +123,7 @@ namespace Digitavox.ViewModels
                     dVViewModelSpeak.Set("maintainTag", true);
                 });
             });
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
 
         private void WriteName(string letter)
@@ -163,9 +174,9 @@ namespace Digitavox.ViewModels
             {
                 if (!dVViewModelFunctions.OnAlert())
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
-                        GoToMenuPage();
+                        _ = GoToMenuPageAsync();
                     });
                 }
             });
@@ -223,18 +234,13 @@ namespace Digitavox.ViewModels
                 RepeatRegisterText();
             });
         }
-        private async void GoToMenuPage()
+        private async Task GoToMenuPageAsync()
         {
-            await Shell.Current.GoToAsync("Menu");
+            await navigationService.GoToAsync(AppRoute.Menu);
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public void HandleUnexpectedKey(string keySpeak)
         {
@@ -245,8 +251,7 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 if (!titleOutput)
@@ -290,7 +295,7 @@ namespace Digitavox.ViewModels
                                     "a", "o", "e", "i", "u"
                                 };
                                 int index = changeVowels.IndexOf(bean.code) % 5;
-                                string letter = fingerMapping.Code2Speak(newVowel[index]);
+                                string letter = keyboardInputProcessor.DescribeKey(newVowel[index]);
                                 userName = userName + newVowel[index];
                                 speakUserName.Add(letter);
                                 WriteName(letter);

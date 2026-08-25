@@ -21,6 +21,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Digitavox.Helpers;
+using Digitavox.Presentation.Input;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.Models
 {
@@ -30,25 +32,19 @@ namespace Digitavox.Models
         private JsonElement keysAndFingers;
         private JsonElement keysIos2Android;
         private JsonElement keysWindows2Android;
-        private List<string> releasedKeysPressedTogether = new List<string>();
-        private bool altGrPressedOnPreviousKey;
-        private bool shiftPressedOnPreviousKey;
-        private bool controlPressedOnPreviousKey;
-        private bool functionPressedOnPreviousKey;
-        private bool acuteAccentOnPreviousKey;
-        private bool circumflexAccentOnPreviousKey;
-        private bool graveAccentOnPreviousKey;
-        private bool tildeAccentOnPreviousKey;
+        private readonly KeyboardInputState legacyState = new();
+        private readonly IAppEnvironment appEnvironment;
+        private Task initializationTask;
         private List<string> charsWithCaps = new List<string>(new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ç" });
         private List<string> keysWithCaps = new List<string>();
         public string mapKeyCode(int intKey)
         {
             var key = intKey.ToString();
-            if ((DVDevice.IsIos() || DVDevice.IsMac()) && keysIos2Android.TryGetProperty(key, out var mapping2))
+            if ((appEnvironment.Platform is AppPlatformKind.Ios or AppPlatformKind.MacCatalyst) && keysIos2Android.TryGetProperty(key, out var mapping2))
             {
                 key = mapping2.GetString();
             }
-            else if (DVDevice.IsWindows() && keysWindows2Android.TryGetProperty(key, out var mapping3))
+            else if (appEnvironment.Platform == AppPlatformKind.Windows && keysWindows2Android.TryGetProperty(key, out var mapping3))
             {
                 key = mapping3.GetString();
             }
@@ -60,22 +56,26 @@ namespace Digitavox.Models
         }
         public FingerMappingBean MapKey(int intKey, int modifiers, List<string> pressedKeys)
         {
+            return MapKey(intKey, modifiers, pressedKeys, legacyState);
+        }
+        public FingerMappingBean MapKey(int intKey, int modifiers, List<string> pressedKeys, KeyboardInputState state)
+        {
             var key = intKey.ToString();
-            if ((DVDevice.IsIos() || DVDevice.IsMac()) && keysIos2Android.TryGetProperty(key, out var mapping4))
+            if ((appEnvironment.Platform is AppPlatformKind.Ios or AppPlatformKind.MacCatalyst) && keysIos2Android.TryGetProperty(key, out var mapping4))
             {
                 key = mapping4.GetString();
             }
-            else if (DVDevice.IsWindows() && keysWindows2Android.TryGetProperty(key, out var mapping8))
+            else if (appEnvironment.Platform == AppPlatformKind.Windows && keysWindows2Android.TryGetProperty(key, out var mapping8))
             {
                 key = mapping8.GetString();
             }
-            var shiftPressed = DVKeyboard.IsModifierSet(Modifier.Shift, modifiers) || releasedKeysPressedTogether.Contains("Shift");
+            var shiftPressed = DVKeyboard.IsModifierSet(Modifier.Shift, modifiers) || state.ReleasedKeysPressedTogether.Contains("Shift");
             if (DVKeyboard.IsModifierSet(Modifier.CapsLock, modifiers) && keysWithCaps.Contains(key))
             {
                 shiftPressed = !shiftPressed;
             }
             var numLockOn = DVKeyboard.IsModifierSet(Modifier.NumLock, modifiers);
-            if ((DVKeyboard.IsModifierSet(Modifier.Ctrl, modifiers) || releasedKeysPressedTogether.Contains("Ctrl")) && keysAndFingers.TryGetProperty(key + "+c", out var mapping6))
+            if ((DVKeyboard.IsModifierSet(Modifier.Ctrl, modifiers) || state.ReleasedKeysPressedTogether.Contains("Ctrl")) && keysAndFingers.TryGetProperty(key + "+c", out var mapping6))
             {
                 key += "+c";
             } 
@@ -87,7 +87,7 @@ namespace Digitavox.Models
             {
                 key += "-nl";
             }
-            else if ((DVKeyboard.IsModifierSet(Modifier.AltGr, modifiers) || releasedKeysPressedTogether.Contains("AltGr")) && keysAndFingers.TryGetProperty(key + "+ag", out var mapping7))
+            else if ((DVKeyboard.IsModifierSet(Modifier.AltGr, modifiers) || state.ReleasedKeysPressedTogether.Contains("AltGr")) && keysAndFingers.TryGetProperty(key + "+ag", out var mapping7))
             {
                 key += "+ag";
             }
@@ -110,20 +110,20 @@ namespace Digitavox.Models
                 
                 if (pressedKeys.Count > 0 && withModifiers && !onlyModifiers)
                 {
-                    releasedKeysPressedTogether.Add(code);
+                    state.ReleasedKeysPressedTogether.Add(code);
                     result = new FingerMappingBean(null, null, null, null, null, null);
                 }
-                else if (!(("Shift".Equals(code) && shiftPressedOnPreviousKey) 
-                        || ("Ctrl".Equals(code) && controlPressedOnPreviousKey)
-                        || ("Function".Equals(code) && functionPressedOnPreviousKey)
-                        || ("AltGr".Equals(code) && altGrPressedOnPreviousKey)
-                        || ("´".Equals(code) && !acuteAccentOnPreviousKey)
-                        || ("^".Equals(code) && !circumflexAccentOnPreviousKey)
-                        || ("`".Equals(code) && !graveAccentOnPreviousKey)
-                        || ("~".Equals(code) && !tildeAccentOnPreviousKey)))
+                else if (!(("Shift".Equals(code) && state.ShiftPressedOnPreviousKey)
+                        || ("Ctrl".Equals(code) && state.ControlPressedOnPreviousKey)
+                        || ("Function".Equals(code) && state.FunctionPressedOnPreviousKey)
+                        || ("AltGr".Equals(code) && state.AltGrPressedOnPreviousKey)
+                        || ("´".Equals(code) && !state.AcuteAccentOnPreviousKey)
+                        || ("^".Equals(code) && !state.CircumflexAccentOnPreviousKey)
+                        || ("`".Equals(code) && !state.GraveAccentOnPreviousKey)
+                        || ("~".Equals(code) && !state.TildeAccentOnPreviousKey)))
                 {
-                    releasedKeysPressedTogether.Clear();
-                    if (acuteAccentOnPreviousKey && ("A".Equals(code.ToUpper()) || "E".Equals(code.ToUpper()) || "I".Equals(code.ToUpper()) || "O".Equals(code.ToUpper()) || "U".Equals(code.ToUpper())))
+                    state.ReleasedKeysPressedTogether.Clear();
+                    if (state.AcuteAccentOnPreviousKey && ("A".Equals(code.ToUpper()) || "E".Equals(code.ToUpper()) || "I".Equals(code.ToUpper()) || "O".Equals(code.ToUpper()) || "U".Equals(code.ToUpper())))
                     {
                         key += "+aa";
                         if (keysAndFingers.TryGetProperty(key, out var mapping5))
@@ -131,7 +131,7 @@ namespace Digitavox.Models
                             mapping = mapping5;
                         }
                     }
-                    else if (circumflexAccentOnPreviousKey && ("A".Equals(code) || "E".Equals(code) || "O".Equals(code) || "a".Equals(code) || "e".Equals(code) || "o".Equals(code)))
+                    else if (state.CircumflexAccentOnPreviousKey && ("A".Equals(code) || "E".Equals(code) || "O".Equals(code) || "a".Equals(code) || "e".Equals(code) || "o".Equals(code)))
                     {
                         key += "+ca";
                         if (keysAndFingers.TryGetProperty(key, out var mapping5))
@@ -139,7 +139,7 @@ namespace Digitavox.Models
                             mapping = mapping5;
                         }
                     }
-                    else if (graveAccentOnPreviousKey && ("A".Equals(code.ToUpper())))
+                    else if (state.GraveAccentOnPreviousKey && ("A".Equals(code.ToUpper())))
                     {
                         key += "+ga";
                         if (keysAndFingers.TryGetProperty(key, out var mapping5))
@@ -147,7 +147,7 @@ namespace Digitavox.Models
                             mapping = mapping5;
                         }
                     }
-                    else if (tildeAccentOnPreviousKey && ("A".Equals(code.ToUpper()) || "O".Equals(code.ToUpper())))
+                    else if (state.TildeAccentOnPreviousKey && ("A".Equals(code.ToUpper()) || "O".Equals(code.ToUpper())))
                     {
                         key += "+ta";
                         if (keysAndFingers.TryGetProperty(key, out var mapping5))
@@ -173,20 +173,20 @@ namespace Digitavox.Models
                 } 
                 else
                 {
-                    releasedKeysPressedTogether.Clear();
+                    state.ReleasedKeysPressedTogether.Clear();
                     result = new FingerMappingBean(null, null, null, null, null, null);
                 }
-                shiftPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Shift, modifiers) && !"Shift".Equals(code);
-                controlPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Ctrl, modifiers) && !"Ctrl".Equals(code);
-                functionPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Fn, modifiers) && !"Function".Equals(code);
-                altGrPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.AltGr, modifiers) && !"AltGr".Equals(code);
-                acuteAccentOnPreviousKey = "´".Equals(code);
+                state.ShiftPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Shift, modifiers) && !"Shift".Equals(code);
+                state.ControlPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Ctrl, modifiers) && !"Ctrl".Equals(code);
+                state.FunctionPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.Fn, modifiers) && !"Function".Equals(code);
+                state.AltGrPressedOnPreviousKey = DVKeyboard.IsModifierSet(Modifier.AltGr, modifiers) && !"AltGr".Equals(code);
+                state.AcuteAccentOnPreviousKey = "´".Equals(code);
                 if (!"Shift".Equals(code))
                 {
-                    circumflexAccentOnPreviousKey = "^".Equals(code);
-                    graveAccentOnPreviousKey = "`".Equals(code);
+                    state.CircumflexAccentOnPreviousKey = "^".Equals(code);
+                    state.GraveAccentOnPreviousKey = "`".Equals(code);
                 }
-                tildeAccentOnPreviousKey = "~".Equals(code);
+                state.TildeAccentOnPreviousKey = "~".Equals(code);
             }
             return result;
         }
@@ -223,11 +223,16 @@ namespace Digitavox.Models
         {
             return fingers.GetProperty(Code2Key("finger", code)).GetString();
         }
-        public FingerMapping()
+        public FingerMapping(IAppEnvironment appEnvironment)
         {
-            Initialize();
+            this.appEnvironment = appEnvironment;
         }
-        private async void Initialize()
+        public Task InitializeAsync()
+        {
+            initializationTask ??= LoadAsync();
+            return initializationTask;
+        }
+        private async Task LoadAsync()
         {
             
             var stream = await FileSystem.OpenAppPackageFileAsync("Fingers.json");
