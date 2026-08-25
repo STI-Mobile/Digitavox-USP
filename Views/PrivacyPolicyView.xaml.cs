@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 
 namespace Digitavox.Views;
 
-public partial class PrivacyPolicyView : ContentPage, IOnPageKeyPress
+public partial class PrivacyPolicyView : ContentPage, IKeyboardInputHandler
 {
+	private PrivacyPolicyViewModel ViewModel => (PrivacyPolicyViewModel)BindingContext;
+
 	public PrivacyPolicyView(PrivacyPolicyViewModel privacyPolicyViewModel)
 	{
 		InitializeComponent();
@@ -26,10 +28,10 @@ public partial class PrivacyPolicyView : ContentPage, IOnPageKeyPress
 	}
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((PrivacyPolicyViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((PrivacyPolicyViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
 }

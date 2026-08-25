@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Helpers;
+using Digitavox.Core.Abstractions;
 using System.Text.Json;
 
 namespace Digitavox.Models
@@ -28,14 +28,19 @@ namespace Digitavox.Models
         private string lessonId;
         private string courseId;
         private int courseNumber;
+        private readonly ICourseCatalogStore courseCatalogStore;
+        public Course(ICourseCatalogStore courseCatalogStore)
+        {
+            this.courseCatalogStore = courseCatalogStore;
+        }
         public void GetCoursesLists()
         {
             if (jsonList.Count == 0)
             {
-                var temp = DVPersistence.ReadCourseFiles();
-                jsonList = temp.Item1;
-                courseIdList = temp.Item2;
-                courseNameList = temp.Item3;
+                CourseCatalogData catalog = courseCatalogStore.Load();
+                jsonList = catalog.Courses;
+                courseIdList = catalog.FileNames;
+                courseNameList = catalog.CourseNames;
             }
         }
         public void SelectCourse(int fileNumber)

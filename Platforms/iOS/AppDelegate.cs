@@ -16,25 +16,20 @@ using Foundation;
 using UIKit;
 using Digitavox.ViewModels;
 using Digitavox.Platforms.iOS;
-
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Digitavox;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-    private bool initialVoiceOverStatus;
-    public static DVViewModelSpeak ViewModelSpeak { get; private set; }
+    private DVViewModelSpeak viewModelSpeak;
 
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-
-    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    protected override MauiApp CreateMauiApp()
     {
-        base.FinishedLaunching(application, launchOptions);
-
-        ViewModelSpeak = new DVViewModelSpeak();
-
-        return true;
+        MauiApp mauiApp = MauiProgram.CreateMauiApp();
+        viewModelSpeak = mauiApp.Services.GetRequiredService<DVViewModelSpeak>();
+        return mauiApp;
     }
 
     public override void OnActivated(UIApplication application)
@@ -46,7 +41,7 @@ public class AppDelegate : MauiUIApplicationDelegate
     public override void OnResignActivation(UIApplication application)
     {
         base.OnResignActivation(application);
-        AppDelegate.ViewModelSpeak.Skip();
+        viewModelSpeak.Skip();
         AccessibilityHelper.CheckVoiceOverStatusChangeAndNotify();
     }
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Digitavox.Helpers;
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.PlatformsImplementations;
 using Microsoft.UI.Xaml;
 using Windows.System;
@@ -72,7 +72,7 @@ public partial class App : MauiWinUIApplication
         bool IsAltPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
         bool IsCapsLockOn = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.CapitalLock).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Locked);
         bool IsNumLockOn = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.NumberKeyLock).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Locked);
-        if (p is IOnPageKeyPress)
+        if (p is IKeyboardInputHandler inputHandler)
         {
             int keyModifiers = 0;
             if (IsCapsLockOn)
@@ -88,7 +88,7 @@ public partial class App : MauiWinUIApplication
             if (IsNumLockOn)
                 DVKeyboard.SetModifier(Modifier.NumLock, ref keyModifiers);
 
-            bool handled = (p as IOnPageKeyPress).OnPageKeyPress((int)keyCode,
+            bool handled = inputHandler.OnPageKeyPress((int)keyCode,
                     keyModifiers);
             if (handled) return true;
             else return false;
@@ -98,9 +98,9 @@ public partial class App : MauiWinUIApplication
     public bool OnKeyDown(uint keyCode)
     {
         Page p = Shell.Current.CurrentPage;
-        if (p is IOnPageKeyPress)
+        if (p is IKeyboardInputHandler inputHandler)
         {
-            bool handled = (p as IOnPageKeyPress).OnPageKeyDown((int)keyCode);
+            bool handled = inputHandler.OnPageKeyDown((int)keyCode);
             if (handled) return true;
             else return false;
         }
@@ -108,4 +108,3 @@ public partial class App : MauiWinUIApplication
     }
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
-
