@@ -110,6 +110,8 @@ public sealed class CatalogMigration
                 checkpoint?.Invoke("removed:" + Path.GetFileNameWithoutExtension(path));
             }
             checkpoint?.Invoke("before-commit");
+            if (files.Any(file => !AtomicJsonFile.Matches(file.Path, file.Bytes)) || removedPaths.Any(File.Exists))
+                throw new InvalidDataException("Publicação incompleta; o catálogo não foi marcado como atualizado.");
             AtomicJsonFile.Write(StatePath, AtomicJsonFile.Encode(new JsonObject { ["catalogVersion"] = CurrentVersion }));
             File.Delete(PendingPath);
             return firstInstallation;

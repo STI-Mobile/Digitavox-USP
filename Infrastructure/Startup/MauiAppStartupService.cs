@@ -7,30 +7,31 @@
 //     http://www.apache.org/licenses/LICENSE-2.0
 
 using Digitavox.Core.Abstractions;
-using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Infrastructure.Persistence;
 
 namespace Digitavox.Infrastructure.Startup;
 
 public sealed class MauiAppStartupService : IAppStartupService
 {
     private readonly FingerMapping fingerMapping;
+    private readonly CatalogMigration catalogMigration;
+    private readonly Course course;
 
-    public MauiAppStartupService(FingerMapping fingerMapping)
+    public MauiAppStartupService(FingerMapping fingerMapping, CatalogMigration catalogMigration, Course course)
     {
         this.fingerMapping = fingerMapping;
+        this.catalogMigration = catalogMigration;
+        this.course = course;
     }
 
     public async Task<AppStartupDestination> InitializeAsync()
     {
         await fingerMapping.InitializeAsync();
 
-        if (DVPersistence.CourseDirectoryExists())
-        {
-            return AppStartupDestination.Login;
-        }
-
-        await DVPersistence.CopyCourseFilesAsync();
-        return AppStartupDestination.Tutorial;
+        bool firstInstallation = await catalogMigration.EnsureCurrentAsync();
+        course.ResetCatalog();
+        course.GetCoursesLists();
+        return firstInstallation ? AppStartupDestination.Tutorial : AppStartupDestination.Login;
     }
 }

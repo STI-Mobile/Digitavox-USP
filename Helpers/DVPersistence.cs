@@ -155,7 +155,7 @@ namespace Digitavox.Helpers
                 }
             }
         }
-        public static (List<JsonElement>, List<string>, List<string>) ReadCourseFiles()
+        public static (List<JsonElement>, List<string>, List<string>) ReadCourseFiles(IEnumerable<string> allowedCourseIds = null)
         {
             var numbered = new SortedDictionary<int, (JsonElement Json, string File, string Name)>();
             List<JsonElement> jsonList = new List<JsonElement>();
@@ -165,6 +165,11 @@ namespace Digitavox.Helpers
             List<string> courseNameList = new List<string>();
             string courseDirectory = Path.Combine(FileSystem.AppDataDirectory, "Courses");
             string[] courseFiles = Directory.GetFiles(courseDirectory, "*.json").OrderBy(Path.GetFileName, StringComparer.Ordinal).ToArray();
+            if (allowedCourseIds is not null)
+            {
+                var allowed = allowedCourseIds.ToHashSet(StringComparer.Ordinal);
+                courseFiles = courseFiles.Where(p => allowed.Contains(Path.GetFileNameWithoutExtension(p))).ToArray();
+            }
             foreach (string courseFile in courseFiles)
             {
                 JsonElement rootJson;

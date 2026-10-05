@@ -10,6 +10,7 @@
   <ItemGroup>
     <Compile Include="../../ViewModels/UserOptionsViewModel.cs" Link="Production/ViewModels/UserOptionsViewModel.cs" />
     <Compile Include="../../Models/Course.cs" Link="Production/Models/Course.cs" />
+    <Compile Include="../../Domain/Catalog/ContentAvailability.cs" Link="Production/Domain/ContentAvailability.cs" />
     <Compile Include="../../Models/CourseLesson.cs" Link="Production/Models/CourseLesson.cs" />
     <Compile Include="../../Models/CourseLessonBean.cs" Link="Production/Models/CourseLessonBean.cs" />
     <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />

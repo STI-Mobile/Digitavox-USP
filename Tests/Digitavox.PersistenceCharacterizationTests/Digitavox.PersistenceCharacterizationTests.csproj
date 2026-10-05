@@ -15,6 +15,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../../Models/Course.cs" Link="Production/Models/Course.cs" />
+    <Compile Include="../../Models/CourseLesson.cs" Link="Production/Models/CourseLesson.cs" />
+    <Compile Include="../../Models/CourseLessonBean.cs" Link="Production/Models/CourseLessonBean.cs" />
+    <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
+    <Compile Include="../../Models/FingerMapping.cs" Link="Production/Models/FingerMapping.cs" />
+    <Compile Include="../../Models/FingerMappingBean.cs" Link="Production/Models/FingerMappingBean.cs" />
+    <Compile Include="../../Helpers/DVHelper.cs" Link="Production/Helpers/DVHelper.cs" />
+    <Compile Include="../../Presentation/Input/KeyboardInputState.cs" Link="Production/Presentation/Input/KeyboardInputState.cs" />
+    <Compile Include="../../Domain/Time/PassiveExerciseTimer.cs" Link="Production/Domain/Time/PassiveExerciseTimer.cs" />
+    <Compile Include="../../Domain/Time/SystemClock.cs" Link="Production/Domain/Time/SystemClock.cs" />
+    <Compile Include="../../Application/Abstractions/ICourseCatalogStore.cs" Link="Production/Application/Abstractions/ICourseCatalogStore.cs" />
+    <Compile Include="../../Application/Abstractions/IUserProgressStore.cs" Link="Production/Application/Abstractions/IUserProgressStore.cs" />
+    <Compile Include="../../Application/Abstractions/IUserHistoryStore.cs" Link="Production/Application/Abstractions/IUserHistoryStore.cs" />
+    <Compile Include="../../Application/Abstractions/IAppStartupService.cs" Link="Production/Application/Abstractions/IAppStartupService.cs" />
+    <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/Abstractions/IAppEnvironment.cs" />
+    <Compile Include="../../Application/Abstractions/ISettingsService.cs" Link="Production/Application/Abstractions/ISettingsService.cs" />
+    <Compile Include="../../Application/Abstractions/IClock.cs" Link="Production/Application/Abstractions/IClock.cs" />
+    <Compile Include="../../Application/Abstractions/IExerciseTimer.cs" Link="Production/Application/Abstractions/IExerciseTimer.cs" />
+    <Compile Include="../../Infrastructure/Startup/MauiAppStartupService.cs" Link="Production/Infrastructure/Startup/MauiAppStartupService.cs" />
+    <Compile Include="../../Infrastructure/Persistence/MauiCourseCatalogStore.cs" Link="Production/Infrastructure/Persistence/MauiCourseCatalogStore.cs" />
+    <Compile Include="../../Infrastructure/Persistence/MauiUserProgressStore.cs" Link="Production/Infrastructure/Persistence/MauiUserProgressStore.cs" />
+    <Compile Include="../../Infrastructure/Persistence/MauiUserHistoryStore.cs" Link="Production/Infrastructure/Persistence/MauiUserHistoryStore.cs" />
+    <Compile Include="../../Infrastructure/Settings/MauiSettingsService.cs" Link="Production/Infrastructure/Settings/MauiSettingsService.cs" />
     <Compile Include="../../Helpers/DVPersistence.cs" Link="Production/Helpers/DVPersistence.cs" />
     <Compile Include="../../Domain/Catalog/CourseCatalogValidator.cs" Link="Production/Domain/CourseCatalogValidator.cs" />
     <Compile Include="../../Domain/Catalog/ContentAvailability.cs" Link="Production/Domain/ContentAvailability.cs" />
