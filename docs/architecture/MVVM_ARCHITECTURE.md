@@ -70,8 +70,8 @@ O code-behind é mantido somente como adaptador do ciclo de vida e dos eventos d
 ### Composition root
 
 - `MauiProgram` registra contratos, implementações e lifetimes.
-- `App` coordena eventos globais de janela.
-- `AppShell` registra rotas tipadas e executa a inicialização assíncrona antes de selecionar a primeira tela.
+- `App` coordena eventos globais de janela e aguarda o startup assíncrono antes de criar `AppShell`.
+- `AppShell` registra rotas tipadas e seleciona a primeira tela pelo destino já validado.
 
 ## Lifetimes
 
@@ -109,6 +109,14 @@ Model ou ViewModel -> contrato Application
                   -> armazenamento MAUI / legado encapsulado
 ```
 
+### Catálogo versão 1 e preservação histórica
+
+`MauiAppStartupService` executa `CatalogMigration` antes de invalidar/carregar `Course` e devolver Login/Tutorial. A existência de `Courses` não certifica catálogo íntegro. `Catalog/state.json` e `Catalog/pending.json` ficam fora dos JSONs de curso e usuário; publicação pendente bloqueia o adapter de catálogo.
+
+`UserProgressMigration` é a transformação pura dos perfis. Estatísticas de conteúdos retirados ficam em `History/Users`; `IUserHistoryStore` permite consultá-las sem selecionar uma lição executável. `ContentAvailability` bloqueia identidades retiradas no domínio. Não foram introduzidos banco de dados ou framework geral de migrations.
+
+O fluxo, a política de avanço, o diagnóstico e os testes estão em [content-catalog-v1-migration.md](../content-catalog-v1-migration.md).
+
 ## Garantias automatizadas
 
 `ArchitectureBoundaryTests` protege as seguintes invariantes:
@@ -126,5 +134,6 @@ Validação local:
 ```bash
 dotnet test Tests/Digitavox.CharacterizationTests/Digitavox.CharacterizationTests.csproj
 dotnet test Tests/Digitavox.PersistenceCharacterizationTests/Digitavox.PersistenceCharacterizationTests.csproj
+dotnet test Tests/Digitavox.PresentationTests/Digitavox.PresentationTests.csproj
 dotnet build Digitavox.csproj -f net10.0-android -t:Compile --no-restore
 ```
