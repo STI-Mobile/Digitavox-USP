@@ -7,6 +7,29 @@ namespace Digitavox.CharacterizationTests;
 [TestClass]
 public class CourseCharacterizationTests
 {
+    [TestMethod]
+    [DataRow(-1)]
+    [DataRow(1)]
+    public void Missing_course_selection_does_not_change_current_course(int index)
+    {
+        Course course = TestCourseFactory.CreateSelectedCourse();
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => course.SelectCourse(index));
+        Assert.AreEqual("curso-teste", course.CourseId());
+    }
+
+    [TestMethod]
+    [DataRow(0)]
+    [DataRow(2)]
+    [DataRow(3)]
+    public void Missing_lesson_selection_does_not_change_current_lesson(int number)
+    {
+        Course course = TestCourseFactory.CreateSelectedCourse();
+        course.SelectLesson(1);
+        Assert.ThrowsExactly<KeyNotFoundException>(() => course.SelectLesson(number));
+        Assert.AreEqual("LICAO1", course.LessonId());
+        CollectionAssert.AreEqual(new[] { "abc", "de f" }, course.GetExercises());
+    }
+
     [TestInitialize]
     public void SetUp()
     {

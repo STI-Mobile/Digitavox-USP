@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Digitavox.PlatformsImplementations;
+using Digitavox.Domain.Catalog;
 using System.Text.Json;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
@@ -156,30 +157,36 @@ namespace Digitavox.Helpers
         }
         public static (List<JsonElement>, List<string>, List<string>) ReadCourseFiles()
         {
-            Dictionary<int, object> number2Course = new Dictionary<int, object>(); 
+            var numbered = new SortedDictionary<int, (JsonElement Json, string File, string Name)>();
             List<JsonElement> jsonList = new List<JsonElement>();
             List<string> fileNameList = new List<string>();
             List<JsonElement> addedJsonList = new List<JsonElement>();
             List<string> addedFileNameList = new List<string>();
             List<string> courseNameList = new List<string>();
             string courseDirectory = Path.Combine(FileSystem.AppDataDirectory, "Courses");
-            string[] courseFiles = Directory.GetFiles(courseDirectory);
+            string[] courseFiles = Directory.GetFiles(courseDirectory, "*.json").OrderBy(Path.GetFileName, StringComparer.Ordinal).ToArray();
             foreach (string courseFile in courseFiles)
             {
-                using Stream fileStream = File.OpenRead(courseFile);
-                using StreamReader reader = new StreamReader(fileStream);
-                JsonElement rootJson = JsonDocument.Parse(reader.ReadToEnd()).RootElement;
+                JsonElement rootJson;
+                try
+                {
+                    using Stream fileStream = File.OpenRead(courseFile);
+                    using var document = JsonDocument.Parse(fileStream);
+                    rootJson = document.RootElement.Clone();
+                }
+                catch (JsonException exception)
+                {
+                    throw new InvalidDataException($"JSON de catálogo inválido: {Path.GetFileName(courseFile)}.", exception);
+                }
+                // Auxiliary JSON objects are not course definitions. Version metadata lives outside Courses.
+                if (rootJson.ValueKind == JsonValueKind.Object && !rootJson.TryGetProperty("CURSO", out _) &&
+                    (!rootJson.TryGetProperty("type", out var type) || type.ToString() != "CURSO")) continue;
+                CourseCatalogValidator.Validate(rootJson, Path.GetFileName(courseFile));
                 if (rootJson.GetProperty("CURSO").TryGetProperty("NUMEROCURSO", out var numberProp))
                 {
                     int number = int.Parse(numberProp.ToString());
-                    Dictionary<string, object> courseObjects = new Dictionary<string, object>()
-                    {
-                        { "json", rootJson },
-                        { "fileName", Path.GetFileName(courseFile) },
-                        { "courseName", rootJson.GetProperty("CURSO").GetProperty("NOMECURSO").ToString() },
-
-                    };
-                    number2Course[number] = courseObjects;
+                    if (!numbered.TryAdd(number, (rootJson, Path.GetFileName(courseFile), rootJson.GetProperty("CURSO").GetProperty("NOMECURSO").GetString())))
+                        throw new InvalidDataException($"NUMEROCURSO duplicado: {number} em {Path.GetFileName(courseFile)}.");
                 }
                 else
                 {
@@ -187,12 +194,11 @@ namespace Digitavox.Helpers
                     addedFileNameList.Add(Path.GetFileName(courseFile));
                 }
             }
-            for (int i = 1; i <= number2Course.Count; i++)
+            foreach (var courseObjects in numbered.Values)
             {
-                Dictionary<string, object> courseObjects = (Dictionary<string, object>)number2Course[i];
-                jsonList.Add((JsonElement)courseObjects["json"]);
-                fileNameList.Add((string)courseObjects["fileName"]);
-                courseNameList.Add((string)courseObjects["courseName"]);
+                jsonList.Add(courseObjects.Json);
+                fileNameList.Add(courseObjects.File);
+                courseNameList.Add(courseObjects.Name);
             }
             for (int i = 0; i < addedJsonList.Count; i++)
             {

@@ -160,6 +160,59 @@ public class DVPersistenceCharacterizationTests
             Directory.GetFiles(courseDirectory).Select(Path.GetFileName).ToArray());
     }
 
+    [TestMethod]
+    [DataRow("1,2,3,4,5")]
+    [DataRow("3,4,5")]
+    public void Numbered_catalog_accepts_gaps_without_renumbering(string numbers)
+    {
+        string directory = Path.Combine(testDirectory, "Courses");
+        Directory.CreateDirectory(directory);
+        int[] expected = numbers.Split(',').Select(int.Parse).ToArray();
+        foreach (int number in expected.Reverse()) WriteCourse(directory, $"course-{number}.json", $"Curso {number}", number);
+
+        var (json, files, names) = DVPersistence.ReadCourseFiles();
+
+        CollectionAssert.AreEqual(expected, json.Select(c => c.GetProperty("CURSO").GetProperty("NUMEROCURSO").GetInt32()).ToArray());
+        CollectionAssert.AreEqual(expected.Select(n => $"course-{n}.json").ToArray(), files);
+        CollectionAssert.AreEqual(expected.Select(n => $"Curso {n}").ToArray(), names);
+    }
+
+    [TestMethod]
+    public void Duplicate_numbers_are_rejected_instead_of_overwriting_a_course()
+    {
+        string directory = Path.Combine(testDirectory, "Courses");
+        Directory.CreateDirectory(directory);
+        WriteCourse(directory, "first.json", "Primeiro", 3);
+        WriteCourse(directory, "duplicate.json", "Duplicado", 3);
+        Assert.ThrowsExactly<InvalidDataException>(() => DVPersistence.ReadCourseFiles());
+    }
+
+    [TestMethod]
+    [DataRow("{")]
+    [DataRow("{\"type\":\"CURSO\"}")]
+    [DataRow("{\"CURSO\":{\"NOMECURSO\":\"Incompleto\"}}")]
+    [DataRow("[]")]
+    public void Malformed_catalogs_are_rejected_with_diagnostic(string json)
+    {
+        string directory = Path.Combine(testDirectory, "Courses");
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, "broken.json"), json);
+        var exception = Assert.ThrowsExactly<InvalidDataException>(() => DVPersistence.ReadCourseFiles());
+        StringAssert.Contains(exception.Message, "broken.json");
+    }
+
+    [TestMethod]
+    public void Auxiliary_files_are_not_loaded_as_courses()
+    {
+        string directory = Path.Combine(testDirectory, "Courses");
+        Directory.CreateDirectory(directory);
+        WriteCourse(directory, "real.json", "Real", 3);
+        File.WriteAllText(Path.Combine(directory, "state.json"), "{\"catalogVersion\":1}");
+        File.WriteAllText(Path.Combine(directory, "real.json.tmp"), "invalid temporary file");
+        File.WriteAllText(Path.Combine(directory, "backup.txt"), "invalid text");
+        CollectionAssert.AreEqual(new[] { "real.json" }, DVPersistence.ReadCourseFiles().Item2);
+    }
+
     private static void WriteCourse(
         string directory,
         string fileName,
@@ -169,8 +222,12 @@ public class DVPersistenceCharacterizationTests
         string numberProperty = courseNumber.HasValue
             ? $", \"NUMEROCURSO\": {courseNumber.Value}"
             : string.Empty;
-        string json =
-            $"{{ \"CURSO\": {{ \"NOMECURSO\": \"{courseName}\"{numberProperty} }} }}";
+        string json = $$$"""
+            {"type":"CURSO", "CURSO": {"NOMECURSO":"{{{courseName}}}"{{{numberProperty}}}, "QUANTIDADELICOES":1,
+            "Present":{"APT":"Curso"},"Instruction":{"IST":"Digite"}},
+            "LICAO1":{"Present":{"APT":"Lição"},"Instruction":{"IST":"Digite"},"EXER1":"abc",
+            "REPETICOESEXER":1,"TEMPOPORCARACTER":1,"MEDIAEXER":90,"SOLETRAEXER":"nao","TUDO_EM_MAIUSCULO":"nao"}}
+            """;
         File.WriteAllText(Path.Combine(directory, fileName), json);
     }
 }

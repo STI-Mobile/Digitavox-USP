@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="../../Helpers/DVPersistence.cs" Link="Production/Helpers/DVPersistence.cs" />
+    <Compile Include="../../Domain/Catalog/CourseCatalogValidator.cs" Link="Production/Domain/CourseCatalogValidator.cs" />
   </ItemGroup>
 
 </Project>

@@ -45,15 +45,23 @@ namespace Digitavox.Models
         }
         public void SelectCourse(int fileNumber)
         {
+            if (fileNumber < 0 || fileNumber >= jsonList.Count)
+                throw new ArgumentOutOfRangeException(nameof(fileNumber), "Curso inexistente no catálogo.");
             fileRoot = jsonList[fileNumber];
             courseRoot = fileRoot.GetProperty("CURSO");
             courseId = courseIdList[fileNumber];
             courseNumber = fileNumber + 1;
+            lessonId = null;
+            lessonRoot = default;
         }
         public void SelectLesson(int lessonNumber)
         {
-            lessonId = $"LICAO{lessonNumber}";
-            lessonRoot = fileRoot.GetProperty(lessonId);
+            string selectedId = $"LICAO{lessonNumber}";
+            if (fileRoot.ValueKind != JsonValueKind.Object || lessonNumber < 1 || lessonNumber > TotalLessons() ||
+                !fileRoot.TryGetProperty(selectedId, out var selectedLesson) || selectedLesson.ValueKind != JsonValueKind.Object)
+                throw new KeyNotFoundException($"Lição inexistente no catálogo: {selectedId}.");
+            lessonId = selectedId;
+            lessonRoot = selectedLesson;
         }
         public string CourseApresentation()
         {
