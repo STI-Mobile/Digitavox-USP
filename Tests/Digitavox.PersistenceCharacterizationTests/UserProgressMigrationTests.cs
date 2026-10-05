@@ -105,6 +105,7 @@ public class UserProgressMigrationTests
         Assert.IsTrue(lines.Contains("Registro LICAO5.1"));
         Assert.IsTrue(lines.Contains("Concluiu (S/N): N"));
         Assert.IsTrue(lines.Contains("Percentual de acertos: 87"));
+        Assert.IsTrue(lines.Contains("Erros no caractere a: 3"));
         Assert.IsFalse(lines.Any(l => l.Contains("payload")));
     }
 

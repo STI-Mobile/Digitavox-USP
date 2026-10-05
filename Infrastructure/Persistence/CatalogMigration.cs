@@ -31,7 +31,7 @@ public sealed class CatalogMigration
         if (!File.Exists(StatePath)) return 0;
         try
         {
-            var state = JsonNode.Parse(File.ReadAllBytes(StatePath)) as JsonObject;
+            var state = JsonNode.Parse(File.ReadAllText(StatePath)) as JsonObject;
             if (state?["catalogVersion"] is not JsonValue value || !value.TryGetValue<int>(out int version) || version != CurrentVersion)
                 throw new InvalidDataException("Versão de catálogo não suportada.");
             return version;
@@ -56,7 +56,7 @@ public sealed class CatalogMigration
                 (!Directory.Exists(Path.Combine(appDataDirectory, "Users")) || !Directory.EnumerateFiles(Path.Combine(appDataDirectory, "Users"), "*.json").Any());
             if (IsPending)
             {
-                var pending = JsonNode.Parse(File.ReadAllBytes(PendingPath)) as JsonObject;
+                var pending = JsonNode.Parse(File.ReadAllText(PendingPath)) as JsonObject;
                 if (pending?["targetVersion"]?.GetValue<int>() != CurrentVersion || pending["firstInstallation"] is not JsonValue first)
                     throw new InvalidDataException("Journal de catálogo inválido; recuperação necessária.");
                 firstInstallation = first.GetValue<bool>();
@@ -131,10 +131,10 @@ public sealed class CatalogMigration
         {
             try
             {
-                var user = JsonNode.Parse(File.ReadAllBytes(path)) as JsonObject ?? throw new InvalidDataException("Objeto de perfil inválido.");
+                var user = JsonNode.Parse(File.ReadAllText(path)) as JsonObject ?? throw new InvalidDataException("Objeto de perfil inválido.");
                 string historyPath = Path.Combine(appDataDirectory, "History", "Users", Path.GetFileName(path));
                 JsonObject history = File.Exists(historyPath)
-                    ? JsonNode.Parse(File.ReadAllBytes(historyPath)) as JsonObject ?? throw new InvalidDataException("Objeto de histórico inválido.")
+                    ? JsonNode.Parse(File.ReadAllText(historyPath)) as JsonObject ?? throw new InvalidDataException("Objeto de histórico inválido.")
                     : null;
                 var migrated = UserProgressMigration.ToVersionOne(user, history);
                 if (!migrated.Changed) continue;

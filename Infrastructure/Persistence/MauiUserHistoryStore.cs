@@ -10,7 +10,7 @@ public sealed class MauiUserHistoryStore : IUserHistoryStore
     {
         string path = Path.Combine(FileSystem.AppDataDirectory, "History", "Users", userName.ToUpper() + ".json");
         if (!File.Exists(path)) return Array.Empty<string>();
-        var history = JsonNode.Parse(File.ReadAllBytes(path)) as JsonObject ?? throw new InvalidDataException("Histórico inválido.");
+        var history = JsonNode.Parse(File.ReadAllText(path)) as JsonObject ?? throw new InvalidDataException("Histórico inválido.");
         return ArchivedProgressReader.Read(history);
     }
 }

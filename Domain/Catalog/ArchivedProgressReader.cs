@@ -43,7 +43,7 @@ public static class ArchivedProgressReader
                 foreach (var statistic in Statistics)
                     if (attempt[statistic.Key] is JsonValue value) lines.Add(statistic.Label + ": " + value.ToString());
                 foreach (var error in attempt.Where(e => e.Key.StartsWith("ERROSEM_", StringComparison.Ordinal)))
-                    lines.Add("Erros no caractere " + error.Key.Substring(7) + ": " + error.Value?.ToString());
+                    lines.Add("Erros no caractere " + error.Key.Substring("ERROSEM_".Length) + ": " + error.Value?.ToString());
             }
         }
         return lines;
