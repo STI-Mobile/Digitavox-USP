@@ -88,6 +88,7 @@ public sealed class CatalogMigration
 
             string[] removedPaths = new[] { "curso_abnt2_basico", "curso_abnt2_intermediario" }
                 .Select(id => Path.Combine(coursesDirectory, id + ".json")).ToArray();
+            files.InsertRange(0, PrepareUserFiles());
             if (version == CurrentVersion && !IsPending && files.All(f => AtomicJsonFile.Matches(f.Path, f.Bytes)) && !removedPaths.Any(File.Exists))
                 return false;
 
@@ -99,7 +100,9 @@ public sealed class CatalogMigration
             foreach (var file in files)
             {
                 AtomicJsonFile.Write(file.Path, file.Bytes);
-                checkpoint?.Invoke("catalog:" + Path.GetFileNameWithoutExtension(file.Path));
+                string kind = Path.GetDirectoryName(file.Path) == coursesDirectory ? "catalog" :
+                    Path.GetDirectoryName(file.Path) == Path.Combine(appDataDirectory, "Users") ? "profile" : "history";
+                checkpoint?.Invoke(kind + ":" + Path.GetFileNameWithoutExtension(file.Path));
             }
             foreach (string path in removedPaths)
             {
@@ -115,5 +118,33 @@ public sealed class CatalogMigration
         {
             InitializationLock.Release();
         }
+    }
+
+    private List<(string Path, byte[] Bytes)> PrepareUserFiles()
+    {
+        var files = new List<(string Path, byte[] Bytes)>();
+        string users = Path.Combine(appDataDirectory, "Users");
+        if (!Directory.Exists(users)) return files;
+        foreach (string path in Directory.EnumerateFiles(users, "*.json").OrderBy(p => p, StringComparer.Ordinal))
+        {
+            try
+            {
+                var user = JsonNode.Parse(File.ReadAllBytes(path)) as JsonObject ?? throw new InvalidDataException("Objeto de perfil inválido.");
+                string historyPath = Path.Combine(appDataDirectory, "History", "Users", Path.GetFileName(path));
+                JsonObject history = File.Exists(historyPath)
+                    ? JsonNode.Parse(File.ReadAllBytes(historyPath)) as JsonObject ?? throw new InvalidDataException("Objeto de histórico inválido.")
+                    : null;
+                var migrated = UserProgressMigration.ToVersionOne(user, history);
+                if (!migrated.Changed) continue;
+                // The archive is committed first. A crash before the profile write can safely repeat the merge.
+                files.Add((historyPath, AtomicJsonFile.Encode(migrated.History)));
+                files.Add((path, AtomicJsonFile.Encode(migrated.Progress)));
+            }
+            catch (Exception exception) when (exception is JsonException or InvalidDataException)
+            {
+                throw new InvalidDataException($"Falha ao migrar {Path.GetFileName(path)}. Os dados originais foram preservados. {exception.Message}", exception);
+            }
+        }
+        return files;
     }
 }

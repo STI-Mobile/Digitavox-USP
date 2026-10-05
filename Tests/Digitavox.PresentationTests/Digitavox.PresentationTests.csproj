@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.3.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.3.3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="10.0.80" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../ViewModels/UserOptionsViewModel.cs" Link="Production/ViewModels/UserOptionsViewModel.cs" />
+    <Compile Include="../../Models/Course.cs" Link="Production/Models/Course.cs" />
+    <Compile Include="../../Models/CourseLesson.cs" Link="Production/Models/CourseLesson.cs" />
+    <Compile Include="../../Models/CourseLessonBean.cs" Link="Production/Models/CourseLessonBean.cs" />
+    <Compile Include="../../Models/UserProgress.cs" Link="Production/Models/UserProgress.cs" />
+    <Compile Include="../../Domain/Time/PassiveExerciseTimer.cs" Link="Production/Domain/Time/PassiveExerciseTimer.cs" />
+    <Compile Include="../../Domain/Time/SystemClock.cs" Link="Production/Domain/Time/SystemClock.cs" />
+    <Compile Include="../../Application/Abstractions/IClock.cs" Link="Production/Application/Abstractions/IClock.cs" />
+    <Compile Include="../../Application/Abstractions/IExerciseTimer.cs" Link="Production/Application/Abstractions/IExerciseTimer.cs" />
+    <Compile Include="../../Application/Abstractions/ICourseCatalogStore.cs" Link="Production/Application/Abstractions/ICourseCatalogStore.cs" />
+    <Compile Include="../../Application/Abstractions/IUserProgressStore.cs" Link="Production/Application/Abstractions/IUserProgressStore.cs" />
+    <Compile Include="../../Application/Abstractions/IUserHistoryStore.cs" Link="Production/Application/Abstractions/IUserHistoryStore.cs" />
+    <Compile Include="../../Application/Abstractions/ISettingsService.cs" Link="Production/Application/Abstractions/ISettingsService.cs" />
+    <Compile Include="../../Application/Abstractions/INavigationService.cs" Link="Production/Application/Abstractions/INavigationService.cs" />
+    <Compile Include="../../Application/Abstractions/IAppEnvironment.cs" Link="Production/Application/Abstractions/IAppEnvironment.cs" />
+    <Compile Include="../../Presentation/Input/IKeyboardInputHandler.cs" Link="Production/Presentation/Input/IKeyboardInputHandler.cs" />
+  </ItemGroup>
+</Project>

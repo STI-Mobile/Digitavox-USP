@@ -18,6 +18,8 @@
     <Compile Include="../../Helpers/DVPersistence.cs" Link="Production/Helpers/DVPersistence.cs" />
     <Compile Include="../../Domain/Catalog/CourseCatalogValidator.cs" Link="Production/Domain/CourseCatalogValidator.cs" />
     <Compile Include="../../Domain/Catalog/ContentAvailability.cs" Link="Production/Domain/ContentAvailability.cs" />
+    <Compile Include="../../Domain/Catalog/UserProgressMigration.cs" Link="Production/Domain/UserProgressMigration.cs" />
+    <Compile Include="../../Domain/Catalog/ArchivedProgressReader.cs" Link="Production/Domain/ArchivedProgressReader.cs" />
     <Compile Include="../../Infrastructure/Persistence/AtomicJsonFile.cs" Link="Production/Persistence/AtomicJsonFile.cs" />
     <Compile Include="../../Infrastructure/Persistence/CatalogMigration.cs" Link="Production/Persistence/CatalogMigration.cs" />
   </ItemGroup>
