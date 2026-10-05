@@ -81,7 +81,8 @@
 		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
 		<!-- Custom Fonts -->
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+			<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+			<MauiAsset Remove="Resources\Raw\**\curso_abnt2_basico.json;Resources\Raw\**\curso_abnt2_intermediario.json" />
 		<MauiAsset Include="THIRD-PARTY-NOTICES.txt" LogicalName="THIRD-PARTY-NOTICES.txt" />
 	</ItemGroup>
 
@@ -127,19 +128,13 @@
 	  <MauiAsset Update="Resources\Raw\ios_keys_to_android.json">
 	    <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
 	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Courses\SENAI.json">
+	  <MauiAsset Update="Resources\Raw\SENAI.json">
 	    <LogicalName>SENAI.json</LogicalName>
 	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Courses\curso_abnt2_basico.json">
-	    <LogicalName>curso_abnt2_basico.json</LogicalName>
-	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Courses\curso_abnt2_intermediario.json">
-	    <LogicalName>curso_abnt2_intermediario.json</LogicalName>
-	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Courses\musica_se_eu_quiser_falar_com_deus.json">
+	  <MauiAsset Update="Resources\Raw\musica_se_eu_quiser_falar_com_deus.json">
 	    <LogicalName>musica_se_eu_quiser_falar_com_deus.json</LogicalName>
 	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Courses\musicas.json">
+	  <MauiAsset Update="Resources\Raw\musicas.json">
 	    <LogicalName>musicas.json</LogicalName>
 	  </MauiAsset>
 	  <MauiAsset Update="Resources\Raw\KeyMapping\Fingers.json">

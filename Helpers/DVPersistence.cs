@@ -14,6 +14,7 @@
 
 using Digitavox.PlatformsImplementations;
 using Digitavox.Domain.Catalog;
+using Digitavox.Infrastructure.Persistence;
 using System.Text.Json;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
@@ -130,30 +131,7 @@ namespace Digitavox.Helpers
         }
         public static async Task CopyCourseFilesAsync()
         {
-            string coursesDirectory = Path.Combine(FileSystem.AppDataDirectory, "Courses");
-            List<string> coursesFilesApp = new List<string>
-            {
-                "curso_abnt2_basico",
-                "curso_abnt2_intermediario",
-                "musica_se_eu_quiser_falar_com_deus",
-                "musicas",
-                "SENAI"
-            };
-            Directory.CreateDirectory(coursesDirectory);
-            foreach (var fileName in coursesFilesApp)
-            {
-                string courseFilePath = Path.Combine(coursesDirectory, $"{fileName}.json");
-                if (!File.Exists(courseFilePath))
-                {
-                    using (var sourceStream = await FileSystem.OpenAppPackageFileAsync($"{fileName}.json"))
-                    {
-                        using (var destinationStream = File.Create(courseFilePath))
-                        {
-                            await sourceStream.CopyToAsync(destinationStream);
-                        }
-                    }
-                }
-            }
+            await new CatalogMigration(FileSystem.AppDataDirectory, FileSystem.OpenAppPackageFileAsync).EnsureCurrentAsync();
         }
         public static (List<JsonElement>, List<string>, List<string>) ReadCourseFiles(IEnumerable<string> allowedCourseIds = null)
         {

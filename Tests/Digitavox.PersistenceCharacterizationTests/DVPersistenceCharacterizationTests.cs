@@ -139,18 +139,11 @@ public class DVPersistenceCharacterizationTests
     {
         string[] bundledCourses =
         {
-            "curso_abnt2_basico",
-            "curso_abnt2_intermediario",
             "musica_se_eu_quiser_falar_com_deus",
             "musicas",
             "SENAI"
         };
-        foreach (string course in bundledCourses)
-        {
-            File.WriteAllText(
-                Path.Combine(FileSystem.AppPackageDirectory, $"{course}.json"),
-                course);
-        }
+        FileSystem.AppPackageDirectory = Path.Combine(AppContext.BaseDirectory, "Bundle");
 
         await DVPersistence.CopyCourseFilesAsync();
 
