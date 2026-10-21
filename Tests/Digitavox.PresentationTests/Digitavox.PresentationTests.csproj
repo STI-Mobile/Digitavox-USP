@@ -9,6 +9,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../ViewModels/UserOptionsViewModel.cs" Link="Production/ViewModels/UserOptionsViewModel.cs" />
+    <Compile Include="../../ViewModels/LoginViewModel.cs" Link="Production/ViewModels/LoginViewModel.cs" />
+    <Compile Include="../../Application/Messages/AppMessages.cs" Link="Production/Application/Messages/AppMessages.cs" />
     <Compile Include="../../Models/Course.cs" Link="Production/Models/Course.cs" />
     <Compile Include="../../Domain/Catalog/ContentAvailability.cs" Link="Production/Domain/ContentAvailability.cs" />
     <Compile Include="../../Models/CourseLesson.cs" Link="Production/Models/CourseLesson.cs" />

@@ -6,13 +6,26 @@ namespace Digitavox.ViewModels
     public class DVViewModelSpeak
     {
         public List<string> Lines { get; private set; } = new();
+        public bool CompleteSpeechImmediately { get; set; } = true;
+        public List<Action> PendingSpeech { get; } = new();
+        public List<int> SpokenLines { get; } = new();
+        public int SkipCalls { get; private set; }
         public DVViewModelSpeak SetTextAndSpeech(List<string> text, List<string> speech) { Lines = text; return this; }
         public void RegisterUpdateScreen(Action<FormattedString> update) => update(new FormattedString());
         public void SpeakAll() { }
-        public void SpeakOneLine(int line, Action completed) => completed();
-        public void Speak(string text, Action completed) => completed();
+        public void SpeakOneLine(int line, Action completed)
+        {
+            SpokenLines.Add(line);
+            if (CompleteSpeechImmediately) completed();
+            else PendingSpeech.Add(completed);
+        }
+        public void Speak(string text, Action completed)
+        {
+            if (CompleteSpeechImmediately) completed();
+            else PendingSpeech.Add(completed);
+        }
         public void ChangeLine(string text, string speech, int line) => Lines[line] = text;
-        public void Skip() { }
+        public void Skip() => SkipCalls++;
         public void Set(string key, bool value) { }
         public int LineCount() => Lines.Count;
     }
@@ -33,6 +46,7 @@ namespace Digitavox.ViewModels
         public void LastLineIsText(bool value) { }
         public void HandleKeyCode(string key) => Keys.Add(key);
         public void InvalidOption(string text) { }
+        public bool OnAlert() => false;
     }
 }
 
@@ -43,8 +57,10 @@ namespace Digitavox.Presentation.Input
         public bool KeyDown(int code) => true;
         public (string code, string speakOnlyChar) KeyUp(int code, int modifiers) => code switch
         {
-            13 => ("Enter", "enter"), 27 => ("Escape", "escape"), 40 => ("Down", "baixo"), _ => ("3", "três")
+            13 => ("Enter", "enter"), 27 => ("Escape", "escape"), 40 => ("Down", "baixo"),
+            >= 65 and <= 90 => (((char)code).ToString(), ((char)code).ToString()), _ => ("3", "três")
         };
+        public string DescribeKey(string code) => code;
     }
 }
 

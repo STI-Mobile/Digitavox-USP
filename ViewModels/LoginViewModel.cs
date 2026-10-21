@@ -26,7 +26,7 @@ namespace Digitavox.ViewModels
     public partial class LoginViewModel : ObservableObject
     {
         bool enterName;
-        bool titleOutput;
+        int introductionVersion;
         string userName;
         bool enterAnswer;
         int accept = -1;
@@ -108,16 +108,15 @@ namespace Digitavox.ViewModels
                 TextSize = settingsService.Get<double>("fontSize");
             });
 
-            titleOutput = true;
+            int currentIntroduction = ++introductionVersion;
+            enterName = true;
             enterAnswer = false;
             userName = string.Empty;
             speakUserName.Clear();
             dVViewModelSpeak.Set("maintainTag", false);
             dVViewModelSpeak.SpeakOneLine(0, () =>
             {
-                enterName = true;
-                
-                titleOutput = false;
+                if (currentIntroduction != introductionVersion) return;
                 dVViewModelSpeak.SpeakOneLine(1, () =>
                 {
                     dVViewModelSpeak.Set("maintainTag", true);
@@ -252,76 +251,75 @@ namespace Digitavox.ViewModels
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
             var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
-            if (bean.code != null)
+            if (bean.code != null && (enterName || enterAnswer))
             {
-                if (!titleOutput)
+                // Typing can interrupt the introduction even if speech never completes.
+                introductionVersion++;
+                dVViewModelSpeak.Skip();
+                if (enterName)
                 {
-                    if (bean.code != null) dVViewModelSpeak.Skip();
-                    if (enterName)
+                    if (bean.code == "Enter")
                     {
-                        if (bean.code == "Enter")
+                        User();
+                    }
+                    else if (bean.code == "Backspace")
+                    {
+                        if (userName.Length > 1)
                         {
-                            User();
-                        }
-                        else if (bean.code == "Backspace")
-                        {
-                            if (userName.Length > 1)
-                            {
-                                string last;
-                                userName = userName.Substring(0, userName.Length - 1);
-                                speakUserName.RemoveAt(speakUserName.Count - 1);
-                                last = speakUserName.Last();
-                                WriteName(last);
-                            }
-                            else
-                            {
-                                userName = string.Empty;
-                                WriteName(string.Empty);
-                            }
+                            string last;
+                            userName = userName.Substring(0, userName.Length - 1);
+                            speakUserName.RemoveAt(speakUserName.Count - 1);
+                            last = speakUserName.Last();
+                            WriteName(last);
                         }
                         else
                         {
-                            if (alphabetLetters.Contains(bean.code))
-                            {
-                                string letter = bean.speakOnlyChar;
-                                userName = userName + bean.code;
-                                speakUserName.Add(letter);
-                                WriteName(letter);
-                            }
-                            else if (changeVowels.Contains(bean.code))
-                            {
-                                List<string> newVowel = new List<string>()
-                                {
-                                    "a", "o", "e", "i", "u"
-                                };
-                                int index = changeVowels.IndexOf(bean.code) % 5;
-                                string letter = keyboardInputProcessor.DescribeKey(newVowel[index]);
-                                userName = userName + newVowel[index];
-                                speakUserName.Add(letter);
-                                WriteName(letter);
-                            }
-                            else if (!DVKeyboard.IsModifierKey(bean.code))
-                            {
-                                HandleUnexpectedKey(bean.speakOnlyChar);
-                            }
+                            userName = string.Empty;
+                            WriteName(string.Empty);
                         }
                     }
-                    else if (enterAnswer)
+                    else
                     {
-                        if (bean.code == "S" || bean.code == "s")
+                        if (alphabetLetters.Contains(bean.code))
                         {
-                            enterAnswer = false;
-                            Accept();
+                            string letter = bean.speakOnlyChar;
+                            userName = userName + bean.code;
+                            speakUserName.Add(letter);
+                            WriteName(letter);
                         }
-                        else if (bean.code == "N" || bean.code == "n")
+                        else if (changeVowels.Contains(bean.code))
                         {
-                            enterAnswer = false;
-                            if (accept >= 0) Reject();
+                            List<string> newVowel = new List<string>()
+                            {
+                                "a", "o", "e", "i", "u"
+                            };
+                            int index = changeVowels.IndexOf(bean.code) % 5;
+                            string letter = keyboardInputProcessor.DescribeKey(newVowel[index]);
+                            userName = userName + newVowel[index];
+                            speakUserName.Add(letter);
+                            WriteName(letter);
                         }
                         else if (!DVKeyboard.IsModifierKey(bean.code))
                         {
                             HandleUnexpectedKey(bean.speakOnlyChar);
                         }
+                    }
+                }
+                else if (enterAnswer)
+                {
+                    if (bean.code == "S" || bean.code == "s")
+                    {
+                        enterAnswer = false;
+                        Accept();
+                    }
+                    else if (bean.code == "N" || bean.code == "n")
+                    {
+                        enterAnswer = false;
+                        if (accept >= 0) Reject();
+                    }
+                    else if (!DVKeyboard.IsModifierKey(bean.code))
+                    {
+                        HandleUnexpectedKey(bean.speakOnlyChar);
                     }
                 }
             }
