@@ -13,37 +13,11 @@
 // limitations under the License.
 
 using Foundation;
-using UIKit;
-using Digitavox.ViewModels;
-using Digitavox.Platforms.iOS;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Digitavox;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-    private DVViewModelSpeak viewModelSpeak;
-
-    protected override MauiApp CreateMauiApp()
-    {
-        MauiApp mauiApp = MauiProgram.CreateMauiApp();
-        viewModelSpeak = mauiApp.Services.GetRequiredService<DVViewModelSpeak>();
-        return mauiApp;
-    }
-
-    public override void OnActivated(UIApplication application)
-    {
-        base.OnActivated(application);
-        AccessibilityHelper.PersistVoiceOverStatusAndNotify();
-    }
-
-    public override void OnResignActivation(UIApplication application)
-    {
-        base.OnResignActivation(application);
-        viewModelSpeak.Skip();
-        AccessibilityHelper.CheckVoiceOverStatusChangeAndNotify();
-    }
-
-
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
