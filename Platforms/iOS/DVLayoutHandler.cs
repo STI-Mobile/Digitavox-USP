@@ -41,11 +41,32 @@ namespace Digitavox.PlatformsImplementations
 public class DVLayoutView : LayoutView {
 
   public DVLayoutView() {
-    this.BecomeFirstResponder();
-
     WeakReferenceMessenger.Default.Register<RequestFirstResponderMessage>(this, (r, m) => {
-      this.BecomeFirstResponder();
+      RequestKeyboardFocus();
     });
+  }
+
+  public override void MovedToWindow() {
+    base.MovedToWindow();
+    RequestKeyboardFocus();
+  }
+
+  private void RequestKeyboardFocus() {
+    // OnAppearing can run before the native view joins its scene's window.
+    BeginInvokeOnMainThread(() => {
+      if (Handle != IntPtr.Zero && Window != null &&
+          Shell.Current?.CurrentPage?.Handler?.PlatformView is UIView pageView &&
+          IsDescendantOfView(pageView)) {
+        BecomeFirstResponder();
+      }
+    });
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) {
+      WeakReferenceMessenger.Default.Unregister<RequestFirstResponderMessage>(this);
+    }
+    base.Dispose(disposing);
   }
 
   public override bool CanBecomeFirstResponder {

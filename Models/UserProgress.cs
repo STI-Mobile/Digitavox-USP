@@ -109,6 +109,7 @@ namespace Digitavox.Models
                     last = (int)courseDictionary["ULTIMACONCLUIDA"];
                 }
             }
+            last = Math.Clamp(last, 0, course.TotalLessons());
             if (last < course.TotalLessons())
             {
                 if (course.TotalLessons() == 1) return 1;
@@ -157,12 +158,16 @@ namespace Digitavox.Models
         {
             if (userDictionary.TryGetValue(courseKey, out object test) && test is Dictionary<string, object> courseDictionary)
             {
-                if (courseDictionary.ContainsKey("ULTIMACONCLUIDA") && course.TotalLessons() == 1)
+                int lessonNumber = int.Parse(lessonKey.Substring(5));
+                if (courseDictionary.TryGetValue("ULTIMACONCLUIDA", out var frontier) && frontier is int last && lessonNumber <= last)
                 {
                     return "Sim";
                 }
+                if (courseDictionary.Any(p => p.Key.StartsWith(lessonKey + ".", StringComparison.Ordinal) &&
+                    p.Value is Dictionary<string, object> attempt && attempt.TryGetValue("CONCLUIU", out var concluded) && Equals(concluded, "S")))
+                    return "Sim";
             }
-            return (int.Parse(lessonKey.Substring(5)) < LastAvailableLesson()) ? "Sim" : "Não";
+            return "Não";
         }
         public Dictionary<string, object>.KeyCollection GetKeys()
         {

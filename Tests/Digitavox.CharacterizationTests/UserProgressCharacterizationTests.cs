@@ -110,6 +110,26 @@ public class UserProgressCharacterizationTests
         Assert.AreEqual("Sim", progress.LessonConcluded());
     }
 
+    [TestMethod]
+    [DataRow(0, "Não", 1)]
+    [DataRow(3, "Não", 4)]
+    [DataRow(4, "Sim", 4)]
+    [DataRow(5, "Sim", 4)]
+    public void Final_lesson_completion_is_independent_of_next_available_lesson(int frontier, string concluded, int available)
+    {
+        Course course = TestCourseFactory.CreateSelectedCourse(totalLessons: 4);
+        DVPersistence.SeedUser("ana", new Dictionary<string, object>
+        {
+            ["NOMEUSUARIO"] = "ANA", [course.CourseId()] = new Dictionary<string, object> { ["ULTIMACONCLUIDA"] = frontier }
+        });
+        UserProgress progress = CreateProgress(new CourseLesson(), course);
+        progress.UserRegistration("ana");
+        progress.CourseRegistration(course.CourseId());
+        progress.LessonRegistration("LICAO4");
+        Assert.AreEqual(available, progress.LastAvailableLesson());
+        Assert.AreEqual(concluded, progress.LessonConcluded());
+    }
+
     private static UserProgress CreateProgress(CourseLesson lesson, Course course) =>
         new(lesson, course, new TestUserProgressStore(), new TestSettingsService());
 

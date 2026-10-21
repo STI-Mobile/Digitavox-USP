@@ -24,7 +24,8 @@ namespace Digitavox.ViewModels
     public partial class UserOptionsViewModel : ObservableObject, IKeyboardInputHandler
     {
         int timeToCaptureNumber = 0;
-        int totalOptions = 2;
+        int totalOptions = 3;
+        bool showingHistory;
         int introductionLines = 1;
         bool answerOption; 
         bool outcome;
@@ -44,13 +45,15 @@ namespace Digitavox.ViewModels
         private readonly ISettingsService settingsService;
         private readonly INavigationService navigationService;
         private readonly IAppEnvironment appEnvironment;
+        private readonly IUserHistoryStore historyStore;
         public UserOptionsViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
                                     KeyboardInputProcessor keyboardInputProcessor,
                                     UserProgress userProgress,
                                     ISettingsService settingsService,
                                     INavigationService navigationService,
-                                    IAppEnvironment appEnvironment)
+                                    IAppEnvironment appEnvironment,
+                                    IUserHistoryStore historyStore)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
@@ -59,6 +62,7 @@ namespace Digitavox.ViewModels
             this.settingsService = settingsService;
             this.navigationService = navigationService;
             this.appEnvironment = appEnvironment;
+            this.historyStore = historyStore;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -70,11 +74,16 @@ namespace Digitavox.ViewModels
             }
             pageFunctions = new List<Action>()
             {
-                UserOn, ChangeUser
+                UserOn, ChangeUser, ShowHistory
             };
         }
         public async Task OnPageAsync()
         {
+            if (showingHistory)
+            {
+                ShowHistoryLines();
+                return;
+            }
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de opções de usuário");
             await Task.Delay(100);
             var textList = new List<string>();
@@ -94,6 +103,7 @@ namespace Digitavox.ViewModels
                 "As opções são: ",
                 "1 - Falar usuário atualmente logado",
                 "2 - Alterar usuário logado",
+                "3 - Consultar histórico dos conteúdos retirados",
                 string.Empty
             };
 
@@ -102,6 +112,7 @@ namespace Digitavox.ViewModels
                 "As opções são: ",
                 "1 - Falar usuário atualmente logado",
                 "2 - Alterar usuário logado",
+                "3 - Consultar histórico dos conteúdos retirados",
                 string.Empty
             };
             if (defaultSpeechList.Count == defaultTextList.Count)
@@ -154,6 +165,36 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.ChangeLine(changeOutput, changeOutput, introductionLines + totalOptions);
             dVViewModelSpeak.SpeakOneLine(introductionLines + totalOptions, () => { });
         }
+        private void ShowHistory()
+        {
+            showingHistory = true;
+            ShowHistoryLines();
+        }
+        private void ShowHistoryLines()
+        {
+            dVViewModelFunctions.ClearHelpOptions();
+            dVViewModelFunctions.SetCurrentPageIdentifier("no histórico de conteúdos retirados");
+            var lines = new List<string> { "Histórico dos conteúdos retirados", "Use tab e setas verticais para consultar as estatísticas. Escape volta." };
+            try
+            {
+                var history = historyStore.LoadLines(userProgress.GetUserName());
+                lines.AddRange(history.Count == 0 ? new[] { "Nenhum registro histórico de conteúdo retirado." } : history);
+            }
+            catch (Exception exception) when (exception is IOException or InvalidDataException or System.Text.Json.JsonException)
+            {
+                lines.Add("Não foi possível consultar o histórico. Os dados foram preservados.");
+            }
+            dVViewModelSpeak.SetTextAndSpeech(lines, lines).RegisterUpdateScreen(text =>
+            {
+                PageFormattedLabel = text;
+                TextSize = settingsService.Get<double>("fontSize");
+            });
+            dVViewModelFunctions.SetFirstOptionLineNumber(0);
+            dVViewModelFunctions.SetLastOptionLineNumber(lines.Count - 1);
+            dVViewModelFunctions.SetOptionNumberStart(0);
+            dVViewModelFunctions.LastLineIsText(false);
+            dVViewModelSpeak.SpeakAll();
+        }
         private void Accept()
         {
             dVViewModelSpeak.Speak("s", () => 
@@ -193,6 +234,17 @@ namespace Digitavox.ViewModels
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
+                if (showingHistory)
+                {
+                    if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
+                    {
+                        showingHistory = false;
+                        _ = OnPageAsync();
+                    }
+                    else if (bean.code is "Up" or "Down" or "Tab" or "ShiftTab") dVViewModelFunctions.HandleKeyCode(bean.code);
+                    else if (bean.code == " ") ShowHistoryLines();
+                    return true;
+                }
                 dVViewModelFunctions.LastLineIsText(outcome);
                 if (answerOption)
                 {

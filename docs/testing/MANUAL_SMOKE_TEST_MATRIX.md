@@ -4,8 +4,8 @@ Esta matriz congela os fluxos observáveis que precisam permanecer equivalentes 
 
 ## Inicialização e ciclo de vida
 
-- [ ] Primeira execução copia os cursos e abre o tutorial somente depois de concluir a preparação.
-- [ ] Execuções seguintes abrem a identificação sem repetir a cópia inicial.
+- [ ] Primeira execução publica o catálogo versão 1 e abre o tutorial somente depois de concluir a preparação.
+- [ ] Execuções seguintes verificam catálogo/perfis e abrem a identificação; estado já válido não sofre novas gravações.
 - [ ] Suspender e retomar preserva tela, seleção, exercício e temporizador.
 - [ ] Encerrar durante uma fala não deixa TTS ou áudio ativo.
 - [ ] Retomar anuncia corretamente a página atual.
@@ -75,3 +75,28 @@ Executar em Android, iOS/iPadOS com teclado, macOS e Windows:
 - [ ] Política de privacidade abre, carrega e permite retorno.
 - [ ] Licenças de terceiros carregam introdução e seções completas.
 - [ ] O tamanho de texto configurado é aplicado às licenças.
+
+## Upgrade do catálogo versão 0 → 1
+
+Estes itens estão **pendentes de execução em dispositivo/pacote nativo**. Os testes automatizados e os limites do ambiente estão registrados em [content-catalog-v1-migration.md](../content-catalog-v1-migration.md).
+
+- [ ] Instalação limpa oferece somente músicas, música individual e SENAI, nessa ordem; campos `NUMEROCURSO` continuam 3/4/5.
+- [ ] Bundle final não contém os dois JSONs retirados nem o payload de `musicas/LICAO5`.
+- [ ] Upgrade de uma versão distribuída preserva sandbox/perfis, atualiza os JSONs antigos e abre identificação.
+- [ ] Perfil sem progresso mantém configurações e dados cadastrais.
+- [ ] Básico concluído e Intermediário parcial saem do catálogo executável; suas tentativas e fronteiras aparecem no histórico.
+- [ ] SENAI e música individual mantêm disponibilidade, tentativas, datas e estatísticas.
+- [ ] Músicas mantém `LICAO1`…`LICAO4` com as mesmas identidades, exercícios e estatísticas.
+- [ ] Fronteiras legadas de músicas 0/1/2/3/4 continuam corretas; fronteira 5 vira 4 e preserva evidência anterior no histórico.
+- [ ] Quinta música desbloqueada, concluída ou incompleta não pode ser iniciada por menu, ajuda, Enter em estatísticas ou retomada.
+- [ ] Conclusão de música 4 continua sendo anunciada corretamente; terminar essa lição não tenta acessar lição 5.
+- [ ] Usuário que estava em um conteúdo retirado antes do upgrade inicia em identificação; nenhum cursor antigo é restaurado.
+- [ ] Todos os perfis, inclusive anônimo e usuários não logados recentemente, são tratados.
+- [ ] Opção 3 do menu de usuário mostra histórico por texto/fala; Tab/setas consultam, Escape retorna e Enter não inicia exercício.
+- [ ] Histórico informa tentativas incompletas, datas, acertos, tempos e erros por caractere; não fala letras/exercícios retirados.
+- [ ] Pasta `Courses` vazia, importação parcial ou arquivo ativo ausente são reparados sem reset do usuário.
+- [ ] Interrupções entre gravação de histórico, perfil, catálogo e commit são recuperadas no reinício sem duplicação/perda.
+- [ ] Falha/JSON inválido mostra erro de inicialização, preserva os dados e não oferece conteúdo retirado como fallback.
+- [ ] Restore de dados legados depois de marcador versão 1 provoca nova reconciliação, sem reutilizar os IDs retirados.
+- [ ] Segunda atualização e startup repetido não alteram arquivos nem duplicam tentativas/histórico.
+- [ ] VoiceOver/TalkBack/TTS e navegação por teclado funcionam no catálogo e na nova consulta histórica.

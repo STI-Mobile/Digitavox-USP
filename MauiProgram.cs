@@ -48,6 +48,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IClock, SystemClock>();
         builder.Services.AddSingleton<IExerciseTimer, MauiExerciseTimer>();
         builder.Services.AddSingleton<IUserProgressStore, MauiUserProgressStore>();
+        builder.Services.AddSingleton<IUserHistoryStore, MauiUserHistoryStore>();
+        builder.Services.AddSingleton(_ => new CatalogMigration(FileSystem.AppDataDirectory, FileSystem.OpenAppPackageFileAsync));
         builder.Services.AddSingleton<ICourseCatalogStore, MauiCourseCatalogStore>();
         builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
         builder.Services.AddSingleton<ISpeechService, MauiSpeechService>();

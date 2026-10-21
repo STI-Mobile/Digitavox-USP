@@ -14,6 +14,7 @@
 
 using Digitavox.Core.Abstractions;
 using System.Text.Json;
+using Digitavox.Domain.Catalog;
 
 namespace Digitavox.Models
 {
@@ -38,37 +39,54 @@ namespace Digitavox.Models
             if (jsonList.Count == 0)
             {
                 CourseCatalogData catalog = courseCatalogStore.Load();
-                jsonList = catalog.Courses;
-                courseIdList = catalog.FileNames;
-                courseNameList = catalog.CourseNames;
+                if (catalog.Courses.Count != catalog.FileNames.Count || catalog.Courses.Count != catalog.CourseNames.Count)
+                    throw new InvalidDataException("Listas de catálogo inconsistentes.");
+                var indices = Enumerable.Range(0, catalog.Courses.Count)
+                    .Where(i => !ContentAvailability.IsRemoved(Path.GetFileNameWithoutExtension(catalog.FileNames[i]))).ToArray();
+                jsonList = indices.Select(i => catalog.Courses[i]).ToList();
+                courseIdList = indices.Select(i => catalog.FileNames[i]).ToList();
+                courseNameList = indices.Select(i => catalog.CourseNames[i]).ToList();
             }
         }
         public void SelectCourse(int fileNumber)
         {
+            if (fileNumber < 0 || fileNumber >= jsonList.Count)
+                throw new ArgumentOutOfRangeException(nameof(fileNumber), "Curso inexistente no catálogo.");
             fileRoot = jsonList[fileNumber];
             courseRoot = fileRoot.GetProperty("CURSO");
             courseId = courseIdList[fileNumber];
             courseNumber = fileNumber + 1;
+            lessonId = null;
+            lessonRoot = default;
         }
         public void SelectLesson(int lessonNumber)
         {
-            lessonId = $"LICAO{lessonNumber}";
-            lessonRoot = fileRoot.GetProperty(lessonId);
+            string selectedId = $"LICAO{lessonNumber}";
+            if (fileRoot.ValueKind != JsonValueKind.Object || ContentAvailability.IsRemoved(CourseId(), selectedId) || lessonNumber < 1 || lessonNumber > TotalLessons() ||
+                !fileRoot.TryGetProperty(selectedId, out var selectedLesson) || selectedLesson.ValueKind != JsonValueKind.Object)
+                throw new KeyNotFoundException($"Lição inexistente no catálogo: {selectedId}.");
+            lessonId = selectedId;
+            lessonRoot = selectedLesson;
         }
         public string CourseApresentation()
         {
+            EnsureAvailable();
             return courseRoot.GetProperty("Present").GetProperty("APT").ToString();
         }
         public string CourseInstruction()
         {
+            EnsureAvailable();
             return courseRoot.GetProperty("Instruction").GetProperty("IST").ToString();
         }
         public int TotalLessons()
         {
-            return int.Parse(courseRoot.GetProperty("QUANTIDADELICOES").ToString());
+            EnsureAvailable();
+            int total = int.Parse(courseRoot.GetProperty("QUANTIDADELICOES").ToString());
+            return CourseId() == "musicas" ? Math.Min(total, 4) : total;
         }
         public string CourseProperty(string property)
         {
+            EnsureAvailable();
             return courseRoot.GetProperty(property).ToString();
         }
         public int CourseNumber()
@@ -81,14 +99,17 @@ namespace Digitavox.Models
         }
         public string LessonApresentation()
         {
+            EnsureAvailable(requireLesson: true);
             return lessonRoot.GetProperty("Present").GetProperty("APT").ToString();
         }
         public string LessonInstruction()
         {
+            EnsureAvailable(requireLesson: true);
             return lessonRoot.GetProperty("Instruction").GetProperty("IST").ToString();
         }
         public string LessonProperty(string property)
         {
+            EnsureAvailable(requireLesson: true);
             return lessonRoot.GetProperty(property).ToString();
         }
         public int LessonNumber()
@@ -105,6 +126,7 @@ namespace Digitavox.Models
         }
         public List<string> GetExercises()
         {
+            EnsureAvailable(requireLesson: true);
             List<string> exercisesList = new List<string>();
             var exercises = lessonRoot.EnumerateObject()
                               .Where(it => it.Name.StartsWith("EXER"));
@@ -113,6 +135,21 @@ namespace Digitavox.Models
                 exercisesList.Add(exercise.Value.ToString());
             }
             return exercisesList;
+        }
+        public void ResetCatalog()
+        {
+            jsonList.Clear();
+            courseIdList.Clear();
+            courseNameList.Clear();
+            fileRoot = courseRoot = lessonRoot = default;
+            courseId = lessonId = null;
+            courseNumber = 0;
+        }
+        private void EnsureAvailable(bool requireLesson = false)
+        {
+            if (courseId is null || ContentAvailability.IsRemoved(CourseId(), requireLesson ? lessonId : null) ||
+                (requireLesson && lessonRoot.ValueKind != JsonValueKind.Object))
+                throw new InvalidOperationException("Conteúdo indisponível para execução.");
         }
     }
 }
