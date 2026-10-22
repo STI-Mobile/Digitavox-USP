@@ -41,6 +41,8 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
 
     protected override void OnCreate(Bundle savedInstanceState) {
         base.OnCreate(savedInstanceState);
+        // MAUI applies the insets through ContentPage.SafeAreaEdges.
+        AndroidX.Core.View.WindowCompat.EnableEdgeToEdge(Window);
         active = true;
         am = (AccessibilityManager)GetSystemService(Context.AccessibilityService);
     }

@@ -50,6 +50,10 @@ e pela entrada/cancelamento da confirmação de login via teclado, sem registros
 de crash. Essa verificação não substitui testes completos de cursos e voz nem
 confirma o processamento no Google Play. O pacote de validação usa chave de debug.
 
+Após a atualização de Material Components e AndroidX para a exibição de ponta
+a ponta, o AAB final passou a conter 8.786.160 bytes (8,79 MB) de DEX. Veja a
+[validação da atualização](android-edge-to-edge.md#resultado-local-em-22102026).
+
 ## Limitação de ofuscação no SDK instalado
 
 O workload `Microsoft.Android.Sdk.Darwin` 36.1.69 desativa a renomeação de símbolos
