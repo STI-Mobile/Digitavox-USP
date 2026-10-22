@@ -55,6 +55,9 @@
 		  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 		  <AndroidUseAapt2>True</AndroidUseAapt2>
+		  <!-- Shrink Java/Kotlin DEX code and include its mapping in the app bundle. -->
+		  <AndroidLinkTool>r8</AndroidLinkTool>
+		  <AndroidCreateProguardMappingFile>True</AndroidCreateProguardMappingFile>
 		</PropertyGroup>
 
 		<Import Project="Signing.local.props" Condition="Exists('Signing.local.props')" />

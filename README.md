@@ -188,6 +188,10 @@ dotnet build Digitavox.csproj -f net10.0-windows10.0.19041.0 --no-restore
 
 `Signing.local.props` é local e não deve ser versionado.
 
+O build Android em `Release` usa R8 para reduzir o código DEX e inclui o arquivo
+de mapeamento no AAB. Veja [otimização DEX na publicação Android](docs/android-release-optimization.md)
+para medir o pacote e verificar as limitações de ofuscação do SDK .NET.
+
 ## Licença / License
 
 Este projeto é licenciado sob a Apache License 2.0.
