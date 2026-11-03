@@ -22,8 +22,9 @@ using Android.Views;
 using Android.Views.Accessibility;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Messages;
 using Java.Util;
 using Locale = Java.Util.Locale;
 using TextToSpeech = Android.Speech.Tts.TextToSpeech;
@@ -40,15 +41,10 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
 
     protected override void OnCreate(Bundle savedInstanceState) {
         base.OnCreate(savedInstanceState);
+        // MAUI applies the insets through ContentPage.SafeAreaEdges.
+        AndroidX.Core.View.WindowCompat.EnableEdgeToEdge(Window);
         active = true;
         am = (AccessibilityManager)GetSystemService(Context.AccessibilityService);
-        WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-            if (m.Value == "WindowActivated")
-            {
-                
-            }
-        });
-       
     }
     private void CheckTalkbackHandler(object sender, EventArgs e)
     {
@@ -58,11 +54,11 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     {
         if (am.IsEnabled && am.IsTouchExplorationEnabled)
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("DisplayAlertDialog"));
+            WeakReferenceMessenger.Default.Send(new ShowSpeechCompatibilityAlertMessage());
         }
         else
         {
-            WeakReferenceMessenger.Default.Send(new DVMessage("DismissAlertDialog"));
+            WeakReferenceMessenger.Default.Send(new HideSpeechCompatibilityAlertMessage());
         }
     }
     protected override void OnPause()
@@ -97,10 +93,10 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     }
     public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
     {
-        Page p = Shell.Current.CurrentPage;
-        if (p is IOnPageKeyPress)
+        Page p = Shell.Current?.CurrentPage;
+        if (p is IKeyboardInputHandler inputHandler)
         {
-            bool handled = (p as IOnPageKeyPress).OnPageKeyDown((int)keyCode);
+            bool handled = inputHandler.OnPageKeyDown((int)keyCode);
             if (handled) return true;
             else return base.OnKeyDown(keyCode, e);
         }
@@ -108,8 +104,8 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     }
     public override bool OnKeyUp([GeneratedEnum] Keycode keyCode, KeyEvent e)
     {
-        Page p = Shell.Current.CurrentPage;
-        if (p is IOnPageKeyPress)
+        Page p = Shell.Current?.CurrentPage;
+        if (p is IKeyboardInputHandler inputHandler)
         {
           int keyModifiers = 0;
           if (e.IsCapsLockOn)
@@ -126,7 +122,7 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
             DVKeyboard.SetModifier(Modifier.NumLock, ref keyModifiers);
           
           
-          bool handled = (p as IOnPageKeyPress).OnPageKeyPress((int)keyCode,
+          bool handled = inputHandler.OnPageKeyPress((int)keyCode,
                   keyModifiers);
           if (handled) return true;
               else return base.OnKeyUp(keyCode, e);

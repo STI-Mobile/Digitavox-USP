@@ -16,12 +16,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesHelpViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         int totalOptions = 11;
         List<string> functionKeyCodes;
         List<string> pageKeyCodes;
@@ -33,14 +35,20 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public ExercisesHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                       DVViewModelFunctions dVViewModelFunctions,
-                                      FingerMapping fingerMapping)
+                                      KeyboardInputProcessor keyboardInputProcessor,
+                                      ISettingsService settingsService,
+                                      IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             functionKeyCodes = new List<string>()
             {
                 "Left", "Right", "F2",
@@ -57,10 +65,10 @@ namespace Digitavox.ViewModels
                 pageKeyCodes.Add(key);
             }
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de ajuda de exercícios");
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             var textList = new List<string>()
 {
@@ -103,19 +111,19 @@ namespace Digitavox.ViewModels
                                 
                                 
                                 PageFormattedLabel = text;
-                                TextSize = DVPersistence.Get<double>("fontSize");
+                                TextSize = settingsService.Get<double>("fontSize");
                             });
 
 
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - totalOptions);
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelFunctions.SetOptionNumberStart(dVViewModelSpeak.LineCount() - totalOptions - 1);
-            dVViewModelFunctions.SetOption2PageList(new List<string>()
+            dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
             {
-                "SecondHelp"
+                AppRoute.SecondHelp
             });
             dVViewModelSpeak.SpeakAll();
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
     }
         private void Enter()
         {
@@ -132,30 +140,24 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
                 dVViewModelFunctions.ExerciseHelpOptions();
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
                 else if (bean.code == "Enter")
                 {
                     Enter();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

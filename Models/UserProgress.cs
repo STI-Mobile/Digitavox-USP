@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Helpers;
+using Digitavox.Core.Abstractions;
 using System.Collections.Generic;
 
 namespace Digitavox.Models
@@ -26,24 +26,32 @@ namespace Digitavox.Models
         private Dictionary<string, object> lessonDictionary;
         private CourseLesson courseLesson;
         private Course course;
-        public UserProgress(CourseLesson courseLesson, Course course)
+        private readonly IUserProgressStore userProgressStore;
+        private readonly ISettingsService settingsService;
+        public UserProgress(
+            CourseLesson courseLesson,
+            Course course,
+            IUserProgressStore userProgressStore,
+            ISettingsService settingsService)
         {
             this.courseLesson = courseLesson;
             this.course = course;
+            this.userProgressStore = userProgressStore;
+            this.settingsService = settingsService;
         }
         public void UserRegistration(string userName)
         {
-            userDictionary = DVPersistence.LoadUserData(userName);
+            userDictionary = userProgressStore.Load(userName);
             if (!userDictionary.ContainsKey("NOMEUSUARIO")) userDictionary["NOMEUSUARIO"] = userName.ToUpper();
         }
         public void UserLogout()
         {
-            userDictionary = new Dictionary<string, object>();
+            userDictionary = null;
         }
         public void NewProgress()
         {
             userDictionary["type"] = "USUARIO";
-            DVPersistence.SaveUserJson(userDictionary);
+            userProgressStore.Save(userDictionary);
         }
         public void CourseRegistration(string course)
         {
@@ -81,7 +89,7 @@ namespace Digitavox.Models
                 if (courseLesson.GetStatistics().concluded) courseValue["ULTIMACONCLUIDA"] = 1;
                 userDictionary[courseKey] = courseValue;
             }
-            DVPersistence.SaveUserJson(userDictionary);
+            userProgressStore.Save(userDictionary);
         }
         public void GetLessonRepetitionData(int repetition)
         {
@@ -101,6 +109,7 @@ namespace Digitavox.Models
                     last = (int)courseDictionary["ULTIMACONCLUIDA"];
                 }
             }
+            last = Math.Clamp(last, 0, course.TotalLessons());
             if (last < course.TotalLessons())
             {
                 if (course.TotalLessons() == 1) return 1;
@@ -129,7 +138,7 @@ namespace Digitavox.Models
                 { "TOTALPALAVRASLICAO", courseLesson.GetStatistics().totalWords },
                 { "NPALAVRASACERTOU", courseLesson.GetStatistics().correctWords },
                 { "NPALAVRASERROU", courseLesson.GetStatistics().incorrectWords },
-                { "DIVISORTEMPO",  DVPersistence.Get<int>("timeDivider") },
+                { "DIVISORTEMPO",  settingsService.Get<int>("timeDivider") },
                 { "REPETICOESEXER", courseLesson.GetStatistics().exerciseRepetitions },
                 { "TEMPOTOTALLICAO", courseLesson.GetStatistics().totalTime },
                 { "TEMPOPRATICALICAO", courseLesson.GetStatistics().practiceTime },
@@ -149,12 +158,16 @@ namespace Digitavox.Models
         {
             if (userDictionary.TryGetValue(courseKey, out object test) && test is Dictionary<string, object> courseDictionary)
             {
-                if (courseDictionary.ContainsKey("ULTIMACONCLUIDA") && course.TotalLessons() == 1)
+                int lessonNumber = int.Parse(lessonKey.Substring(5));
+                if (courseDictionary.TryGetValue("ULTIMACONCLUIDA", out var frontier) && frontier is int last && lessonNumber <= last)
                 {
                     return "Sim";
                 }
+                if (courseDictionary.Any(p => p.Key.StartsWith(lessonKey + ".", StringComparison.Ordinal) &&
+                    p.Value is Dictionary<string, object> attempt && attempt.TryGetValue("CONCLUIU", out var concluded) && Equals(concluded, "S")))
+                    return "Sim";
             }
-            return (int.Parse(lessonKey.Substring(5)) < LastAvailableLesson()) ? "Sim" : "Não";
+            return "Não";
         }
         public Dictionary<string, object>.KeyCollection GetKeys()
         {

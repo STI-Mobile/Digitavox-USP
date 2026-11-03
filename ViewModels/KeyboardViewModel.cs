@@ -15,13 +15,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
-using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class KeyboardViewModel : ObservableObject, IOnPageKeyPress
+    public partial class KeyboardViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         int escPressed = 0;
         [ObservableProperty]
         private FormattedString pageFormattedLabel;
@@ -31,14 +31,23 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
+        private KeyboardInputProcessor keyboardInputProcessor;
         public KeyboardViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
-                                    FingerMapping fingerMapping)
+                                    KeyboardInputProcessor keyboardInputProcessor,
+                                    ISettingsService settingsService,
+                                    INavigationService navigationService,
+                                    IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
         }
         public void OnPage()
         {
@@ -64,7 +73,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
 
@@ -74,34 +83,28 @@ namespace Digitavox.ViewModels
         private void CountEsc()
         {
             escPressed += 1; 
-            if (escPressed == 2) NavigateBack();
+            if (escPressed == 2) _ = NavigateBackAsync();
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            await navigationService.GoBackAsync();
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.show != null && bean.speak != null)
             {
                 dVViewModelSpeak.Skip();
-                if (DVDevice.IsVirtual() && (bean.code != "!" || escPressed == 0))
+                if (appEnvironment.IsVirtualDevice && (bean.code != "!" || escPressed == 0))
                 {
                     dVViewModelSpeak.ChangeLine(bean.show, bean.speak, 2);
                     dVViewModelSpeak.SpeakOneLine(2, () => { });
                 }
-                else if (!DVDevice.IsVirtual() && (bean.code != "Escape" || escPressed == 0))
+                else if (!appEnvironment.IsVirtualDevice && (bean.code != "Escape" || escPressed == 0))
 
                 {
                     dVViewModelSpeak.ChangeLine(bean.show, bean.speak, 2);
@@ -111,7 +114,7 @@ namespace Digitavox.ViewModels
                 {
                     CountEsc();
                 }
-                else if (bean.code == "!" && DVDevice.IsVirtual())
+                else if (bean.code == "!" && appEnvironment.IsVirtualDevice)
                 {
                     CountEsc();
                 }

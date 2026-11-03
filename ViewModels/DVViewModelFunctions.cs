@@ -14,11 +14,7 @@
 
 using Digitavox.Helpers;
 using Digitavox.Models;
-using Digitavox.Views;
-using Plugin.Maui.Audio;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Text.RegularExpressions;
-using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Abstractions;
 
 namespace Digitavox.ViewModels
 {
@@ -26,9 +22,8 @@ namespace Digitavox.ViewModels
     {
         private int numberCaptureInterval;
         private string numberConcat;
-        private string nextPageRoute;
-        private string lastHelpPageRoute = string.Empty;
-        private string currentPageIdentifier = string.Empty;
+        private AppRoute nextPageRoute;
+        private AppRoute? lastHelpPageRoute;
         private int optionNumber;
         private int firstOptionLineNumber;
         private int lastOptionLineNumber;
@@ -36,47 +31,60 @@ namespace Digitavox.ViewModels
         private bool lastLineIsText;
         private bool alertControl = false;
         private bool keysEnabled = true;
-        private List<string> pageRouteStack = new List<string>();
-        private List<string> pageListEnterFunction;
+        private List<AppRoute> pageRouteStack = new List<AppRoute>();
+        private List<AppRoute> pageListEnterFunction;
         private List<string> courseHelpOptions;
         private List<string> lessonHelpOptions;
         private List<string> exerciseHelpOptions;
         private Dictionary<string, Action> commonFunctions;
         private Dictionary<string, Action> helpFunctions = new Dictionary<string, Action>();
         private Dictionary<string, string> onlySpokenOptions = new Dictionary<string, string>();
-        private string buzzSound = "buzz.wav";
-        private IAudioPlayer player1;
         private System.Timers.Timer timer = new System.Timers.Timer();
         private Course course;
         private CourseLesson courseLesson;
         private UserProgress userProgress;
         private DVViewModelSpeak dVViewModelSpeak;
         private FingerMapping fingerMapping;
-        private readonly IAudioManager audioManager;
+        private readonly ISettingsService settingsService;
+        private readonly ISpeechService speechService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
+        private readonly ISpeechTextFormatter speechTextFormatter;
+        private readonly ICurrentPageContext currentPageContext;
         public DVViewModelFunctions(Course course,
                                CourseLesson courseLesson,
                                UserProgress userProgress,
                                DVViewModelSpeak dVViewModelSpeak,
                                FingerMapping fingerMapping,
-                               IAudioManager audioManager)
+                               ISettingsService settingsService,
+                               ISpeechService speechService,
+                               INavigationService navigationService,
+                               IAppEnvironment appEnvironment,
+                               ISpeechTextFormatter speechTextFormatter,
+                               ICurrentPageContext currentPageContext)
         {
             this.course = course;
             this.courseLesson = courseLesson;
             this.userProgress = userProgress;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.fingerMapping = fingerMapping;
-            this.audioManager = audioManager;
+            this.settingsService = settingsService;
+            this.speechService = speechService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
+            this.speechTextFormatter = speechTextFormatter;
+            this.currentPageContext = currentPageContext;
             commonFunctions = new Dictionary<string, Action>()
             {
                 { "Enter", Enter},
-                { "!", NavigateBack},
+                { "!", () => _ = NavigateBackAsync()},
                 { "Down",  DownArrow},
                 { "Tab",  DownArrow},
                 { "Up",  UpArrow},
                 { "ShiftTab",  UpArrow},
-                { "Escape", NavigateBack},
-                { "F1", GoToNextPage},
-                { "@", GoToNextPage}
+                { "Escape", () => _ = NavigateBackAsync()},
+                { "F1", () => _ = GoToNextPageAsync()},
+                { "@", () => _ = GoToNextPageAsync()}
             };
             courseHelpOptions = new List<string>()
             {
@@ -91,7 +99,7 @@ namespace Digitavox.ViewModels
                 "Left", "Ctrl+Left", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "Escape"
             };
             numberConcat = string.Empty;
-            nextPageRoute = "Menu";
+            nextPageRoute = AppRoute.Menu;
             speakFromHelp = -1;
             lastLineIsText = false;
             optionNumber = 0;
@@ -110,17 +118,17 @@ namespace Digitavox.ViewModels
                 {courseHelpOptions[3], $"Total de {course.TotalLessons()} lições."},
                 {courseHelpOptions[4], $"Última concluída: lição {userProgress.LastAvailableLesson() - 1}."},
                 {courseHelpOptions[5], $"Usuário {userProgress.GetUserName()} logado."},
-                {courseHelpOptions[6], $"O divisor de tempo definido é {DVPersistence.Get<int>("timeDivider")}"},
+                {courseHelpOptions[6], $"O divisor de tempo definido é {settingsService.Get<int>("timeDivider")}"},
                 {courseHelpOptions[7], $"Curso número {course.CourseNumber()} de {course.CourseNameList().Count}"}
             };
         }
         private void CourseSelectedApresentation()
         {
-            OptionBasedOnCurrentPage("CoursesHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.CoursesHelp, 0);
         }
         private void CourseSelectedInstruction()
         {
-            OptionBasedOnCurrentPage("CoursesHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.CoursesHelp, 1);
         }
         public bool CoursesEnterOptionSelected()
         {
@@ -128,13 +136,13 @@ namespace Digitavox.ViewModels
         }
         private void StartCourse()
         {
-            nextPageRoute = "Lessons";
-            if (pageRouteStack[pageRouteStack.Count - 1] == "CoursesHelp")
+            nextPageRoute = AppRoute.Lessons;
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.CoursesHelp)
             {
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            GoToNextPage();
+            _ = GoToNextPageAsync();
         }
         public void LessonHelpOptions()
         {
@@ -147,18 +155,18 @@ namespace Digitavox.ViewModels
                 {lessonHelpOptions[9], LessonStatistics},
                 {lessonHelpOptions[10], CourseApresentation},
                 {lessonHelpOptions[11], CourseInstruction},
-                {lessonHelpOptions[12], NavigateBack}
+                {lessonHelpOptions[12], () => _ = NavigateBackAsync()}
             };
             string exercisesString = string.Empty;
             for (int i = 0; i < course.GetExercises().Count; i++)
             {
-                exercisesString += string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase) ? SpellWord(course.GetExercises()[i]) : SpeakPunctuation(course.GetExercises()[i]);
+                exercisesString += string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase) ? speechTextFormatter.Spell(course.GetExercises()[i]) : speechTextFormatter.DescribePunctuation(course.GetExercises()[i]);
             }
             onlySpokenOptions = new Dictionary<string, string>()
             {
                 {lessonHelpOptions[4], exercisesString},
                 {lessonHelpOptions[5], $"Usuário {userProgress.GetUserName()} logado."},
-                {lessonHelpOptions[6], $"O divisor de tempo definido é {DVPersistence.Get<int>("timeDivider")}"},
+                {lessonHelpOptions[6], $"O divisor de tempo definido é {settingsService.Get<int>("timeDivider")}"},
                 {lessonHelpOptions[7], $"Lição número {course.LessonNumber()} de {course.TotalLessons()}"},
                 {lessonHelpOptions[8], $"{course.CourseProperty("NOMECURSO")}"}
             };
@@ -177,34 +185,34 @@ namespace Digitavox.ViewModels
         }
         private void StartLesson()
         {
-            nextPageRoute = "Exercises";
-            if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+            nextPageRoute = AppRoute.Exercises;
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
             {
                 lastHelpPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            GoToNextPage();
+            _ = GoToNextPageAsync();
         }
         private void CourseApresentation()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 0);
         }
         private void CourseInstruction()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 1);
         }
         private void LessonSelectedApresentation()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 2);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 2);
         }
         private void LessonSelectedInstruction()
         {
-            OptionBasedOnCurrentPage("LessonsHelp", 3);
+            OptionBasedOnCurrentPage(AppRoute.LessonsHelp, 3);
         }
         private void LessonData()
         {
             courseLesson.SetLessonChars(course.GetExercises(), int.Parse(course.LessonProperty("REPETICOESEXER")), int.Parse(course.LessonProperty("TEMPOPORCARACTER")),
-                int.Parse(course.LessonProperty("MEDIAEXER")), DVPersistence.Get<int>("timeDivider"), string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase), string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase));
+                int.Parse(course.LessonProperty("MEDIAEXER")), settingsService.Get<int>("timeDivider"), string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase), string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase));
             List<string> statisticsList = new List<string>()
             {
                 $"Lição: {course.LessonNumber()}",
@@ -217,7 +225,7 @@ namespace Digitavox.ViewModels
                 $"Maiúsculas dispensadas: {course.LessonProperty("TUDO_EM_MAIUSCULO")}",
                 $"Quantidade de exercícios: {course.GetExercises().Count}",
             };
-            NextPageContent($"{LessonDataCode()} - Apresenta dados da lição", statisticsList);
+            _ = NextPageContentAsync($"{LessonDataCode()} - Apresenta dados da lição", statisticsList);
         }
         private void LessonStatistics()
         {
@@ -225,13 +233,13 @@ namespace Digitavox.ViewModels
             if (textList.Count == 1)
             {
                 dVViewModelSpeak.Speak("Nenhuma tentativa registrada", () => { });
-                if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+                if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
                 {
                     optionNumber = lessonHelpOptions.IndexOf("F8") + firstOptionLineNumber;
                     dVViewModelSpeak.BoldLine(optionNumber);
                 }
             }
-            else NextPageContent($"{LessonStatisticsCode()} - Apresenta estatísticas da lição", textList);
+            else _ = NextPageContentAsync($"{LessonStatisticsCode()} - Apresenta estatísticas da lição", textList);
         }
         public void ExerciseHelpOptions()
         {
@@ -240,7 +248,7 @@ namespace Digitavox.ViewModels
                 {exerciseHelpOptions[6], LessonApresentation},
                 {exerciseHelpOptions[7], LessonInstruction},
                 {exerciseHelpOptions[9], TimeStatistics},
-                {exerciseHelpOptions[10], NavigateBack},
+                {exerciseHelpOptions[10], () => _ = NavigateBackAsync()},
                 {"Ctrl+Up", LessonApresentation},
                 {"Ctrl+Down", LessonInstruction},
             };
@@ -249,14 +257,14 @@ namespace Digitavox.ViewModels
                 {exerciseHelpOptions[0], $"Repetição {courseLesson.CurrentRepetition()} de {courseLesson.GetStatistics().exerciseRepetitions}"},
                 {exerciseHelpOptions[1], $"{CharsTypedCorrectPercentual()}%" },
                 {exerciseHelpOptions[2], $"{fingerMapping.Code2Speak(courseLesson.CurrentCharacter())} {fingerMapping.Code2Finger(courseLesson.CurrentCharacter())}"},
-                {exerciseHelpOptions[3], SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
-                {exerciseHelpOptions[4], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : SpeakPunctuation(SpeakRemainder(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
-                {exerciseHelpOptions[5], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise()) : SpeakPunctuation(courseLesson.CurrentExercise())},
+                {exerciseHelpOptions[3], speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
+                {exerciseHelpOptions[4], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : speechTextFormatter.DescribePunctuation(speechTextFormatter.PreserveWordAfterLeadingPunctuation(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
+                {exerciseHelpOptions[5], (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise()) : speechTextFormatter.DescribePunctuation(courseLesson.CurrentExercise())},
                 {exerciseHelpOptions[8], DateTime.Now.ToString().Substring(11)},
-                {"Up", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise()) : SpeakPunctuation(courseLesson.CurrentExercise())},
-                {"Right", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : SpeakPunctuation(SpeakRemainder(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
+                {"Up", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise()) : speechTextFormatter.DescribePunctuation(courseLesson.CurrentExercise())},
+                {"Right", (string.Equals(course.LessonProperty("SOLETRAEXER"), "sim", StringComparison.OrdinalIgnoreCase)) ? speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())) : speechTextFormatter.DescribePunctuation(speechTextFormatter.PreserveWordAfterLeadingPunctuation(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex())))},
                 {"Down", $"{fingerMapping.Code2Speak(courseLesson.CurrentCharacter())} {fingerMapping.Code2Finger(courseLesson.CurrentCharacter())}"},
-                {"Ctrl+Right", SpellWord(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
+                {"Ctrl+Right", speechTextFormatter.Spell(courseLesson.CurrentExercise().Substring(courseLesson.NextCharacterIndex()))},
             };
         }
         public void ClearHelpOptions()
@@ -264,45 +272,13 @@ namespace Digitavox.ViewModels
             onlySpokenOptions.Clear();
             helpFunctions.Clear();
         }
-        public string SpellWord(string word)
-        {
-            string exerciseSpelled = string.Empty;
-            if (word.Last() == ' ' && word.Length > 1) word = word.Remove(word.Length - 1, 1);
-            foreach (char letter in word)
-            {
-                exerciseSpelled += fingerMapping.Code2Speak($"{letter}") + " ";
-            }
-            return exerciseSpelled;
-        }
-        public string SpeakPunctuation(string word)
-        {
-            string speakString = string.Empty;
-            foreach (char character in word)
-            {
-                if (IsPunctuation(character)) speakString += " " + fingerMapping.Code2Speak($"{character}") + " ";
-                else speakString += character;
-            }
-            return speakString;
-        }
-        static bool IsPunctuation(char character)
-        {
-            string punctuationChars = ".,;:?!";
+        public string SpellWord(string word) => speechTextFormatter.Spell(word);
 
-            return punctuationChars.Contains(character);
-        }
-        private string SpeakRemainder(string word)
-        {
-            string speakString = fingerMapping.Code2Speak($"{word.First()}") + " ";
-            if (char.IsLetter(word.First()))
-            {
-                return word;
-            }
-            if (word.Length > 1)
-            {
-                speakString += SpeakRemainder(word.Substring(1));
-            }
-            return speakString;
-        }
+        public string SpeakPunctuation(string word) => speechTextFormatter.DescribePunctuation(word);
+
+        public string EditStringForVoiceOver(string inputString) =>
+            speechTextFormatter.AdaptForScreenReader(inputString);
+
         private int CharsTypedCorrectPercentual()
         {
             int totalCharsTyped = courseLesson.GetStatistics().correctChars + courseLesson.GetStatistics().incorrectChars;
@@ -311,26 +287,15 @@ namespace Digitavox.ViewModels
         }
         private void LessonApresentation()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 0);
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 0);
         }
         private void LessonInstruction()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 1);
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 1);
         }
         private void TimeStatistics()
         {
-            OptionBasedOnCurrentPage("ExercisesHelp", 2);
-        }
-        public async void CreatePlayers()
-        {
-            if (player1 == null)
-            {
-                player1 = audioManager.CreatePlayer(await FileSystem.OpenAppPackageFileAsync(buzzSound));
-            }
-        }
-        public void PlayBuzzSound()
-        {
-            player1.Play();
+            OptionBasedOnCurrentPage(AppRoute.ExercisesHelp, 2);
         }
         private void ShortCode2Speak(string code)
         {
@@ -340,35 +305,35 @@ namespace Digitavox.ViewModels
             }
             else 
             {
-                int spellingSpeakRate = DVPersistence.Get<int>("speakRate") - 3;
+                int spellingSpeakRate = settingsService.Get<int>("speakRate") - 3;
                 if (spellingSpeakRate < 1)
                 {
                     spellingSpeakRate = 1;
                 }
-                DVSpeak.GetInstance().SetSpeechRate(spellingSpeakRate);
+                speechService.SetRate(spellingSpeakRate);
                 courseLesson.PauseTimer();
                 dVViewModelSpeak.Speak(onlySpokenOptions[code], () => {
-                    DVSpeak.GetInstance().SetSpeechRate(DVPersistence.Get<int>("speakRate"));
+                    speechService.SetRate(settingsService.Get<int>("speakRate"));
                     courseLesson.ContinueTimer();
                 });
             }
             int number = -1;
-            if (pageRouteStack[pageRouteStack.Count - 1] == "CoursesHelp")
+            if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.CoursesHelp)
             {
                 number = courseHelpOptions.IndexOf(code);
             }
-            else if (pageRouteStack[pageRouteStack.Count - 1] == "LessonsHelp")
+            else if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.LessonsHelp)
             {
                 number = lessonHelpOptions.IndexOf(code);
             }
-            else if (pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp")
+            else if (pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp)
             {
                 List<string> arrow_function = new List<string>
                 {
                     "Down", "Ctrl+Right", "Right", "Up", "Ctrl+Up", "Ctrl+Down" 
                 };
                 number = exerciseHelpOptions.IndexOf(code);
-                if ((pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp") && arrow_function.Contains(code))
+                if ((pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp) && arrow_function.Contains(code))
                 {
                     number = exerciseHelpOptions.IndexOf("F2") + arrow_function.IndexOf(code);
                 }
@@ -395,22 +360,21 @@ namespace Digitavox.ViewModels
         {
             numberCaptureInterval = interval;
         }
-        public void SetNextPageRoute(string route)
+        public void SetNextPageRoute(AppRoute route)
         {
             nextPageRoute = route;
         }
-        public void SetOption2PageList(List<string> pagesRoutes)
+        public void SetOption2PageList(List<AppRoute> pagesRoutes)
         {
             pageListEnterFunction = pagesRoutes;
         }
-        private async void NextPageContent(string title, List<string> lines)
+        private async Task NextPageContentAsync(string title, List<string> lines)
         {
             dVViewModelSpeak.Set("optionTitle", title);
             dVViewModelSpeak.Set("optionList", lines);
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
-            await Shell.Current.GoToAsync("SecondHelp");
+            await navigationService.GoToAsync(AppRoute.SecondHelp);
         }
         private void UpArrow()
         {
@@ -443,36 +407,36 @@ namespace Digitavox.ViewModels
             if (optionNumber >= firstOptionLineNumber && optionNumber < dVViewModelSpeak.LineCount())
             {
                 nextPageRoute = (pageListEnterFunction.Count > 1) ? pageListEnterFunction[optionNumber - firstOptionLineNumber] : pageListEnterFunction[0];
-                if (nextPageRoute != "PrivacyPolicy")
+                if (nextPageRoute != AppRoute.PrivacyPolicy)
                 {
-                    GoToNextPage();
+                    _ = GoToNextPageAsync();
                 }
                 else
                 {
                     keysEnabled = false;
-                    if (DVVoiceOverHelper.IsVoiceOverEnabled())
+                    if (appEnvironment.IsScreenReaderEnabled)
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade as teclas de setas e esqueipe devem ser devolvidas para o controle do vóice ôver, para tanto pressione as teclas de seta para direita e esquerda ao mesmo tempo. Para sair pressione as teclas control e esqueipe juntas e depois pressione as teclas de seta para direita e esquerda ao mesmo tempo novamente.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
-                    else if (DVDevice.IsIos()) 
+                    else if (appEnvironment.Platform == AppPlatformKind.Ios)
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade o vóice ôver deve ser ativado e as teclas de setas e esqueipe devem estar configuradas para o seu uso. Para sair pressione as teclas control e esqueipe juntas e depois pressione as teclas de seta para direita e esquerda ao mesmo tempo novamente.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
                     else
                     {
                         dVViewModelSpeak.Speak("Para escutar a política de privacidade ative o leitor de tela e para sair pressione a tecla esqueipe.", () =>
                         {
-                            MainThread.BeginInvokeOnMainThread(() =>
+                            appEnvironment.RunOnMainThread(() =>
                             {
-                                GoToNextPage();
+                                _ = GoToNextPageAsync();
                             });
                         });
                     }
@@ -485,56 +449,54 @@ namespace Digitavox.ViewModels
             if (!keysEnabled) keysEnabled = true;
             return keysEnabledStored;
         }
-        public async void GoToNextPage()
+        public async Task GoToNextPageAsync()
         {
             lastLineIsText = false;
             keysEnabled = true;
             pageRouteStack.Add(nextPageRoute);
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
-            await Shell.Current.GoToAsync(nextPageRoute);
+            await navigationService.GoToAsync(nextPageRoute);
         }
-        public async void DisplayAlert()
+        public async Task DisplayAlertAsync()
         {
             if (!alertControl)
             {
                 alertControl = true;
-                await Shell.Current.GoToAsync("Alert");
+                await navigationService.GoToAsync(AppRoute.Alert);
             }
         }
-        public async void DismissAlert()
+        public async Task DismissAlertAsync()
         {
             if (alertControl)
             {
                 alertControl = false;
-                await Shell.Current.GoToAsync("..");
+                await navigationService.GoBackAsync();
             }
         }
         public bool OnAlert()
         {
             return alertControl;
         }
-        private async void NavigateBack()
+        private async Task NavigateBackAsync()
         {
             lastLineIsText = false;
             
-            string currentPageRoute = string.Empty;
-            string navigateBackRoute = "..";
+            AppRoute? currentPageRoute = null;
+            int backLevels = 1;
             if (pageRouteStack.Count > 0)
             {
                 currentPageRoute = pageRouteStack[pageRouteStack.Count - 1];
                 pageRouteStack.RemoveAt(pageRouteStack.Count - 1);
             }
-            if ((currentPageRoute == "Exercises" && lastHelpPageRoute == "LessonsHelp") || (currentPageRoute == "Lessons" && lastHelpPageRoute == "CoursesHelp"))
+            if ((currentPageRoute == AppRoute.Exercises && lastHelpPageRoute == AppRoute.LessonsHelp) || (currentPageRoute == AppRoute.Lessons && lastHelpPageRoute == AppRoute.CoursesHelp))
             {
-                navigateBackRoute = "../..";
-                lastHelpPageRoute = string.Empty;
+                backLevels = 2;
+                lastHelpPageRoute = null;
             }
             dVViewModelSpeak.CurrentIsExercisePage(false);
-            dVViewModelSpeak.CurrentIsLessonsPage(false);
             dVViewModelSpeak.ClearStyleDictionary();
-            await Shell.Current.GoToAsync(navigateBackRoute);
+            await navigationService.GoBackAsync(backLevels);
         }
         public void InvalidOption(string key)
         {
@@ -544,12 +506,12 @@ namespace Digitavox.ViewModels
                 else SkipPageApresentation();
             }
         }
-        private void OptionBasedOnCurrentPage(string route, int helpNumber)
+        private void OptionBasedOnCurrentPage(AppRoute route, int helpNumber)
         {
             speakFromHelp = helpNumber;
             if (pageRouteStack[pageRouteStack.Count - 1] == route)
             {
-                NavigateBack();
+                _ = NavigateBackAsync();
             }
         }
         public int GetUpdateSpeakFromHelp()
@@ -611,18 +573,18 @@ namespace Digitavox.ViewModels
                 {
                     helpFunctions[code]();
                 }
-                else if (onlySpokenOptions.ContainsKey(code) && (((pageRouteStack[pageRouteStack.Count - 1] == "ExercisesHelp") && !arrow_navigation.Contains(code)) || (pageRouteStack[pageRouteStack.Count - 1] != "ExercisesHelp")))
+                else if (onlySpokenOptions.ContainsKey(code) && (((pageRouteStack[pageRouteStack.Count - 1] == AppRoute.ExercisesHelp) && !arrow_navigation.Contains(code)) || (pageRouteStack[pageRouteStack.Count - 1] != AppRoute.ExercisesHelp)))
                 {
                     ShortCode2Speak(code);
                 }
                 else
                 {
-                    if (!((code == "!" || code == "@") && (!DVDevice.IsVirtual()))) commonFunctions[code]();
+                    if (!((code == "!" || code == "@") && !appEnvironment.IsVirtualDevice)) commonFunctions[code]();
                 }
             }
             else if (code == "Escape") 
             {
-                NavigateBack();
+                _ = NavigateBackAsync();
             }
             else
             {
@@ -652,43 +614,9 @@ namespace Digitavox.ViewModels
                 dVViewModelSpeak.SpeakOneLine(optionNumber, () => { });
             }
         }
-
-
-        private static readonly Dictionary<string, string> termModifications = new Dictionary<string, string>
-        {
-            { "Escape", "CTRL + Escape" },
-            { "ESCAPE", "CTRL + ESCAPE" },
-            { "esqueipe", "control esqueipe" },
-            { "Esqueipe", "control esqueipe" },
-            { "[ESC]", "[CTRL] + [ESC]" },
-        };
-
-        public string EditStringForVoiceOver(string inputString)
-        {
-            if (DeviceInfo.Platform == DevicePlatform.iOS && DVVoiceOverHelper.IsVoiceOverEnabled())
-            {
-                foreach (var term in termModifications.Keys)
-                {
-                    if (inputString.Contains(term))
-                    {
-                        inputString = inputString.Replace(term, termModifications[term]);
-                    }
-                }
-            }
-
-            return inputString;
-        }
         public void SetCurrentPageIdentifier(string currentPageIdentifier)
         {
-            this.currentPageIdentifier = currentPageIdentifier;
-        }
-        public string CurrentPageIdentifier()
-        {
-            if (currentPageIdentifier.Length > 0)
-            {
-                return currentPageIdentifier;
-            }
-            return string.Empty;
+            currentPageContext.Identifier = currentPageIdentifier;
         }
     }
 }

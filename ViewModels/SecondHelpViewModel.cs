@@ -16,13 +16,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 
 
 namespace Digitavox.ViewModels
 {
-    public partial class SecondHelpViewModel : ObservableObject, IOnPageKeyPress
+    public partial class SecondHelpViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         string statistcsOptionKey;
         List<string> pageKeyCodes;
         [ObservableProperty]
@@ -33,23 +35,29 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
         private Course course;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
         public SecondHelpViewModel(DVViewModelSpeak dVViewModelSpeak,
                                    DVViewModelFunctions dVViewModelFunctions, 
-                                   FingerMapping fingerMapping,
+                                   KeyboardInputProcessor keyboardInputProcessor,
                                    UserProgress userProgress,
-                                   Course course)
+                                   Course course,
+                                   ISettingsService settingsService,
+                                   IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
             this.course = course;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
             statistcsOptionKey = dVViewModelFunctions.LessonStatisticsCode();
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             bool statisticsNext = dVViewModelSpeak.Get<string>("optionTitle").StartsWith(statistcsOptionKey);
             string instructionText = statisticsNext ? "Use tab e shift tab ou as setas verticais para navegar pelos itens. Depois tecle Enter para confirmar. Escape volta." : "Use tab e shift tab ou as setas verticais para navegar pelos itens. Escape volta.";
@@ -60,7 +68,7 @@ namespace Digitavox.ViewModels
                 "Escape"
             };
             dVViewModelFunctions.ClearHelpOptions();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             List<string> textList = new List<string>()
             {
                 
@@ -70,7 +78,7 @@ namespace Digitavox.ViewModels
             {
                 string.Empty
             };
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 textList.Add(instructionText);
                 speechList.Add(instructionSpeak);
@@ -86,9 +94,9 @@ namespace Digitavox.ViewModels
                 dVViewModelFunctions.SetFirstOptionLineNumber(originalTextListCount + 1);
                 dVViewModelFunctions.SetOptionNumberStart(originalTextListCount);
                 dVViewModelFunctions.SetLastOptionLineNumber(textList.Count - 1);
-                dVViewModelFunctions.SetOption2PageList(new List<string>()
+                dVViewModelFunctions.SetOption2PageList(new List<AppRoute>()
                 {
-                    "ExercisesStatistics"
+                    AppRoute.ExercisesStatistics
                 });
                 pageKeyCodes.Add("Enter");
             }
@@ -111,11 +119,11 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
             dVViewModelFunctions.SetLastOptionLineNumber(dVViewModelSpeak.LineCount() - 1);
             dVViewModelSpeak.SpeakAll();
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
         private void Option2Lesson()
         {
@@ -124,17 +132,11 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
@@ -144,9 +146,9 @@ namespace Digitavox.ViewModels
                 }
                 if (bean.code == " ")
                 {
-                    OnPage();
+                    _ = OnPageAsync();
                 }
-                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     dVViewModelFunctions.HandleKeyCode(bean.code);
                 }

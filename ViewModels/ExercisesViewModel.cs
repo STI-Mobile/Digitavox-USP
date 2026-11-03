@@ -16,14 +16,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
-using Plugin.Maui.Audio;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 using System;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ExercisesViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ExercisesViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         int escPressed = 0;
         bool updateLine;
         string exerciseSpeak;
@@ -54,21 +55,30 @@ namespace Digitavox.ViewModels
         private CourseLesson courseLesson;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
+        private readonly ISettingsService settingsService;
+        private readonly IAppEnvironment appEnvironment;
+        private readonly IFeedbackSoundService feedbackSoundService;
         public ExercisesViewModel(Course course,
                                   CourseLesson courseLesson, 
                                   DVViewModelSpeak dVViewModelSpeak,
                                   DVViewModelFunctions dVViewModelFunctions,
-                                  FingerMapping fingerMapping,
-                                  UserProgress userProgress)
+                                  KeyboardInputProcessor keyboardInputProcessor,
+                                  UserProgress userProgress,
+                                  ISettingsService settingsService,
+                                  IAppEnvironment appEnvironment,
+                                  IFeedbackSoundService feedbackSoundService)
         {
             this.course = course;
             this.courseLesson = courseLesson;
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
+            this.settingsService = settingsService;
+            this.appEnvironment = appEnvironment;
+            this.feedbackSoundService = feedbackSoundService;
             pageKeyCodes = new List<string>()
             {
                 "F1", "Up", "Escape", "Left", "Right", "Down",
@@ -79,7 +89,7 @@ namespace Digitavox.ViewModels
             repetitionsTotal = 0;
             consecutiveErrors = 0;
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             escPressed = 0;
             dVViewModelFunctions.SetCurrentPageIdentifier("na tela de exercícios");
@@ -91,9 +101,9 @@ namespace Digitavox.ViewModels
             dVViewModelFunctions.SetFirstOptionLineNumber(exerciseLine);
             dVViewModelFunctions.SetLastOptionLineNumber(exerciseLine);
             dVViewModelFunctions.SetOptionNumberStart(exerciseLine);
-            dVViewModelFunctions.SetNextPageRoute("ExercisesHelp");
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesHelp);
             speakFromHelp = dVViewModelFunctions.GetUpdateSpeakFromHelp();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             if (speakFromHelp == -1)
             {
                 if (courseLesson.ExerciseRunnig())
@@ -110,13 +120,7 @@ namespace Digitavox.ViewModels
                         if (updateLine && escPressed == 0)
                         {
                             dVViewModelSpeak.ChangeLine(exercise, exerciseSpeak, 3);
-                            dVViewModelSpeak.SpeakOneLine(3, () =>
-                            {
-                                courseLesson.ContinueTimer();
-                                Thread.Sleep(200);
-                                if (updateLine) dVViewModelSpeak.ChangeLine(exerciseDisplay, exerciseSpeak, 3);
-                                startExercise = true;
-                            });
+                            dVViewModelSpeak.SpeakOneLine(3, () => _ = RestoreExerciseDisplayAsync());
                         }
                     });
                 }
@@ -141,13 +145,13 @@ namespace Digitavox.ViewModels
                     courseLesson.ContinueTimer();
                 });
             }
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
 
         }
         public void BeginExercise()
         {
             startExercise = false;
-            dVViewModelFunctions.CreatePlayers();
+            _ = feedbackSoundService.PrepareAsync();
             wordInput = "";
             exercisesList = course.GetExercises();
             exerciseNumber = 0;
@@ -160,17 +164,17 @@ namespace Digitavox.ViewModels
             ignoreLetterCase = string.Equals(course.LessonProperty("TUDO_EM_MAIUSCULO"), "sim", StringComparison.OrdinalIgnoreCase);
             repetitionsTotal = int.Parse(course.LessonProperty("REPETICOESEXER"));
             courseLesson.SetLessonChars(exercisesList, repetitionsTotal, int.Parse(course.LessonProperty("TEMPOPORCARACTER")),
-                int.Parse(course.LessonProperty("MEDIAEXER")), DVPersistence.Get<int>("timeDivider"), string.Equals(spellingActive, "sim", StringComparison.OrdinalIgnoreCase), ignoreLetterCase);
+                int.Parse(course.LessonProperty("MEDIAEXER")), settingsService.Get<int>("timeDivider"), string.Equals(spellingActive, "sim", StringComparison.OrdinalIgnoreCase), ignoreLetterCase);
             courseLesson.StartTimer(() =>
             {
                 dVViewModelSpeak.Skip();
                 dVViewModelSpeak.Speak("Tempo expirado", () =>
                 {
                     userProgress.SaveStatistics();
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
-                        dVViewModelFunctions.SetNextPageRoute("ExercisesStatistics");
-                        dVViewModelFunctions.GoToNextPage();
+                        dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
+                        _ = dVViewModelFunctions.GoToNextPageAsync();
                     });
                 });
             });
@@ -226,7 +230,7 @@ namespace Digitavox.ViewModels
                             {
                                 
                                 PageFormattedLabel = text;
-                                TextSize = DVPersistence.Get<double>("fontSize");
+                                TextSize = settingsService.Get<double>("fontSize");
                             });
         }
         private void ControlExercises()
@@ -262,7 +266,7 @@ namespace Digitavox.ViewModels
                 }
             }
             string repetitionsCount = $"Repetição: {courseLesson.CurrentRepetition()} / {repetitionsTotal}";
-            string repetitionsSpeak = (DVPersistence.Get<bool>("countRepetitions") && updateRepetition) ? $"Repetição {courseLesson.CurrentRepetition()} de {repetitionsTotal}" : string.Empty;
+            string repetitionsSpeak = (settingsService.Get<bool>("countRepetitions") && updateRepetition) ? $"Repetição {courseLesson.CurrentRepetition()} de {repetitionsTotal}" : string.Empty;
             dVViewModelSpeak.ChangeLine(repetitionsCount, repetitionsSpeak, 2);
             dVViewModelSpeak.ChangeLine(exercise, exerciseSpeak, 3);
             SpeakNextIteration();
@@ -301,7 +305,7 @@ namespace Digitavox.ViewModels
                 {
                     color = "red";
                     CountConsecutiveErrors();
-                    dVViewModelFunctions.PlayBuzzSound();
+                    feedbackSoundService.PlayError();
                 }
                 dVViewModelSpeak.AttributeStyle(color, 4, index - 1);
                 inputDisplay += wordInput[index - 1];
@@ -322,7 +326,7 @@ namespace Digitavox.ViewModels
         private void WriteWord()
         {
             
-            if (DVPersistence.Get<bool>("speakInput"))
+            if (settingsService.Get<bool>("speakInput"))
             {
                 
                 dVViewModelSpeak.Speak(lastInput, () => {
@@ -336,16 +340,25 @@ namespace Digitavox.ViewModels
             endLesson = true;
             courseLesson.StopTimer();
             userProgress.SaveStatistics();
-            dVViewModelFunctions.SetNextPageRoute("ExercisesStatistics");
-            dVViewModelSpeak.Speak("Fim da lição", () =>
+            dVViewModelFunctions.SetNextPageRoute(AppRoute.ExercisesStatistics);
+            dVViewModelSpeak.Speak("Fim da lição", () => _ = CompleteExerciseAsync());
+        }
+
+        private async Task RestoreExerciseDisplayAsync()
+        {
+            courseLesson.ContinueTimer();
+            await Task.Delay(200);
+            if (updateLine) dVViewModelSpeak.ChangeLine(exerciseDisplay, exerciseSpeak, 3);
+            startExercise = true;
+        }
+
+        private async Task CompleteExerciseAsync()
+        {
+            await Task.Delay(100);
+            appEnvironment.RunOnMainThread(() =>
             {
-                Thread.Sleep(100);
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    endLesson = false;
-                    dVViewModelFunctions.GoToNextPage();
-                });
-                
+                endLesson = false;
+                _ = dVViewModelFunctions.GoToNextPageAsync();
             });
         }
         private void CountEsc()
@@ -366,21 +379,15 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null && !endLesson)
             {
                 dVViewModelFunctions.ExerciseHelpOptions();
-                if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                 {
                     CountEsc();
                 }
@@ -392,10 +399,10 @@ namespace Digitavox.ViewModels
                     if (startExercise)
                     {
                         updateLine = false;
-                        if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && DVDevice.IsVirtual()))
+                        if (pageKeyCodes.Contains(bean.code) || ((bean.code == "!" || bean.code == "@") && appEnvironment.IsVirtualDevice))
                         {
                             dVViewModelFunctions.HandleKeyCode(bean.code);
-                            if (dVViewModelFunctions.GetSpeakFromHelp() != -1) OnPage();
+                            if (dVViewModelFunctions.GetSpeakFromHelp() != -1) _ = OnPageAsync();
                         }
                         else if (bean.code.Length == 1)
                         {
@@ -405,7 +412,7 @@ namespace Digitavox.ViewModels
                                 if (bean.code != " ")
                                 {
                                     CountConsecutiveErrors();
-                                    dVViewModelFunctions.PlayBuzzSound();
+                                    feedbackSoundService.PlayError();
                                     
                                 }
                                 else

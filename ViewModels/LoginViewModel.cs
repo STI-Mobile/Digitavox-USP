@@ -17,14 +17,16 @@ using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
 using Microsoft.Maui.Controls;
+using Digitavox.Core.Abstractions;
+using Digitavox.Core.Messages;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
     public partial class LoginViewModel : ObservableObject
     {
-        List<string> pressedKeys = new List<string>();
         bool enterName;
-        bool titleOutput;
+        int introductionVersion;
         string userName;
         bool enterAnswer;
         int accept = -1;
@@ -52,18 +54,27 @@ namespace Digitavox.ViewModels
         };
         public List<string> speakUserName = new List<string>();
         private DVViewModelSpeak dVViewModelSpeak;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
         private DVViewModelFunctions dVViewModelFunctions;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
         public LoginViewModel(DVViewModelSpeak dVViewModelSpeak, 
-                              FingerMapping fingerMapping,
+                              KeyboardInputProcessor keyboardInputProcessor,
                               UserProgress userProgress,
-                              DVViewModelFunctions dVViewModelFunctions)
+                              DVViewModelFunctions dVViewModelFunctions,
+                              ISettingsService settingsService,
+                              INavigationService navigationService,
+                              IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
             this.dVViewModelFunctions = dVViewModelFunctions;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
             
         }
         public void OnPage()
@@ -94,25 +105,24 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
-            titleOutput = true;
+            int currentIntroduction = ++introductionVersion;
+            enterName = true;
             enterAnswer = false;
             userName = string.Empty;
             speakUserName.Clear();
             dVViewModelSpeak.Set("maintainTag", false);
             dVViewModelSpeak.SpeakOneLine(0, () =>
             {
-                enterName = true;
-                
-                titleOutput = false;
+                if (currentIntroduction != introductionVersion) return;
                 dVViewModelSpeak.SpeakOneLine(1, () =>
                 {
                     dVViewModelSpeak.Set("maintainTag", true);
                 });
             });
-            WeakReferenceMessenger.Default.Send(new DVMessage("BecomeFirstResponder"));
+            WeakReferenceMessenger.Default.Send(new RequestFirstResponderMessage());
         }
 
         private void WriteName(string letter)
@@ -163,9 +173,9 @@ namespace Digitavox.ViewModels
             {
                 if (!dVViewModelFunctions.OnAlert())
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    appEnvironment.RunOnMainThread(() =>
                     {
-                        GoToMenuPage();
+                        _ = GoToMenuPageAsync();
                     });
                 }
             });
@@ -223,18 +233,13 @@ namespace Digitavox.ViewModels
                 RepeatRegisterText();
             });
         }
-        private async void GoToMenuPage()
+        private async Task GoToMenuPageAsync()
         {
-            await Shell.Current.GoToAsync("Menu");
+            await navigationService.GoToAsync(AppRoute.Menu);
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public void HandleUnexpectedKey(string keySpeak)
         {
@@ -245,78 +250,76 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
-            if (bean.code != null)
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
+            if (bean.code != null && (enterName || enterAnswer))
             {
-                if (!titleOutput)
+                // Typing can interrupt the introduction even if speech never completes.
+                introductionVersion++;
+                dVViewModelSpeak.Skip();
+                if (enterName)
                 {
-                    if (bean.code != null) dVViewModelSpeak.Skip();
-                    if (enterName)
+                    if (bean.code == "Enter")
                     {
-                        if (bean.code == "Enter")
+                        User();
+                    }
+                    else if (bean.code == "Backspace")
+                    {
+                        if (userName.Length > 1)
                         {
-                            User();
-                        }
-                        else if (bean.code == "Backspace")
-                        {
-                            if (userName.Length > 1)
-                            {
-                                string last;
-                                userName = userName.Substring(0, userName.Length - 1);
-                                speakUserName.RemoveAt(speakUserName.Count - 1);
-                                last = speakUserName.Last();
-                                WriteName(last);
-                            }
-                            else
-                            {
-                                userName = string.Empty;
-                                WriteName(string.Empty);
-                            }
+                            string last;
+                            userName = userName.Substring(0, userName.Length - 1);
+                            speakUserName.RemoveAt(speakUserName.Count - 1);
+                            last = speakUserName.Last();
+                            WriteName(last);
                         }
                         else
                         {
-                            if (alphabetLetters.Contains(bean.code))
-                            {
-                                string letter = bean.speakOnlyChar;
-                                userName = userName + bean.code;
-                                speakUserName.Add(letter);
-                                WriteName(letter);
-                            }
-                            else if (changeVowels.Contains(bean.code))
-                            {
-                                List<string> newVowel = new List<string>()
-                                {
-                                    "a", "o", "e", "i", "u"
-                                };
-                                int index = changeVowels.IndexOf(bean.code) % 5;
-                                string letter = fingerMapping.Code2Speak(newVowel[index]);
-                                userName = userName + newVowel[index];
-                                speakUserName.Add(letter);
-                                WriteName(letter);
-                            }
-                            else if (!DVKeyboard.IsModifierKey(bean.code))
-                            {
-                                HandleUnexpectedKey(bean.speakOnlyChar);
-                            }
+                            userName = string.Empty;
+                            WriteName(string.Empty);
                         }
                     }
-                    else if (enterAnswer)
+                    else
                     {
-                        if (bean.code == "S" || bean.code == "s")
+                        if (alphabetLetters.Contains(bean.code))
                         {
-                            enterAnswer = false;
-                            Accept();
+                            string letter = bean.speakOnlyChar;
+                            userName = userName + bean.code;
+                            speakUserName.Add(letter);
+                            WriteName(letter);
                         }
-                        else if (bean.code == "N" || bean.code == "n")
+                        else if (changeVowels.Contains(bean.code))
                         {
-                            enterAnswer = false;
-                            if (accept >= 0) Reject();
+                            List<string> newVowel = new List<string>()
+                            {
+                                "a", "o", "e", "i", "u"
+                            };
+                            int index = changeVowels.IndexOf(bean.code) % 5;
+                            string letter = keyboardInputProcessor.DescribeKey(newVowel[index]);
+                            userName = userName + newVowel[index];
+                            speakUserName.Add(letter);
+                            WriteName(letter);
                         }
                         else if (!DVKeyboard.IsModifierKey(bean.code))
                         {
                             HandleUnexpectedKey(bean.speakOnlyChar);
                         }
+                    }
+                }
+                else if (enterAnswer)
+                {
+                    if (bean.code == "S" || bean.code == "s")
+                    {
+                        enterAnswer = false;
+                        Accept();
+                    }
+                    else if (bean.code == "N" || bean.code == "n")
+                    {
+                        enterAnswer = false;
+                        if (accept >= 0) Reject();
+                    }
+                    else if (!DVKeyboard.IsModifierKey(bean.code))
+                    {
+                        HandleUnexpectedKey(bean.speakOnlyChar);
                     }
                 }
             }

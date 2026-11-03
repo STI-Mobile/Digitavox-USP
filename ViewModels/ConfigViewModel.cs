@@ -15,13 +15,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Digitavox.Helpers;
 using Digitavox.Models;
-using Digitavox.PlatformsImplementations;
+using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class ConfigViewModel : ObservableObject, IOnPageKeyPress
+    public partial class ConfigViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         private int currentSpeakRate = -1;
         private double prevFontSize = -1;
         int timeToCaptureNumber = 0;
@@ -44,14 +44,23 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
+        private readonly ISettingsService settingsService;
+        private readonly ISpeechService speechService;
+        private readonly IAppEnvironment appEnvironment;
         public ConfigViewModel(DVViewModelSpeak dVViewModelSpeak,
                                DVViewModelFunctions dVViewModelFunctions,
-                               FingerMapping fingerMapping)
+                               KeyboardInputProcessor keyboardInputProcessor,
+                               ISettingsService settingsService,
+                               ISpeechService speechService,
+                               IAppEnvironment appEnvironment)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
+            this.settingsService = settingsService;
+            this.speechService = speechService;
+            this.appEnvironment = appEnvironment;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -66,16 +75,16 @@ namespace Digitavox.ViewModels
                 SpeakRate, TypingToggle, ChangeFont, TimeDivider, CountRepetitions, EnableInstructions, ResetConfig
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
             currentSpeakRate = -1;
             prevFontSize = -1;
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de configurações");
             dVViewModelFunctions.ClearHelpOptions();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if ((DVPersistence.Get<bool>("instructionsEnabled") && updateText) || storedText)
+            if ((settingsService.Get<bool>("instructionsEnabled") && updateText) || storedText)
             {
                 introductionLines = 2;
                 storedText = true;
@@ -125,7 +134,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
 
@@ -151,10 +160,10 @@ namespace Digitavox.ViewModels
         private void SpeakRate()
         {
             answerController = pageFunctions.IndexOf(SpeakRate);
-            string speakRateOutput = $"A velocidade de fala atualmente definida é {DVPersistence.Get<int>("speakRate")}.\n" +
+            string speakRateOutput = $"A velocidade de fala atualmente definida é {settingsService.Get<int>("speakRate")}.\n" +
                 "Digite um número de 1 a 9 para definir a velocidade de fala.\n" +
                 "Escape volta.";
-            string textSpeak = $"A velocidade de fala atualmente definida é {DVPersistence.Get<int>("speakRate")}. " +
+            string textSpeak = $"A velocidade de fala atualmente definida é {settingsService.Get<int>("speakRate")}. " +
                 "Digite um número de 1 a 9 para definir a velocidade de fala. " +
                 "Esqueipe volta.";
             DisplayOutcome(speakRateOutput, textSpeak);
@@ -164,7 +173,7 @@ namespace Digitavox.ViewModels
             
             outcome = true;
             
-            DVSpeak.GetInstance().SetSpeechRate(currentSpeakRate);
+            speechService.SetRate(currentSpeakRate);
             string speakRateOutputText = $"A velocidade de fala definida é {currentSpeakRate}. Aperte enter para salvar ou escape para descartar a alteração.";
             string speakRateOutputSpeech = $"A velocidade de fala definida é {currentSpeakRate}. Aperte êmter para salvar ou esqueipe para descartar a alteração.";
             DisplayOutcome(speakRateOutputText, speakRateOutputSpeech);
@@ -173,14 +182,14 @@ namespace Digitavox.ViewModels
         private void ConfirmSpeakRate()
         {
             answerController = -1;
-            DVPersistence.Set("speakRate", currentSpeakRate);
+            settingsService.Set("speakRate", currentSpeakRate);
             answerOption = true;
-            OnPage();
+            _ = OnPageAsync();
         }
         private void TypingToggle()
         {
             answerController = pageFunctions.IndexOf(TypingToggle);
-            string speakInputString = (DVPersistence.Get<bool>("speakInput")) ? "habilitada" : "desabilitada";
+            string speakInputString = settingsService.Get<bool>("speakInput") ? "habilitada" : "desabilitada";
             string typingOutput = $"A fala de teclagem está atualmente {speakInputString}. Para habilitá-la digite S ou para desabilitá-la digite N.";
             DisplayOutcome(typingOutput, typingOutput);
         }
@@ -188,7 +197,7 @@ namespace Digitavox.ViewModels
         {
             outcome = true;
             answerController = -1;
-            string speakInputString = (DVPersistence.Get<bool>("speakInput")) ? "habilitada" : "desabilitada";
+            string speakInputString = settingsService.Get<bool>("speakInput") ? "habilitada" : "desabilitada";
             string typingOutput = $"Fala de teclagem {speakInputString}.";
             DisplayOutcome(typingOutput, typingOutput);
             answerOption = true;
@@ -196,10 +205,10 @@ namespace Digitavox.ViewModels
         private void ChangeFont()
         {
             answerController = pageFunctions.IndexOf(ChangeFont);
-            string fontSizeOutput = $"O tamanho da fonte atualmente definido é {(int)((DVPersistence.Get<double>("fontSize") - (DVPersistence.GetFontSize() / 2)) / (DVPersistence.GetFontSize() / 2))}.\n" +
+            string fontSizeOutput = $"O tamanho da fonte atualmente definido é {(int)((settingsService.Get<double>("fontSize") - (settingsService.DefaultFontSize / 2)) / (settingsService.DefaultFontSize / 2))}.\n" +
                 "Digite um número de 1 a 3 para definir o tamanho.\n" +
                 "Escape volta.";
-            string textSpeak = $"O tamanho da fonte atualmente definido é {(int)((DVPersistence.Get<double>("fontSize") - (DVPersistence.GetFontSize() / 2)) / (DVPersistence.GetFontSize() / 2))}.\n" +
+            string textSpeak = $"O tamanho da fonte atualmente definido é {(int)((settingsService.Get<double>("fontSize") - (settingsService.DefaultFontSize / 2)) / (settingsService.DefaultFontSize / 2))}.\n" +
                 "Digite um número de 1 a 3 para definir o tamanho.\n" +
                 "Esqueipe volta.";
             DisplayOutcome(fontSizeOutput, textSpeak);
@@ -208,8 +217,8 @@ namespace Digitavox.ViewModels
         {
             
             outcome = true; 
-            string fontSizeOutputText = $"O tamanho de texto definido é {(int)((DVPersistence.Get<double>("fontSize") - (DVPersistence.GetFontSize() / 2)) / (DVPersistence.GetFontSize() / 2))}. Aperte enter para salvar ou escape para descartar a alteração.";
-            string fontSizeOutputSpeech = $"O tamanho de texto definido é {(int)((DVPersistence.Get<double>("fontSize") - (DVPersistence.GetFontSize() / 2)) / (DVPersistence.GetFontSize() / 2))}. Aperte êmter para salvar ou esqueipe para descartar a alteração.";
+            string fontSizeOutputText = $"O tamanho de texto definido é {(int)((settingsService.Get<double>("fontSize") - (settingsService.DefaultFontSize / 2)) / (settingsService.DefaultFontSize / 2))}. Aperte enter para salvar ou escape para descartar a alteração.";
+            string fontSizeOutputSpeech = $"O tamanho de texto definido é {(int)((settingsService.Get<double>("fontSize") - (settingsService.DefaultFontSize / 2)) / (settingsService.DefaultFontSize / 2))}. Aperte êmter para salvar ou esqueipe para descartar a alteração.";
             DisplayOutcome(fontSizeOutputText, fontSizeOutputSpeech);
             
         }
@@ -217,15 +226,15 @@ namespace Digitavox.ViewModels
         {
             answerController = -1;
             answerOption = true;
-            OnPage();
+            _ = OnPageAsync();
         }
         private void TimeDivider()
         {
             answerController = pageFunctions.IndexOf(TimeDivider);
-            string timeDividerOutput = $"O divisor de tempo é utilizado para diminuir o tempo máximo para realizar uma lição. O divisor de tempo atualmente definido é {DVPersistence.Get<int>("timeDivider")}.\n" +
+            string timeDividerOutput = $"O divisor de tempo é utilizado para diminuir o tempo máximo para realizar uma lição. O divisor de tempo atualmente definido é {settingsService.Get<int>("timeDivider")}.\n" +
                 "Digite um número de 1 a 5 para definir o valor do novo divisor.\n" +
                 "Escape volta.";
-            string textSpeak = $"O divisor de tempo é utilizado para diminuir o tempo máximo para realizar uma lição. O divisor de tempo atualmente definido é {DVPersistence.Get<int>("timeDivider")}.\n" +
+            string textSpeak = $"O divisor de tempo é utilizado para diminuir o tempo máximo para realizar uma lição. O divisor de tempo atualmente definido é {settingsService.Get<int>("timeDivider")}.\n" +
                 "Digite um número de 1 a 5 para definir o valor do novo divisor.\n" +
                 "Esqueipe volta.";
             DisplayOutcome(timeDividerOutput, textSpeak);
@@ -234,14 +243,14 @@ namespace Digitavox.ViewModels
         {
             answerController = -1;
             outcome = true;
-            string timeDividerOutput = $"O novo divisor de tempo definido é {DVPersistence.Get<int>("timeDivider")}.";
+            string timeDividerOutput = $"O novo divisor de tempo definido é {settingsService.Get<int>("timeDivider")}.";
             DisplayOutcome(timeDividerOutput, timeDividerOutput);
             answerOption = true;
         }
         private void CountRepetitions()
         {
             answerController = pageFunctions.IndexOf(CountRepetitions);
-            string countRepetitionsString = (DVPersistence.Get<bool>("countRepetitions")) ? "habilitada" : "desabilitada";
+            string countRepetitionsString = settingsService.Get<bool>("countRepetitions") ? "habilitada" : "desabilitada";
             string repetitionsOutput = $"A fala do número de repetições está atualmente {countRepetitionsString}. Para habilitá-la digite S ou para desabilitá-la digite N.";
             DisplayOutcome(repetitionsOutput, repetitionsOutput);
         }
@@ -249,7 +258,7 @@ namespace Digitavox.ViewModels
         {
             outcome = true;
             answerController = -1;
-            string repetitionsString = (DVPersistence.Get<bool>("countRepetitions")) ? "habilitada" : "desabilitada";
+            string repetitionsString = settingsService.Get<bool>("countRepetitions") ? "habilitada" : "desabilitada";
             string repetitionsOutput = $"Fala de repetições {repetitionsString}.";
             DisplayOutcome(repetitionsOutput, repetitionsOutput);
             answerOption = true;
@@ -257,7 +266,7 @@ namespace Digitavox.ViewModels
         private void EnableInstructions()
         {
             answerController = pageFunctions.IndexOf(EnableInstructions);
-            string enableInstructionsString = (DVPersistence.Get<bool>("instructionsEnabled")) ? "habilitada" : "desabilitada";
+            string enableInstructionsString = settingsService.Get<bool>("instructionsEnabled") ? "habilitada" : "desabilitada";
             string enableInstructionsOutput = $"A apresentação de instruções de navegação nas telas está atualmente {enableInstructionsString}. Para habilitá-la digite S ou para desabilitá-la digite N.";
             DisplayOutcome(enableInstructionsOutput, enableInstructionsOutput);
         }
@@ -265,7 +274,7 @@ namespace Digitavox.ViewModels
         {
             outcome = true;
             answerController = -1;
-            string repetitionsString = (DVPersistence.Get<bool>("instructionsEnabled")) ? "habilitada" : "desabilitada";
+            string repetitionsString = settingsService.Get<bool>("instructionsEnabled") ? "habilitada" : "desabilitada";
             string repetitionsOutput = $"Apresentação de instruções de navegação {repetitionsString}.";
             DisplayOutcome(repetitionsOutput, repetitionsOutput);
             answerOption = true;
@@ -306,12 +315,12 @@ namespace Digitavox.ViewModels
         {
             if (answerController == pageFunctions.IndexOf(ResetConfig) && answerLetter == "S")
             {
-                DVPersistence.SetDefaulConfig();
+                settingsService.ResetDefaults();
                 ResetConfigAccepted();
             }
             else if (answerController == pageFunctions.IndexOf(ResetConfig) && answerLetter == "N")
             {
-                OnPage();
+                _ = OnPageAsync();
             }
             else if (answerController == pageFunctions.IndexOf(TypingToggle))
             {
@@ -330,7 +339,7 @@ namespace Digitavox.ViewModels
         {
             dVViewModelSpeak.Speak(key, () =>
             {
-                OnPage();
+                _ = OnPageAsync();
             });
         }
         private void Select(string key, Action onCompleted)
@@ -339,17 +348,11 @@ namespace Digitavox.ViewModels
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
@@ -369,7 +372,7 @@ namespace Digitavox.ViewModels
                     {
                         if (currentSpeakRate != -1)
                         {
-                            DVSpeak.GetInstance().SetSpeechRate(DVPersistence.Get<int>("speakRate"));
+                            speechService.SetRate(settingsService.Get<int>("speakRate"));
                         }
                         Reject(bean.speakOnlyChar);
                     }
@@ -386,8 +389,8 @@ namespace Digitavox.ViewModels
                 {
                     if (bean.code == "1" || bean.code == "2" || bean.code == "3")
                     {
-                        prevFontSize = DVPersistence.Get<double>("fontSize");
-                        DVPersistence.Set("fontSize", (DVPersistence.GetFontSize() / 2) + (DVPersistence.GetFontSize() / 2) * int.Parse(bean.code));
+                        prevFontSize = settingsService.Get<double>("fontSize");
+                        settingsService.Set("fontSize", (settingsService.DefaultFontSize / 2) + (settingsService.DefaultFontSize / 2) * int.Parse(bean.code));
                         Select(bean.speakOnlyChar, () =>
                         {
                             ChangeTextSize();
@@ -397,7 +400,7 @@ namespace Digitavox.ViewModels
                     {
                         if (prevFontSize != -1)
                         {
-                            DVPersistence.Set("fontSize", prevFontSize);
+                            settingsService.Set("fontSize", prevFontSize);
                         }
                         Reject(bean.speakOnlyChar);
                     }
@@ -414,7 +417,7 @@ namespace Digitavox.ViewModels
                 {
                     if (bean.code == "1" || bean.code == "2" || bean.code == "3" || bean.code == "4" || bean.code == "5")
                     {
-                        DVPersistence.Set("timeDivider", int.Parse(bean.code));
+                        settingsService.Set("timeDivider", int.Parse(bean.code));
                         Select(bean.speakOnlyChar, () =>
                         {
                             ChangeTimeDivider();
@@ -434,7 +437,7 @@ namespace Digitavox.ViewModels
                     if (bean.code == "S" || bean.code == "s")
                     {
                         answerLetter = "S";
-                        DVPersistence.Set("speakInput", true);
+                        settingsService.Set("speakInput", true);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -443,7 +446,7 @@ namespace Digitavox.ViewModels
                     else if (bean.code == "N" || bean.code == "n")
                     {
                         answerLetter = "N";
-                        DVPersistence.Set("speakInput", false);
+                        settingsService.Set("speakInput", false);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -463,7 +466,7 @@ namespace Digitavox.ViewModels
                     if (bean.code == "S" || bean.code == "s")
                     {
                         answerLetter = "S";
-                        DVPersistence.Set("countRepetitions", true);
+                        settingsService.Set("countRepetitions", true);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -472,7 +475,7 @@ namespace Digitavox.ViewModels
                     else if (bean.code == "N" || bean.code == "n")
                     {
                         answerLetter = "N";
-                        DVPersistence.Set("countRepetitions", false);
+                        settingsService.Set("countRepetitions", false);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -492,7 +495,7 @@ namespace Digitavox.ViewModels
                     if (bean.code == "S" || bean.code == "s")
                     {
                         answerLetter = "S";
-                        DVPersistence.Set("instructionsEnabled", true);
+                        settingsService.Set("instructionsEnabled", true);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -501,7 +504,7 @@ namespace Digitavox.ViewModels
                     else if (bean.code == "N" || bean.code == "n")
                     {
                         answerLetter = "N";
-                        DVPersistence.Set("instructionsEnabled", false);
+                        settingsService.Set("instructionsEnabled", false);
                         Select(bean.speakOnlyChar, () =>
                         {
                             Confirm();
@@ -548,15 +551,15 @@ namespace Digitavox.ViewModels
                     if (outcome) RemoveOutcome();
                     if (bean.code == " ")
                     {
-                        OnPage();
+                        _ = OnPageAsync();
                     }
                     else if (bean.code == "Enter" && apresentationSkiped)
                     {
                         Enter();
                     }
-                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                     {
-                        if (bean.code == "Escape" || (bean.code == "!" && DVDevice.IsVirtual()))
+                        if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                         {
                             updateText = true;
                             storedText = false;

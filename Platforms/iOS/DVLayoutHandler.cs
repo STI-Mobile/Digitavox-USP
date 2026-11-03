@@ -17,9 +17,10 @@ using Foundation;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using UIKit;
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 using Digitavox.Helpers;
+using Digitavox.Core.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Platforms.iOS;
 
@@ -39,15 +40,33 @@ namespace Digitavox.PlatformsImplementations
 
 public class DVLayoutView : LayoutView {
 
-  WeakReferenceMessenger dvMessenger;
-
   public DVLayoutView() {
-    this.BecomeFirstResponder();
-
-    WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-      if (m.Value == "BecomeFirstResponder")
-        this.BecomeFirstResponder();
+    WeakReferenceMessenger.Default.Register<RequestFirstResponderMessage>(this, (r, m) => {
+      RequestKeyboardFocus();
     });
+  }
+
+  public override void MovedToWindow() {
+    base.MovedToWindow();
+    RequestKeyboardFocus();
+  }
+
+  private void RequestKeyboardFocus() {
+    // OnAppearing can run before the native view joins its scene's window.
+    BeginInvokeOnMainThread(() => {
+      if (Handle != IntPtr.Zero && Window != null &&
+          Shell.Current?.CurrentPage?.Handler?.PlatformView is UIView pageView &&
+          IsDescendantOfView(pageView)) {
+        BecomeFirstResponder();
+      }
+    });
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) {
+      WeakReferenceMessenger.Default.Unregister<RequestFirstResponderMessage>(this);
+    }
+    base.Dispose(disposing);
   }
 
   public override bool CanBecomeFirstResponder {
@@ -64,9 +83,9 @@ public class DVLayoutView : LayoutView {
   public override void PressesBegan(NSSet<UIPress> presses, UIPressesEvent evt) {
     
     int keyCode = (int)presses.AnyObject.Key.KeyCode;
-    Page p = Shell.Current.CurrentPage;
-    if (p is IOnPageKeyPress) {
-      bool handled = (p as IOnPageKeyPress).OnPageKeyDown((int)keyCode);
+    Page p = Shell.Current?.CurrentPage;
+    if (p is IKeyboardInputHandler inputHandler) {
+      bool handled = inputHandler.OnPageKeyDown((int)keyCode);
       if (!handled)
         base.PressesBegan(presses, evt);
     } else
@@ -102,9 +121,9 @@ public class DVLayoutView : LayoutView {
     
     
 
-    Page p = Shell.Current.CurrentPage;
-    if (p is IOnPageKeyPress) {
-      bool handled = (p as IOnPageKeyPress).OnPageKeyPress(keyCode, keyModifiers);
+    Page p = Shell.Current?.CurrentPage;
+    if (p is IKeyboardInputHandler inputHandler) {
+      bool handled = inputHandler.OnPageKeyPress(keyCode, keyModifiers);
       if (!handled)
         base.PressesEnded(presses, evt);
     } else
