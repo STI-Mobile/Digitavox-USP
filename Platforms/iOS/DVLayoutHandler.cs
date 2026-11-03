@@ -83,7 +83,7 @@ public class DVLayoutView : LayoutView {
   public override void PressesBegan(NSSet<UIPress> presses, UIPressesEvent evt) {
     
     int keyCode = (int)presses.AnyObject.Key.KeyCode;
-    Page p = Shell.Current.CurrentPage;
+    Page p = Shell.Current?.CurrentPage;
     if (p is IKeyboardInputHandler inputHandler) {
       bool handled = inputHandler.OnPageKeyDown((int)keyCode);
       if (!handled)
@@ -121,7 +121,7 @@ public class DVLayoutView : LayoutView {
     
     
 
-    Page p = Shell.Current.CurrentPage;
+    Page p = Shell.Current?.CurrentPage;
     if (p is IKeyboardInputHandler inputHandler) {
       bool handled = inputHandler.OnPageKeyPress(keyCode, keyModifiers);
       if (!handled)

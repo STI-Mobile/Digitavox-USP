@@ -199,6 +199,21 @@ public sealed class ArchitectureBoundaryTests
     }
 
     [TestMethod]
+    [DataRow("Android", "MainActivity.cs")]
+    [DataRow("Windows", "App.xaml.cs")]
+    [DataRow("iOS", "DVLayoutHandler.cs")]
+    [DataRow("MacCatalyst", "DVLayoutHandler.cs")]
+    public void KeyboardEntryPointsAllowStartupWithoutShell(string platform, string fileName)
+    {
+        // Host-side boundary check: native callbacks cannot run in this test assembly.
+        // Both pending startup and failed startup leave the window without a Shell.
+        string source = File.ReadAllText(Path.Combine(RepositoryRoot.Value, "Platforms", platform, fileName));
+
+        Assert.IsFalse(System.Text.RegularExpressions.Regex.IsMatch(source, @"Shell\s*\.\s*Current\s*\."),
+            "O teclado não pode pressupor que o Shell exista durante a inicialização.");
+    }
+
+    [TestMethod]
     public void KeyboardInputContractBelongsToPresentationLayer()
     {
         string contract = Path.Combine(RepositoryRoot.Value, "Presentation", "Input", "IKeyboardInputHandler.cs");
