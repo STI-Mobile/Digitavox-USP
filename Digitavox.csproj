@@ -19,8 +19,8 @@
 		<ApplicationIdGuid>7bb29c79-1497-44c6-8a14-a26048874ff4</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>1.1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>24</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
@@ -28,6 +28,10 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<ApplicationVersion>12</ApplicationVersion>
 	</PropertyGroup>
 
 	<!-- Runtime Identifier -->		
@@ -50,11 +54,12 @@
 		  <AndroidKeyStore Condition="Exists('Signing.local.props')">True</AndroidKeyStore>
 		  <AndroidSigningKeyAlias>distribution</AndroidSigningKeyAlias>
 		  <AndroidPackageFormat>aab</AndroidPackageFormat>
-		  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
-		  <ApplicationVersion>23</ApplicationVersion>
 		  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 		  <AndroidUseAapt2>True</AndroidUseAapt2>
+		  <!-- Shrink Java/Kotlin DEX code and include its mapping in the app bundle. -->
+		  <AndroidLinkTool>r8</AndroidLinkTool>
+		  <AndroidCreateProguardMappingFile>True</AndroidCreateProguardMappingFile>
 		</PropertyGroup>
 
 		<Import Project="Signing.local.props" Condition="Exists('Signing.local.props')" />
@@ -122,6 +127,21 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.80" />
 		<PackageReference Include="System.Speech" Version="10.0.10" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<!-- Android 15+ system bar handling fixes used by MAUI's native dialogs. -->
+		<PackageReference Include="Xamarin.Google.Android.Material" Version="1.14.0.6" />
+		<!-- Keep MAUI's AndroidX companions aligned with Material's dependencies. -->
+		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.13.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

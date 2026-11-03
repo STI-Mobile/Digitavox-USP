@@ -381,90 +381,90 @@ License texts and required notices: A5, A11
 
 ============================================================
 Xamarin.AndroidX.Activity
-Version: 1.10.1.3
+Version: 1.13.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Activity.Ktx
-Version: 1.10.1.3
+Version: 1.13.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Annotation
-Version: 1.9.1.5
+Version: 1.10.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Annotation.Experimental
-Version: 1.5.1.1
+Version: 1.6.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Annotation.Jvm
-Version: 1.9.1.5
+Version: 1.10.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.AppCompat
-Version: 1.7.1.1
+Version: 1.7.1.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.AppCompat.AppCompatResources
-Version: 1.7.1.1
+Version: 1.7.1.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Arch.Core.Common
-Version: 2.2.0.18
+Version: 2.2.0.21
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Arch.Core.Runtime
-Version: 2.2.0.18
+Version: 2.2.0.21
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -474,187 +474,207 @@ Xamarin.AndroidX.Browser
 Version: 1.8.0.11
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.CardView
-Version: 1.0.0.36
+Version: 1.0.0.39
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Collection
-Version: 1.5.0.3
+Version: 1.6.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Collection.Jvm
-Version: 1.5.0.3
+Version: 1.6.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Collection.Ktx
-Version: 1.5.0.3
+Version: 1.6.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: direct
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.Compose.Runtime.Annotation
+Version: 1.11.3.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.Compose.Runtime.Annotation.Android
+Version: 1.11.3.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Concurrent.Futures
-Version: 1.3.0.1
+Version: 1.3.0.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ConstraintLayout
-Version: 2.2.1.3
+Version: 2.2.1.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ConstraintLayout.Core
-Version: 1.1.1.3
+Version: 1.1.1.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.CoordinatorLayout
-Version: 1.3.0.3
+Version: 1.3.0.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Core
-Version: 1.16.0.3
+Version: 1.19.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Core.Core.Ktx
-Version: 1.16.0.3
+Version: 1.19.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Core.ViewTree
-Version: 1.0.0.3
+Version: 1.0.0.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.CursorAdapter
-Version: 1.0.0.34
+Version: 1.0.0.37
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.CustomView
-Version: 1.2.0.1
+Version: 1.2.0.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.CustomView.PoolingContainer
-Version: 1.1.0.1
+Version: 1.1.0.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.DrawerLayout
-Version: 1.2.0.18
+Version: 1.2.0.21
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.DynamicAnimation
-Version: 1.1.0.3
+Version: 1.1.0.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Emoji2
-Version: 1.5.0.6
+Version: 1.6.0.3
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Emoji2.ViewsHelper
-Version: 1.5.0.6
+Version: 1.6.0.3
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -664,197 +684,217 @@ Xamarin.AndroidX.ExifInterface
 Version: 1.4.1.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Fragment
-Version: 1.8.8.1
+Version: 1.8.9.3
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Fragment.Ktx
-Version: 1.8.8.1
+Version: 1.8.9.3
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: direct
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.Graphics.Shapes
+Version: 1.1.0.3
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.Graphics.Shapes.Android
+Version: 1.1.0.3
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Interpolator
-Version: 1.0.0.34
+Version: 1.0.0.37
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Common
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Common.Jvm
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.LiveData
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.LiveData.Core
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Process
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Runtime
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Runtime.Android
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Runtime.Ktx
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.ViewModel
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.ViewModel.Android
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.ViewModel.Ktx
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.ViewModelSavedState
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android
-Version: 2.9.2.1
+Version: 2.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Loader
-Version: 1.1.0.34
+Version: 1.1.0.37
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -864,7 +904,7 @@ Xamarin.AndroidX.Navigation.Common
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -874,7 +914,7 @@ Xamarin.AndroidX.Navigation.Common.Android
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -884,7 +924,7 @@ Xamarin.AndroidX.Navigation.Fragment
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -894,7 +934,7 @@ Xamarin.AndroidX.Navigation.Runtime
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -904,7 +944,7 @@ Xamarin.AndroidX.Navigation.Runtime.Android
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -914,69 +954,89 @@ Xamarin.AndroidX.Navigation.UI
 Version: 2.9.2.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.NavigationEvent
+Version: 1.1.2.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A10
+
+============================================================
+Xamarin.AndroidX.NavigationEvent.Android
+Version: 1.1.2.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ProfileInstaller.ProfileInstaller
-Version: 1.4.1.5
+Version: 1.4.1.8
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.RecyclerView
-Version: 1.4.0.3
+Version: 1.4.0.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ResourceInspection.Annotation
-Version: 1.0.1.22
+Version: 1.0.1.25
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.SavedState
-Version: 1.3.1.1
+Version: 1.5.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.SavedState.SavedState.Android
-Version: 1.3.1.1
+Version: 1.5.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.SavedState.SavedState.Ktx
-Version: 1.3.1.1
+Version: 1.5.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
@@ -984,7 +1044,7 @@ Xamarin.AndroidX.Security.SecurityCrypto
 Version: 1.1.0.4-alpha07
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -994,17 +1054,17 @@ Xamarin.AndroidX.SlidingPaneLayout
 Version: 1.2.0.22
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Startup.StartupRuntime
-Version: 1.2.0.5
+Version: 1.2.0.8
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -1014,87 +1074,87 @@ Xamarin.AndroidX.SwipeRefreshLayout
 Version: 1.1.0.29
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Tracing.Tracing
-Version: 1.3.0.1
+Version: 1.3.0.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Tracing.Tracing.Android
-Version: 1.3.0.1
+Version: 1.3.0.4
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.Transition
-Version: 1.6.0.1
+Version: 1.7.0.2
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.VectorDrawable
-Version: 1.2.0.8
+Version: 1.2.0.11
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.VectorDrawable.Animated
-Version: 1.2.0.8
+Version: 1.2.0.11
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.VersionedParcelable
-Version: 1.2.1.3
+Version: 1.2.1.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ViewPager
-Version: 1.1.0.4
+Version: 1.1.0.7
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.AndroidX.ViewPager2
-Version: 1.1.0.8
+Version: 1.1.0.11
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -1104,7 +1164,7 @@ Xamarin.AndroidX.Window
 Version: 1.4.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -1114,7 +1174,7 @@ Xamarin.AndroidX.Window.WindowCore
 Version: 1.4.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
@@ -1124,19 +1184,19 @@ Xamarin.AndroidX.Window.WindowCore.Jvm
 Version: 1.4.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A10
 
 ============================================================
 Xamarin.Google.Android.Material
-Version: 1.12.0.5
+Version: 1.14.0.6
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
-Dependency: transitive
+Dependency: direct
 License texts and required notices: A5, A10
 
 ============================================================
@@ -1161,10 +1221,10 @@ License texts and required notices: A5, A2
 
 ============================================================
 Xamarin.Google.ErrorProne.Annotations
-Version: 2.41.0.1
+Version: 2.50.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A18
@@ -1201,60 +1261,80 @@ License texts and required notices: A5, A9
 
 ============================================================
 Xamarin.Kotlin.StdLib
-Version: 2.2.0.1
+Version: 2.4.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
-License texts and required notices: A5, A9
+License texts and required notices: A5, A22
+
+============================================================
+Xamarin.KotlinX.AtomicFU
+Version: 0.33.0.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A13
+
+============================================================
+Xamarin.KotlinX.AtomicFU.Jvm
+Version: 0.33.0.1
+License: MIT AND Apache-2.0
+Copyright: © Microsoft Corporation. All rights reserved.
+Project: https://aka.ms/android-libraries
+Platforms: Android
+Dependency: transitive
+License texts and required notices: A5, A13
 
 ============================================================
 Xamarin.KotlinX.Coroutines.Android
-Version: 1.10.2.1
+Version: 1.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A13
 
 ============================================================
 Xamarin.KotlinX.Coroutines.Core
-Version: 1.10.2.1
+Version: 1.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A13
 
 ============================================================
 Xamarin.KotlinX.Coroutines.Core.Jvm
-Version: 1.10.2.1
+Version: 1.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A13
 
 ============================================================
 Xamarin.KotlinX.Serialization.Core
-Version: 1.9.0.1
+Version: 1.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A13
 
 ============================================================
 Xamarin.KotlinX.Serialization.Core.Jvm
-Version: 1.9.0.1
+Version: 1.11.0.1
 License: MIT AND Apache-2.0
 Copyright: © Microsoft Corporation. All rights reserved.
-Project: https://github.com/xamarin/AndroidX.git
+Project: https://aka.ms/android-libraries
 Platforms: Android
 Dependency: transitive
 License texts and required notices: A5, A13
@@ -1749,94 +1829,102 @@ Applies to:
 - Xamarin.Android.Glide.Annotations 4.16.0.14 (LICENSE.md)
 - Xamarin.Android.Glide.DiskLruCache 4.16.0.14 (LICENSE.md)
 - Xamarin.Android.Glide.GifDecoder 4.16.0.14 (LICENSE.md)
-- Xamarin.AndroidX.Activity 1.10.1.3 (LICENSE.md)
-- Xamarin.AndroidX.Activity.Ktx 1.10.1.3 (LICENSE.md)
-- Xamarin.AndroidX.Annotation 1.9.1.5 (LICENSE.md)
-- Xamarin.AndroidX.Annotation.Experimental 1.5.1.1 (LICENSE.md)
-- Xamarin.AndroidX.Annotation.Jvm 1.9.1.5 (LICENSE.md)
-- Xamarin.AndroidX.AppCompat 1.7.1.1 (LICENSE.md)
-- Xamarin.AndroidX.AppCompat.AppCompatResources 1.7.1.1 (LICENSE.md)
-- Xamarin.AndroidX.Arch.Core.Common 2.2.0.18 (LICENSE.md)
-- Xamarin.AndroidX.Arch.Core.Runtime 2.2.0.18 (LICENSE.md)
+- Xamarin.AndroidX.Activity 1.13.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Activity.Ktx 1.13.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Annotation 1.10.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Annotation.Experimental 1.6.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Annotation.Jvm 1.10.0.1 (LICENSE.md)
+- Xamarin.AndroidX.AppCompat 1.7.1.4 (LICENSE.md)
+- Xamarin.AndroidX.AppCompat.AppCompatResources 1.7.1.4 (LICENSE.md)
+- Xamarin.AndroidX.Arch.Core.Common 2.2.0.21 (LICENSE.md)
+- Xamarin.AndroidX.Arch.Core.Runtime 2.2.0.21 (LICENSE.md)
 - Xamarin.AndroidX.Browser 1.8.0.11 (LICENSE.md)
-- Xamarin.AndroidX.CardView 1.0.0.36 (LICENSE.md)
-- Xamarin.AndroidX.Collection 1.5.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Collection.Jvm 1.5.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Collection.Ktx 1.5.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Concurrent.Futures 1.3.0.1 (LICENSE.md)
-- Xamarin.AndroidX.ConstraintLayout 2.2.1.3 (LICENSE.md)
-- Xamarin.AndroidX.ConstraintLayout.Core 1.1.1.3 (LICENSE.md)
-- Xamarin.AndroidX.CoordinatorLayout 1.3.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Core 1.16.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Core.Core.Ktx 1.16.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Core.ViewTree 1.0.0.3 (LICENSE.md)
-- Xamarin.AndroidX.CursorAdapter 1.0.0.34 (LICENSE.md)
-- Xamarin.AndroidX.CustomView 1.2.0.1 (LICENSE.md)
-- Xamarin.AndroidX.CustomView.PoolingContainer 1.1.0.1 (LICENSE.md)
-- Xamarin.AndroidX.DrawerLayout 1.2.0.18 (LICENSE.md)
-- Xamarin.AndroidX.DynamicAnimation 1.1.0.3 (LICENSE.md)
-- Xamarin.AndroidX.Emoji2 1.5.0.6 (LICENSE.md)
-- Xamarin.AndroidX.Emoji2.ViewsHelper 1.5.0.6 (LICENSE.md)
+- Xamarin.AndroidX.CardView 1.0.0.39 (LICENSE.md)
+- Xamarin.AndroidX.Collection 1.6.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Collection.Jvm 1.6.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Collection.Ktx 1.6.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Compose.Runtime.Annotation 1.11.3.1 (LICENSE.md)
+- Xamarin.AndroidX.Compose.Runtime.Annotation.Android 1.11.3.1 (LICENSE.md)
+- Xamarin.AndroidX.Concurrent.Futures 1.3.0.4 (LICENSE.md)
+- Xamarin.AndroidX.ConstraintLayout 2.2.1.6 (LICENSE.md)
+- Xamarin.AndroidX.ConstraintLayout.Core 1.1.1.6 (LICENSE.md)
+- Xamarin.AndroidX.CoordinatorLayout 1.3.0.6 (LICENSE.md)
+- Xamarin.AndroidX.Core 1.19.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Core.Core.Ktx 1.19.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Core.ViewTree 1.0.0.6 (LICENSE.md)
+- Xamarin.AndroidX.CursorAdapter 1.0.0.37 (LICENSE.md)
+- Xamarin.AndroidX.CustomView 1.2.0.4 (LICENSE.md)
+- Xamarin.AndroidX.CustomView.PoolingContainer 1.1.0.4 (LICENSE.md)
+- Xamarin.AndroidX.DrawerLayout 1.2.0.21 (LICENSE.md)
+- Xamarin.AndroidX.DynamicAnimation 1.1.0.6 (LICENSE.md)
+- Xamarin.AndroidX.Emoji2 1.6.0.3 (LICENSE.md)
+- Xamarin.AndroidX.Emoji2.ViewsHelper 1.6.0.3 (LICENSE.md)
 - Xamarin.AndroidX.ExifInterface 1.4.1.1 (LICENSE.md)
-- Xamarin.AndroidX.Fragment 1.8.8.1 (LICENSE.md)
-- Xamarin.AndroidX.Fragment.Ktx 1.8.8.1 (LICENSE.md)
-- Xamarin.AndroidX.Interpolator 1.0.0.34 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Common 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Common.Jvm 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.LiveData 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.LiveData.Core 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Process 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Runtime 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Runtime.Android 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Runtime.Ktx 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.ViewModel 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.ViewModel.Android 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.ViewModel.Ktx 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.ViewModelSavedState 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.Loader 1.1.0.34 (LICENSE.md)
+- Xamarin.AndroidX.Fragment 1.8.9.3 (LICENSE.md)
+- Xamarin.AndroidX.Fragment.Ktx 1.8.9.3 (LICENSE.md)
+- Xamarin.AndroidX.Graphics.Shapes 1.1.0.3 (LICENSE.md)
+- Xamarin.AndroidX.Graphics.Shapes.Android 1.1.0.3 (LICENSE.md)
+- Xamarin.AndroidX.Interpolator 1.0.0.37 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Common 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Common.Jvm 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.LiveData 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.LiveData.Core 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Process 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Runtime 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Runtime.Android 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Runtime.Ktx 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.ViewModel 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.ViewModel.Android 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.ViewModel.Ktx 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.ViewModelSavedState 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android 2.11.0.1 (LICENSE.md)
+- Xamarin.AndroidX.Loader 1.1.0.37 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.Common 2.9.2.1 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.Common.Android 2.9.2.1 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.Fragment 2.9.2.1 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.Runtime 2.9.2.1 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.Runtime.Android 2.9.2.1 (LICENSE.md)
 - Xamarin.AndroidX.Navigation.UI 2.9.2.1 (LICENSE.md)
-- Xamarin.AndroidX.ProfileInstaller.ProfileInstaller 1.4.1.5 (LICENSE.md)
-- Xamarin.AndroidX.RecyclerView 1.4.0.3 (LICENSE.md)
-- Xamarin.AndroidX.ResourceInspection.Annotation 1.0.1.22 (LICENSE.md)
-- Xamarin.AndroidX.SavedState 1.3.1.1 (LICENSE.md)
-- Xamarin.AndroidX.SavedState.SavedState.Android 1.3.1.1 (LICENSE.md)
-- Xamarin.AndroidX.SavedState.SavedState.Ktx 1.3.1.1 (LICENSE.md)
+- Xamarin.AndroidX.NavigationEvent 1.1.2.1 (LICENSE.md)
+- Xamarin.AndroidX.NavigationEvent.Android 1.1.2.1 (LICENSE.md)
+- Xamarin.AndroidX.ProfileInstaller.ProfileInstaller 1.4.1.8 (LICENSE.md)
+- Xamarin.AndroidX.RecyclerView 1.4.0.6 (LICENSE.md)
+- Xamarin.AndroidX.ResourceInspection.Annotation 1.0.1.25 (LICENSE.md)
+- Xamarin.AndroidX.SavedState 1.5.0.1 (LICENSE.md)
+- Xamarin.AndroidX.SavedState.SavedState.Android 1.5.0.1 (LICENSE.md)
+- Xamarin.AndroidX.SavedState.SavedState.Ktx 1.5.0.1 (LICENSE.md)
 - Xamarin.AndroidX.Security.SecurityCrypto 1.1.0.4-alpha07 (LICENSE.md)
 - Xamarin.AndroidX.SlidingPaneLayout 1.2.0.22 (LICENSE.md)
-- Xamarin.AndroidX.Startup.StartupRuntime 1.2.0.5 (LICENSE.md)
+- Xamarin.AndroidX.Startup.StartupRuntime 1.2.0.8 (LICENSE.md)
 - Xamarin.AndroidX.SwipeRefreshLayout 1.1.0.29 (LICENSE.md)
-- Xamarin.AndroidX.Tracing.Tracing 1.3.0.1 (LICENSE.md)
-- Xamarin.AndroidX.Tracing.Tracing.Android 1.3.0.1 (LICENSE.md)
-- Xamarin.AndroidX.Transition 1.6.0.1 (LICENSE.md)
-- Xamarin.AndroidX.VectorDrawable 1.2.0.8 (LICENSE.md)
-- Xamarin.AndroidX.VectorDrawable.Animated 1.2.0.8 (LICENSE.md)
-- Xamarin.AndroidX.VersionedParcelable 1.2.1.3 (LICENSE.md)
-- Xamarin.AndroidX.ViewPager 1.1.0.4 (LICENSE.md)
-- Xamarin.AndroidX.ViewPager2 1.1.0.8 (LICENSE.md)
+- Xamarin.AndroidX.Tracing.Tracing 1.3.0.4 (LICENSE.md)
+- Xamarin.AndroidX.Tracing.Tracing.Android 1.3.0.4 (LICENSE.md)
+- Xamarin.AndroidX.Transition 1.7.0.2 (LICENSE.md)
+- Xamarin.AndroidX.VectorDrawable 1.2.0.11 (LICENSE.md)
+- Xamarin.AndroidX.VectorDrawable.Animated 1.2.0.11 (LICENSE.md)
+- Xamarin.AndroidX.VersionedParcelable 1.2.1.6 (LICENSE.md)
+- Xamarin.AndroidX.ViewPager 1.1.0.7 (LICENSE.md)
+- Xamarin.AndroidX.ViewPager2 1.1.0.11 (LICENSE.md)
 - Xamarin.AndroidX.Window 1.4.0.1 (LICENSE.md)
 - Xamarin.AndroidX.Window.WindowCore 1.4.0.1 (LICENSE.md)
 - Xamarin.AndroidX.Window.WindowCore.Jvm 1.4.0.1 (LICENSE.md)
-- Xamarin.Google.Android.Material 1.12.0.5 (LICENSE.md)
+- Xamarin.Google.Android.Material 1.14.0.6 (LICENSE.md)
 - Xamarin.Google.Code.FindBugs.JSR305 3.0.2.21 (LICENSE.md)
 - Xamarin.Google.Crypto.Tink.Android 1.18.0.1 (LICENSE.md)
-- Xamarin.Google.ErrorProne.Annotations 2.41.0.1 (LICENSE.md)
+- Xamarin.Google.ErrorProne.Annotations 2.50.0.1 (LICENSE.md)
 - Xamarin.Google.Guava.ListenableFuture 1.0.0.29 (LICENSE.md)
-- Xamarin.JSpecify 1.0.0.4 (LICENSE.md)
 - Xamarin.Jetbrains.Annotations 26.0.2.3 (LICENSE.md)
-- Xamarin.Kotlin.StdLib 2.2.0.1 (LICENSE.md)
-- Xamarin.KotlinX.Coroutines.Android 1.10.2.1 (LICENSE.md)
-- Xamarin.KotlinX.Coroutines.Core 1.10.2.1 (LICENSE.md)
-- Xamarin.KotlinX.Coroutines.Core.Jvm 1.10.2.1 (LICENSE.md)
-- Xamarin.KotlinX.Serialization.Core 1.9.0.1 (LICENSE.md)
-- Xamarin.KotlinX.Serialization.Core.Jvm 1.9.0.1 (LICENSE.md)
+- Xamarin.JSpecify 1.0.0.4 (LICENSE.md)
+- Xamarin.Kotlin.StdLib 2.4.0.1 (LICENSE.md)
+- Xamarin.KotlinX.AtomicFU 0.33.0.1 (LICENSE.md)
+- Xamarin.KotlinX.AtomicFU.Jvm 0.33.0.1 (LICENSE.md)
+- Xamarin.KotlinX.Coroutines.Android 1.11.0.1 (LICENSE.md)
+- Xamarin.KotlinX.Coroutines.Core 1.11.0.1 (LICENSE.md)
+- Xamarin.KotlinX.Coroutines.Core.Jvm 1.11.0.1 (LICENSE.md)
+- Xamarin.KotlinX.Serialization.Core 1.11.0.1 (LICENSE.md)
+- Xamarin.KotlinX.Serialization.Core.Jvm 1.11.0.1 (LICENSE.md)
 
 Note: This package may contain or install third-party dependencies which are
 governed by additional license(s). Microsoft is not responsible for, nor
@@ -2247,7 +2335,6 @@ It also applies even if Microsoft knew or should have known about the possibilit
 APPENDIX A9
 Applies to:
 - Xamarin.JSpecify 1.0.0.4 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.Kotlin.StdLib 2.2.0.1 (THIRD-PARTY-NOTICES.txt)
 
 THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 Do not translate or localize
@@ -2467,82 +2554,88 @@ implication, estoppel or otherwise.
 ============================================================
 APPENDIX A10
 Applies to:
-- Xamarin.AndroidX.Activity 1.10.1.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Activity.Ktx 1.10.1.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Annotation 1.9.1.5 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Annotation.Experimental 1.5.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Annotation.Jvm 1.9.1.5 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.AppCompat 1.7.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.AppCompat.AppCompatResources 1.7.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Arch.Core.Common 2.2.0.18 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Arch.Core.Runtime 2.2.0.18 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Activity 1.13.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Activity.Ktx 1.13.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Annotation 1.10.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Annotation.Experimental 1.6.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Annotation.Jvm 1.10.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.AppCompat 1.7.1.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.AppCompat.AppCompatResources 1.7.1.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Arch.Core.Common 2.2.0.21 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Arch.Core.Runtime 2.2.0.21 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Browser 1.8.0.11 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.CardView 1.0.0.36 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Collection 1.5.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Collection.Jvm 1.5.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Collection.Ktx 1.5.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Concurrent.Futures 1.3.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ConstraintLayout 2.2.1.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ConstraintLayout.Core 1.1.1.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.CoordinatorLayout 1.3.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Core 1.16.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Core.Core.Ktx 1.16.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Core.ViewTree 1.0.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.CursorAdapter 1.0.0.34 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.CustomView 1.2.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.CustomView.PoolingContainer 1.1.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.DrawerLayout 1.2.0.18 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.DynamicAnimation 1.1.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Emoji2 1.5.0.6 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Emoji2.ViewsHelper 1.5.0.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.CardView 1.0.0.39 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Collection 1.6.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Collection.Jvm 1.6.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Collection.Ktx 1.6.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Compose.Runtime.Annotation 1.11.3.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Compose.Runtime.Annotation.Android 1.11.3.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Concurrent.Futures 1.3.0.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ConstraintLayout 2.2.1.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ConstraintLayout.Core 1.1.1.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.CoordinatorLayout 1.3.0.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Core 1.19.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Core.Core.Ktx 1.19.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Core.ViewTree 1.0.0.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.CursorAdapter 1.0.0.37 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.CustomView 1.2.0.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.CustomView.PoolingContainer 1.1.0.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.DrawerLayout 1.2.0.21 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.DynamicAnimation 1.1.0.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Emoji2 1.6.0.3 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Emoji2.ViewsHelper 1.6.0.3 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.ExifInterface 1.4.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Fragment 1.8.8.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Fragment.Ktx 1.8.8.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Interpolator 1.0.0.34 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Common 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Common.Jvm 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.LiveData 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.LiveData.Core 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Process 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Runtime 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Runtime.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Runtime.Ktx 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.ViewModel 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.ViewModel.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.ViewModel.Ktx 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.ViewModelSavedState 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Loader 1.1.0.34 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Fragment 1.8.9.3 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Fragment.Ktx 1.8.9.3 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Graphics.Shapes 1.1.0.3 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Graphics.Shapes.Android 1.1.0.3 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Interpolator 1.0.0.37 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Common 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Common.Jvm 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.LiveData 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.LiveData.Core 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Process 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Runtime 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Runtime.Android 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Runtime.Ktx 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.ViewModel 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.ViewModel.Android 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.ViewModel.Ktx 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.ViewModelSavedState 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android 2.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Loader 1.1.0.37 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.Common 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.Common.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.Fragment 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.Runtime 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.Runtime.Android 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Navigation.UI 2.9.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ProfileInstaller.ProfileInstaller 1.4.1.5 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.RecyclerView 1.4.0.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ResourceInspection.Annotation 1.0.1.22 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.SavedState 1.3.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.SavedState.SavedState.Android 1.3.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.SavedState.SavedState.Ktx 1.3.1.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.NavigationEvent 1.1.2.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.NavigationEvent.Android 1.1.2.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ProfileInstaller.ProfileInstaller 1.4.1.8 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.RecyclerView 1.4.0.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ResourceInspection.Annotation 1.0.1.25 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.SavedState 1.5.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.SavedState.SavedState.Android 1.5.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.SavedState.SavedState.Ktx 1.5.0.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Security.SecurityCrypto 1.1.0.4-alpha07 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.SlidingPaneLayout 1.2.0.22 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Startup.StartupRuntime 1.2.0.5 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Startup.StartupRuntime 1.2.0.8 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.SwipeRefreshLayout 1.1.0.29 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Tracing.Tracing 1.3.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Tracing.Tracing.Android 1.3.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.Transition 1.6.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.VectorDrawable 1.2.0.8 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.VectorDrawable.Animated 1.2.0.8 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.VersionedParcelable 1.2.1.3 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ViewPager 1.1.0.4 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.AndroidX.ViewPager2 1.1.0.8 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Tracing.Tracing 1.3.0.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Tracing.Tracing.Android 1.3.0.4 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.Transition 1.7.0.2 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.VectorDrawable 1.2.0.11 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.VectorDrawable.Animated 1.2.0.11 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.VersionedParcelable 1.2.1.6 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ViewPager 1.1.0.7 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.AndroidX.ViewPager2 1.1.0.11 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Window 1.4.0.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Window.WindowCore 1.4.0.1 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.AndroidX.Window.WindowCore.Jvm 1.4.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.Google.Android.Material 1.12.0.5 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.Google.Android.Material 1.14.0.6 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.Google.Code.FindBugs.JSR305 3.0.2.21 (THIRD-PARTY-NOTICES.txt)
 - Xamarin.Google.Guava.ListenableFuture 1.0.0.29 (THIRD-PARTY-NOTICES.txt)
 
@@ -3046,11 +3139,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 APPENDIX A13
 Applies to:
 - GoogleGson 2.13.1.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.KotlinX.Coroutines.Android 1.10.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.KotlinX.Coroutines.Core 1.10.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.KotlinX.Coroutines.Core.Jvm 1.10.2.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.KotlinX.Serialization.Core 1.9.0.1 (THIRD-PARTY-NOTICES.txt)
-- Xamarin.KotlinX.Serialization.Core.Jvm 1.9.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.AtomicFU 0.33.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.AtomicFU.Jvm 0.33.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.Coroutines.Android 1.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.Coroutines.Core 1.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.Coroutines.Core.Jvm 1.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.Serialization.Core 1.11.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.KotlinX.Serialization.Core.Jvm 1.11.0.1 (THIRD-PARTY-NOTICES.txt)
 
 THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 Do not translate or localize
@@ -5363,7 +5458,7 @@ SOFTWARE.
 ============================================================
 APPENDIX A18
 Applies to:
-- Xamarin.Google.ErrorProne.Annotations 2.41.0.1 (THIRD-PARTY-NOTICES.txt)
+- Xamarin.Google.ErrorProne.Annotations 2.50.0.1 (THIRD-PARTY-NOTICES.txt)
 
 THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 Do not translate or localize
@@ -13184,3 +13279,223 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+============================================================
+APPENDIX A22
+Applies to:
+- Xamarin.Kotlin.StdLib 2.4.0.1 (THIRD-PARTY-NOTICES.txt)
+
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+Do not translate or localize
+
+This binding package incorporates third-party material. The license(s) under
+which Microsoft received such third party material are set forth below.
+Microsoft reserves all other rights not expressly granted, whether by
+implication, estoppel or otherwise.
+
+############################################################
+# Apache-2.0
+# http://www.apache.org/licenses/LICENSE-2.0.txt
+############################################################
+
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
