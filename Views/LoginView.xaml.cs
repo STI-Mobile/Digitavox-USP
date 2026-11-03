@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 
 namespace Digitavox.Views;
 
-public partial class LoginView : ContentPage, IOnPageKeyPress
+public partial class LoginView : ContentPage, IKeyboardInputHandler
 {
+    private LoginViewModel ViewModel => (LoginViewModel)BindingContext;
+
 	public LoginView(LoginViewModel loginViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class LoginView : ContentPage, IOnPageKeyPress
     }
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((LoginViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((LoginViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is LoginViewModel vm)
-        {
-            vm.OnPage();
-        }
+        ViewModel.OnPage();
     }
 }

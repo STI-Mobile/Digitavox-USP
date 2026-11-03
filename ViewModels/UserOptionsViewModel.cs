@@ -16,14 +16,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Digitavox.Helpers;
 using Digitavox.Models;
+using Digitavox.Core.Abstractions;
+using Digitavox.Presentation.Input;
 
 namespace Digitavox.ViewModels
 {
-    public partial class UserOptionsViewModel : ObservableObject, IOnPageKeyPress
+    public partial class UserOptionsViewModel : ObservableObject, IKeyboardInputHandler
     {
-        List<string> pressedKeys = new List<string>();
         int timeToCaptureNumber = 0;
-        int totalOptions = 2;
+        int totalOptions = 3;
+        bool showingHistory;
         int introductionLines = 1;
         bool answerOption; 
         bool outcome;
@@ -38,17 +40,29 @@ namespace Digitavox.ViewModels
         private double _textSize;
         private DVViewModelSpeak dVViewModelSpeak;
         private DVViewModelFunctions dVViewModelFunctions;
-        private FingerMapping fingerMapping;
+        private KeyboardInputProcessor keyboardInputProcessor;
         private UserProgress userProgress;
+        private readonly ISettingsService settingsService;
+        private readonly INavigationService navigationService;
+        private readonly IAppEnvironment appEnvironment;
+        private readonly IUserHistoryStore historyStore;
         public UserOptionsViewModel(DVViewModelSpeak dVViewModelSpeak,
                                     DVViewModelFunctions dVViewModelFunctions,
-                                    FingerMapping fingerMapping,
-                                    UserProgress userProgress)
+                                    KeyboardInputProcessor keyboardInputProcessor,
+                                    UserProgress userProgress,
+                                    ISettingsService settingsService,
+                                    INavigationService navigationService,
+                                    IAppEnvironment appEnvironment,
+                                    IUserHistoryStore historyStore)
         {
             this.dVViewModelSpeak = dVViewModelSpeak;
             this.dVViewModelFunctions = dVViewModelFunctions;
-            this.fingerMapping = fingerMapping;
+            this.keyboardInputProcessor = keyboardInputProcessor;
             this.userProgress = userProgress;
+            this.settingsService = settingsService;
+            this.navigationService = navigationService;
+            this.appEnvironment = appEnvironment;
+            this.historyStore = historyStore;
             pageKeyCodes = new List<string>()
             {
                 "Up", "Down", "Tab", "ShiftTab",
@@ -60,16 +74,21 @@ namespace Digitavox.ViewModels
             }
             pageFunctions = new List<Action>()
             {
-                UserOn, ChangeUser
+                UserOn, ChangeUser, ShowHistory
             };
         }
-        public void OnPage()
+        public async Task OnPageAsync()
         {
+            if (showingHistory)
+            {
+                ShowHistoryLines();
+                return;
+            }
             dVViewModelFunctions.SetCurrentPageIdentifier("no menu de opções de usuário");
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var textList = new List<string>();
             var speechList = new List<string>();
-            if (DVPersistence.Get<bool>("instructionsEnabled"))
+            if (settingsService.Get<bool>("instructionsEnabled"))
             {
                 introductionLines = 2;
                 textList.Add($"Use os números de 1 a {totalOptions}, tab e shift tab ou setas verticais para navegar entre as opções. Depois tecle enter para confirmar. Escape volta.");
@@ -84,6 +103,7 @@ namespace Digitavox.ViewModels
                 "As opções são: ",
                 "1 - Falar usuário atualmente logado",
                 "2 - Alterar usuário logado",
+                "3 - Consultar histórico dos conteúdos retirados",
                 string.Empty
             };
 
@@ -92,6 +112,7 @@ namespace Digitavox.ViewModels
                 "As opções são: ",
                 "1 - Falar usuário atualmente logado",
                 "2 - Alterar usuário logado",
+                "3 - Consultar histórico dos conteúdos retirados",
                 string.Empty
             };
             if (defaultSpeechList.Count == defaultTextList.Count)
@@ -110,7 +131,7 @@ namespace Digitavox.ViewModels
                 
                 
                 PageFormattedLabel = text;
-                TextSize = DVPersistence.Get<double>("fontSize");
+                TextSize = settingsService.Get<double>("fontSize");
             });
 
             dVViewModelFunctions.SetFirstOptionLineNumber(dVViewModelSpeak.LineCount() - totalOptions - 1);
@@ -144,13 +165,43 @@ namespace Digitavox.ViewModels
             dVViewModelSpeak.ChangeLine(changeOutput, changeOutput, introductionLines + totalOptions);
             dVViewModelSpeak.SpeakOneLine(introductionLines + totalOptions, () => { });
         }
+        private void ShowHistory()
+        {
+            showingHistory = true;
+            ShowHistoryLines();
+        }
+        private void ShowHistoryLines()
+        {
+            dVViewModelFunctions.ClearHelpOptions();
+            dVViewModelFunctions.SetCurrentPageIdentifier("no histórico de conteúdos retirados");
+            var lines = new List<string> { "Histórico dos conteúdos retirados", "Use tab e setas verticais para consultar as estatísticas. Escape volta." };
+            try
+            {
+                var history = historyStore.LoadLines(userProgress.GetUserName());
+                lines.AddRange(history.Count == 0 ? new[] { "Nenhum registro histórico de conteúdo retirado." } : history);
+            }
+            catch (Exception exception) when (exception is IOException or InvalidDataException or System.Text.Json.JsonException)
+            {
+                lines.Add("Não foi possível consultar o histórico. Os dados foram preservados.");
+            }
+            dVViewModelSpeak.SetTextAndSpeech(lines, lines).RegisterUpdateScreen(text =>
+            {
+                PageFormattedLabel = text;
+                TextSize = settingsService.Get<double>("fontSize");
+            });
+            dVViewModelFunctions.SetFirstOptionLineNumber(0);
+            dVViewModelFunctions.SetLastOptionLineNumber(lines.Count - 1);
+            dVViewModelFunctions.SetOptionNumberStart(0);
+            dVViewModelFunctions.LastLineIsText(false);
+            dVViewModelSpeak.SpeakAll();
+        }
         private void Accept()
         {
             dVViewModelSpeak.Speak("s", () => 
             {
-                MainThread.BeginInvokeOnMainThread(() =>
+                appEnvironment.RunOnMainThread(() =>
                 {
-                    Logout();
+                    _ = LogoutAsync();
                 });
             });
         }
@@ -159,36 +210,41 @@ namespace Digitavox.ViewModels
             outcome = false;
             dVViewModelSpeak.ChangeLine(string.Empty, string.Empty, introductionLines + totalOptions);
         }
-        private async void Logout()
+        private async Task LogoutAsync()
         {
             userProgress.UserLogout();
             dVViewModelFunctions.LastLineIsText(false);
             
-            await Shell.Current.GoToAsync("../..");
+            await navigationService.GoBackAsync(levels: 2);
         }
         private void Reject()
         {
             dVViewModelSpeak.Speak("n", () => 
             {
-                OnPage();
+                _ = OnPageAsync();
             });
         }
         public bool OnPageKeyDown(int keyCode)
         {
-            string code = fingerMapping.mapKeyCode(keyCode);
-            if (!pressedKeys.Contains(code))
-            {
-                pressedKeys.Add(code);
-            }
-            return true;
+            return keyboardInputProcessor.KeyDown(keyCode);
         }
         public bool OnPageKeyPress(int keyCode, int modifiers)
         {
-            pressedKeys.Remove(fingerMapping.mapKeyCode(keyCode));
-            var bean = fingerMapping.MapKey(keyCode, modifiers, pressedKeys);
+            var bean = keyboardInputProcessor.KeyUp(keyCode, modifiers);
             if (bean.code != null)
             {
                 dVViewModelSpeak.Skip();
+                if (showingHistory)
+                {
+                    if (bean.code == "Escape" || (bean.code == "!" && appEnvironment.IsVirtualDevice))
+                    {
+                        showingHistory = false;
+                        _ = OnPageAsync();
+                    }
+                    else if (bean.code is "Up" or "Down" or "Tab" or "ShiftTab") dVViewModelFunctions.HandleKeyCode(bean.code);
+                    else if (bean.code == " ") ShowHistoryLines();
+                    return true;
+                }
                 dVViewModelFunctions.LastLineIsText(outcome);
                 if (answerOption)
                 {
@@ -212,13 +268,13 @@ namespace Digitavox.ViewModels
                     if (outcome) RemoveOutcome();
                     if (bean.code == " ")
                     {
-                        OnPage();
+                        _ = OnPageAsync();
                     }
                     else if (bean.code == "Enter" && apresentationSkiped)
                     {
                         Enter();
                     }
-                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && DVDevice.IsVirtual()))
+                    else if (pageKeyCodes.Contains(bean.code) || (bean.code == "!" && appEnvironment.IsVirtualDevice))
                     {
                         dVViewModelFunctions.HandleKeyCode(bean.code);
                         apresentationSkiped = true;

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="Digitavox.Views.StartupView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Digitavox.Views"
+    x:DataType="local:StartupView"
+    BackgroundColor="White"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid
+        Padding="24"
+        RowDefinitions="*,Auto,Auto,*"
+        RowSpacing="16">
+        <ActivityIndicator
+            x:Name="LoadingIndicator"
+            Grid.Row="1"
+            AutomationProperties.Name="Inicializando aplicativo"
+            Color="#FCB421"
+            HorizontalOptions="Center"
+            IsRunning="True" />
+        <Label
+            x:Name="StatusLabel"
+            Grid.Row="2"
+            HorizontalTextAlignment="Center"
+            SemanticProperties.Description="Inicializando aplicativo"
+            Text="Inicializando..."
+            TextColor="Black" />
+    </Grid>
+
+</ContentPage>

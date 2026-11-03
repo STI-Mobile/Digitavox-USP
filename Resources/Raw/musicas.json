@@ -2,7 +2,7 @@
 	"type":	"CURSO",
 	"CURSO":	{
 		"Present":	{
-			"APT":	"Este curso é composto por cinco lições, cada lição é a letra de uma música para você treinar a sua digitação. Preste bastante atenção no que for falado, Lembre que começo de frase tem letra maiúscula."
+			"APT":	"Este curso é composto por quatro lições, cada lição é a letra de uma música para você treinar a sua digitação. Preste bastante atenção no que for falado, Lembre que começo de frase tem letra maiúscula."
 		},
 		"Instruction":	{
 			"IST":	"Na lista não aparece o nome da música, entre na lição e descobrirá qual será. A próxima lição estará disponível quando concluir a última lição exibida com êxito. Se é a primeira vez neste curso, para começar tecle enter sobre a lição 1."
@@ -12,7 +12,7 @@
 		"SOMNOMECURSO":	"CUR_3",
 		"SOMAPRESENTACAO":	"",
 		"SOMINSTRUCAO":	"",
-		"QUANTIDADELICOES":	5,
+		"QUANTIDADELICOES":	4,
 		"SOMINICURSO":	"visual",
 		"SOMFIMCURSO":	"escond",
 		"SOMINILICAO":	"mod",
@@ -151,53 +151,6 @@
 		"REPETICOESEXER":	1,
 		"TEMPOPORCARACTER":	1,
 		"MEDIAEXER":	97,
-		"TUDO_EM_MAIUSCULO":	"nao"
-	},
-	"LICAO5":	{
-		"Present": {
-			"APT": "Esta é a última lição deste curso. Vou ditar a letra da música \"A  CÚMPLICE\" de Juca Chaves. Para digitar o acento circunflexo, solte a tecla do acento antes de soltar o Shift. Digite com atenção, lembre que uma frase começa com letra maiúscula. Lembre também de digitar barra de espaço entre as palavras e no fim do que for ditado, pois a barra de espaço no final é quem diz para o Digitavox USP falar a próxima sentença."
-		},
-		"Instruction":	{
-			"IST":	"Digite:"
-		},
-		"SOMAPRESENTACAO":	"",
-		"SOMINSTRUCAO":	"",
-		"EXER1":	"Eu quero uma mulher",
-		"EXER2":	"Que seja diferente",
-		"EXER3":	"De todas que já tive",
-		"EXER4":	"Todas tão iguais",
-		"EXER5":	"Que seja minha amiga",
-		"EXER6":	"Amante e confidente",
-		"EXER7":	"A cúmplice de tudo",
-		"EXER8":	"Que eu fizer a mais",
-		"EXER9":	"No corpo tem o sol",
-		"EXER10":	"No coração a lua",
-		"EXER11":	"A pele cor de sonho",
-		"EXER12":	"As formas de maçã",
-		"EXER13":	"A fina transparência",
-		"EXER14":	"Uma elegância nua",
-		"EXER15":	"O mágico fascínio",
-		"EXER16":	"O cheiro das manhãs",
-		"EXER17":	"Eu quero uma mulher",
-		"EXER18":	"De coloridos modos",
-		"EXER19":	"Que morda os lábios",
-		"EXER20":	"Sempre que for me abraçar",
-		"EXER21":	"Que o seu falar provoque",
-		"EXER22":	"O silenciar de todos",
-		"EXER23":	"E o teu silêncio",
-		"EXER24":	"Obrigue a me fazer sonhar",
-		"EXER25":	"Que saiba receber",
-		"EXER26":	"Que saiba ser bem vinda",
-		"EXER27":	"Que possa dar jeitinho",
-		"EXER28":	"Em tudo que fizer",
-		"EXER29":	"Que ao sorrir provoque",
-		"EXER30":	"Uma covinha linda",
-		"EXER31":	"De dia uma menina",
-		"EXER32":	"A noite uma mulher",
-		"SOLETRAEXER":	"nao",
-		"REPETICOESEXER":	1,
-		"TEMPOPORCARACTER":	1,
-		"MEDIAEXER":	99,
 		"TUDO_EM_MAIUSCULO":	"nao"
 	}
 }

@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Digitavox.Models;
+using Digitavox.Presentation.Input;
 using Digitavox.ViewModels;
 
 namespace Digitavox.Views;
 
-public partial class ExercisesHelpView : ContentPage, IOnPageKeyPress
+public partial class ExercisesHelpView : ContentPage, IKeyboardInputHandler
 {
+    private ExercisesHelpViewModel ViewModel => (ExercisesHelpViewModel)BindingContext;
+
 	public ExercisesHelpView(ExercisesHelpViewModel exercisesHelpViewModel)
 	{
 		InitializeComponent();
@@ -26,18 +28,15 @@ public partial class ExercisesHelpView : ContentPage, IOnPageKeyPress
 	}
     public bool OnPageKeyPress(int keyCode, int modifiers)
     {
-        return ((ExercisesHelpViewModel)BindingContext).OnPageKeyPress(keyCode, modifiers);
+        return ViewModel.OnPageKeyPress(keyCode, modifiers);
     }
     public bool OnPageKeyDown(int keyCode)
     {
-        return ((ExercisesHelpViewModel)BindingContext).OnPageKeyDown(keyCode);
+        return ViewModel.OnPageKeyDown(keyCode);
     }
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is ExercisesHelpViewModel vm)
-        {
-            vm.OnPage();
-        }
+        await ViewModel.OnPageAsync();
     }
 }

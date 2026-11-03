@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommunityToolkit.Mvvm.Messaging;
-using Digitavox.Helpers;
+using Digitavox.Core.Abstractions;
+using Digitavox.Domain.Time;
 
 namespace Digitavox.Models
 {
@@ -33,20 +33,17 @@ namespace Digitavox.Models
         private bool currentWordError;
         private bool ignoreLetterCase;
         private CourseLessonBean bean;
-        private IDispatcherTimer timer;
+        private readonly IExerciseTimer timer;
+        private readonly IClock clock;
         private Action timeIsOver;
         public CourseLesson()
+            : this(new PassiveExerciseTimer(), new SystemClock())
         {
-            WeakReferenceMessenger.Default.Register<DVMessage>(this, (r, m) => {
-                if (m.Value == "WindowCreated" || m.Value == "WindowActivated" || m.Value == "WindowResumed")
-                {
-                    ContinueTimer();
-                }
-                else if (m.Value == "WindowDeactivated" || m.Value == "WindowStopped" || m.Value == "WindowDestroying")
-                {
-                    PauseTimer();
-                }
-            });
+        }
+        public CourseLesson(IExerciseTimer timer, IClock clock)
+        {
+            this.timer = timer;
+            this.clock = clock;
         }
         public void SetLessonChars(List<string> lessonChars, int exerciseRepetitions, int secondsPerChar, int targetPercent, int timeDivider, bool spellingActive, bool ignoreLetterCase)
         {
@@ -86,7 +83,7 @@ namespace Digitavox.Models
         {
             running = true;
             paused = true;
-            startTime = DateTime.Now;
+            startTime = clock.Now;
             timeCheckpoint = startTime;
             bean.correctChars = 0;
             bean.incorrectChars = 0;
@@ -98,12 +95,6 @@ namespace Digitavox.Models
             currentRepetition = 1;
             bean.errorsByChar = new Dictionary<string, int>();
             this.timeIsOver = timeIsOver;
-            timer = Application.Current.Dispatcher.CreateTimer();
-            timer.Tick += (sender, e) =>
-            {
-                StopTimer();
-                timeIsOver.Invoke();
-            };
         }
         public void CharPressed(string c)
         {
@@ -152,32 +143,36 @@ namespace Digitavox.Models
         public void StopTimer()
         {
             running = false;
-            endTime = DateTime.Now;
+            endTime = clock.Now;
             this.previousMilliseconds += (int)(endTime - timeCheckpoint).TotalMilliseconds;
             bean.practiceTime = this.previousMilliseconds / 1000;
-            if (timer != null) timer.Stop();
+            timer.Stop();
             bean.concluded = TotalCorrectPercent() >= targetPercent;
         }
         public void PauseTimer()
         {
             if (running && !paused)
             {
-                this.previousMilliseconds += (int)(DateTime.Now - timeCheckpoint).TotalMilliseconds;
+                this.previousMilliseconds += (int)(clock.Now - timeCheckpoint).TotalMilliseconds;
                 bean.practiceTime = this.previousMilliseconds / 1000;
                 paused = true;
-                if (timer != null) timer.Stop();
+                timer.Stop();
             }
         }
         public void ContinueTimer()
         {
             if (running && paused)
             {
-                timeCheckpoint = DateTime.Now;
+                timeCheckpoint = clock.Now;
                 paused = false;
-                
-                timer.Interval = TimeSpan.FromMilliseconds(bean.totalTime * 1000 - previousMilliseconds);
-                
-                timer.Start();
+
+                TimeSpan remaining = TimeSpan.FromMilliseconds(
+                    Math.Max(0, bean.totalTime * 1000 - previousMilliseconds));
+                timer.Start(remaining, () =>
+                {
+                    StopTimer();
+                    timeIsOver.Invoke();
+                });
             }
         }
         public CourseLessonBean GetStatistics()

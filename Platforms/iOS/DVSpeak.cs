@@ -14,99 +14,91 @@
 
 using AVFoundation;
 using Foundation;
+using Microsoft.Maui.ApplicationModel;
 
-namespace Digitavox.PlatformsImplementations {
+namespace Digitavox.PlatformsImplementations;
 
-  public partial class DVSpeak : AVSpeechSynthesizerDelegate {
+public partial class DVSpeak : AVSpeechSynthesizerDelegate
+{
+    private readonly Lazy<AVSpeechSynthesizer> lazySynthesizer = new(() => new AVSpeechSynthesizer());
+    private AVSpeechSynthesizer Synthesizer => lazySynthesizer.Value;
+    private readonly Dictionary<AVSpeechUtterance, Action> callbacks = new();
+    private int speechGeneration;
+    private float iosSpeechRate = AVSpeechUtterance.DefaultSpeechRate;
 
-    private static Lazy<AVSpeechSynthesizer> lazySynthesizer = new Lazy<AVSpeechSynthesizer>(() => new AVSpeechSynthesizer());
-    private AVSpeechSynthesizer synthesizer => lazySynthesizer.Value;
-    
-    private float iosSpeechRate;
-    private Dictionary<string, Action> callbacks = new Dictionary<string, Action>();
-    private Dictionary<AVSpeechUtterance, string> utteranceToIdMap = new Dictionary<AVSpeechUtterance, string>();
-
-    public partial void Cancel() {
-      
-      synthesizer.StopSpeaking(AVSpeechBoundary.Immediate);
-      float savedRate = NSUserDefaults.StandardUserDefaults.FloatForKey("speechRateKey");
-      iosSpeechRate = savedRate != 0 ? savedRate : 0.5f;
-    }
-
-    public partial void Init(object obj) {
-      
-      synthesizer.Delegate = this;
-      synthesizer.UsesApplicationAudioSession = true;
-    }
-
-    public partial void InitCompleted() {
-      
-    }
-
-    public partial void SpeakText(string text, Action onFinished) {
-        var utteranceId = Guid.NewGuid().ToString();
-        var utterance = new AVSpeechUtterance(text) {
-            Voice = AVSpeechSynthesisVoice.FromLanguage("pt-BR"),
-            Rate = iosSpeechRate
-        };
-        synthesizer.SpeakUtterance(utterance);
-        callbacks[utteranceId] = onFinished;
-        utteranceToIdMap[utterance] = utteranceId;
-    }
-
-    public partial void SetSpeechRate(int speechRate) {
-      
-      iosSpeechRate = ((float)speechRate - 1) * 0.0625f + 0.5f; 
-      NSUserDefaults.StandardUserDefaults.SetFloat(iosSpeechRate, "speechRateKey");
-    }
-
-    public partial void Completed(object id) {
-      
-    }
-
-
-    private Queue<string> speechQueue = new Queue<string>();
-
-    public void EnqueueSpeech(string text)
+    public partial void Init(object obj)
     {
-        speechQueue.Enqueue(text);
-        if (!synthesizer.Speaking)
-        {
-            SpeakNextInQueue();
-        }
+        Synthesizer.Delegate = this;
+        // Let iOS route speech and handle interruptions independently of feedback sounds.
+        Synthesizer.UsesApplicationAudioSession = false;
+        RestoreSpeechRate();
     }
 
-    private void SpeakNextInQueue()
+    public partial void InitCompleted() { }
+    public partial void Completed(object id) { }
+
+    public partial void Cancel()
     {
-        if (speechQueue.Count > 0)
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            string nextSpeech = speechQueue.Dequeue();
-            SpeakText(nextSpeech, () => {
-                
+            // Cancelled utterances must not navigate or restart an earlier page's speech.
+            speechGeneration++;
+            callbacks.Clear();
+            Synthesizer.StopSpeaking(AVSpeechBoundary.Immediate);
+            RestoreSpeechRate();
+        });
+    }
+
+    private void RestoreSpeechRate()
+    {
+        float savedRate = NSUserDefaults.StandardUserDefaults.FloatForKey("speechRateKey");
+        iosSpeechRate = savedRate != 0 ? savedRate : AVSpeechUtterance.DefaultSpeechRate;
+    }
+
+    public partial void SpeakText(string text, Action onFinished)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                onFinished();
+                return;
+            }
+
+            var utterance = new AVSpeechUtterance(text)
+            {
+                Voice = AVSpeechSynthesisVoice.FromLanguage("pt-BR"),
+                Rate = iosSpeechRate
+            };
+            // Register before speaking, including when iOS completes an utterance immediately.
+            callbacks[utterance] = onFinished;
+            Synthesizer.SpeakUtterance(utterance);
+        });
+    }
+
+    public partial void SetSpeechRate(int speechRate)
+    {
+        iosSpeechRate = ((float)speechRate - 1) * 0.0625f + 0.5f;
+        NSUserDefaults.StandardUserDefaults.SetFloat(iosSpeechRate, "speechRateKey");
+    }
+
+    public void EnqueueSpeech(string text) => SpeakText(text, () => { });
+
+    public override void DidFinishSpeechUtterance(AVSpeechSynthesizer synthesizer, AVSpeechUtterance utterance)
+    {
+        if (callbacks.Remove(utterance, out var callback))
+        {
+            // Finish the native delegate call before a continuation stops or starts speech.
+            int generation = speechGeneration;
+            BeginInvokeOnMainThread(() =>
+            {
+                if (generation == speechGeneration) callback();
             });
         }
     }
 
-    public override void DidFinishSpeechUtterance(AVFoundation.AVSpeechSynthesizer synthesizer, AVFoundation.AVSpeechUtterance utterance)
+    public override void DidCancelSpeechUtterance(AVSpeechSynthesizer synthesizer, AVSpeechUtterance utterance)
     {
-        
-        try
-        {
-            var utteranceId = utteranceToIdMap[utterance];
-            if (callbacks.TryGetValue(utteranceId, out var callback))
-            {
-                callback.Invoke();
-                callbacks.Remove(utteranceId);
-                utteranceToIdMap.Remove(utterance);
-            }
-            SpeakNextInQueue(); 
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in DidFinishSpeechUtterance: {ex.Message}");
-        }
+        callbacks.Remove(utterance);
     }
-
-
-    } 
-} 
+}
