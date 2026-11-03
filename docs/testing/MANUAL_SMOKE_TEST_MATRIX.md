@@ -9,6 +9,10 @@ Esta matriz congela os fluxos observáveis que precisam permanecer equivalentes 
 - [ ] Suspender e retomar preserva tela, seleção, exercício e temporizador.
 - [ ] Encerrar durante uma fala não deixa TTS ou áudio ativo.
 - [ ] Retomar anuncia corretamente a página atual.
+- [ ] Com inicialização deliberadamente pendente, pressionar/soltar teclas físicas não causa crash nem despacha comandos de página.
+- [ ] Com falha de inicialização e a mensagem de erro visível, pressionar/soltar teclas físicas continua seguro.
+- [ ] Depois da inicialização, teclas tratadas e não tratadas, modificadores e navegação mantêm o comportamento normal.
+- [ ] Manter uma tecla pressionada na transição de StartupView para AppShell não causa crash; validar também Shell ainda sem CurrentPage.
 
 ## Login e sessão
 

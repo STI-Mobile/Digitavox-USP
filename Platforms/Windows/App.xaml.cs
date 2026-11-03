@@ -66,7 +66,7 @@ public partial class App : MauiWinUIApplication
     }
     public bool OnKeyUp(uint keyCode)
     {
-        Page p = Shell.Current.CurrentPage;
+        Page p = Shell.Current?.CurrentPage;
         bool IsShiftPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
         bool IsCtrlPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
         bool IsAltPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
@@ -97,7 +97,7 @@ public partial class App : MauiWinUIApplication
     }
     public bool OnKeyDown(uint keyCode)
     {
-        Page p = Shell.Current.CurrentPage;
+        Page p = Shell.Current?.CurrentPage;
         if (p is IKeyboardInputHandler inputHandler)
         {
             bool handled = inputHandler.OnPageKeyDown((int)keyCode);

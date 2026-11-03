@@ -93,7 +93,7 @@ public class DVLayoutView : LayoutView {
     
     
 
-    Page p = Shell.Current.CurrentPage;
+    Page p = Shell.Current?.CurrentPage;
     if (p is IKeyboardInputHandler inputHandler) {
       bool handled = inputHandler.OnPageKeyPress(keyCode, keyModifiers);
       if (!handled)

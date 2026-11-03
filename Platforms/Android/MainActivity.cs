@@ -93,7 +93,7 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     }
     public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
     {
-        Page p = Shell.Current.CurrentPage;
+        Page p = Shell.Current?.CurrentPage;
         if (p is IKeyboardInputHandler inputHandler)
         {
             bool handled = inputHandler.OnPageKeyDown((int)keyCode);
@@ -104,7 +104,7 @@ public class MainActivity : MauiAppCompatActivity, TextToSpeech.IOnInitListener,
     }
     public override bool OnKeyUp([GeneratedEnum] Keycode keyCode, KeyEvent e)
     {
-        Page p = Shell.Current.CurrentPage;
+        Page p = Shell.Current?.CurrentPage;
         if (p is IKeyboardInputHandler inputHandler)
         {
           int keyModifiers = 0;
